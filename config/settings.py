@@ -114,7 +114,7 @@ if DATABASE_URL:
         conn_max_age=600,
         ssl_require=DATABASE_URL.startswith('postgres'),
     )
-elif config('DB_HOST', default=''):
+elif config('USE_POSTGRES', default=False, cast=bool):
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME', default='property_bazaar_db'),
