@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Login - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="bg-light min-vh-100 d-flex align-items-center justify-content-center py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card border-0 shadow-lg rounded-4">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-size: 24px;">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <h3 class="fw-bold">Admin Login</h3>
+                            <p class="text-muted small">Please login to access the admin dashboard</p>
+                        </div>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
+                                    <input type="email" name="email" class="form-control border-start-0 ps-0 bg-light py-2" placeholder="admin@propertybazaar.com" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-muted">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                                    <input type="password" name="password" class="form-control border-start-0 ps-0 bg-light py-2" placeholder="Enter your password" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill">
+                                Login to Dashboard
+                            </button>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{% url 'dashboard:home' %}" class="text-muted text-decoration-none small"><i class="fas fa-arrow-left me-1"></i> Back to Site</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

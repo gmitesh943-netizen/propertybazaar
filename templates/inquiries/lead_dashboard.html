@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lead Management - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="fw-black mb-1">Lead <span class="text-primary">Management</span></h2>
+                <p class="text-muted mb-0">Track and follow up with potential buyers who inquired about your properties.</p>
+            </div>
+            <div class="text-end">
+                <div class="p-3 bg-white rounded-4 shadow-sm border-start border-4 border-danger">
+                    <p class="small text-muted fw-bold text-uppercase mb-1">Posting Usage</p>
+                    <h5 class="fw-bold mb-0">{{ user_limits.used }} / {{ user_limits.total }}</h5>
+                    <div class="progress mt-2" style="height: 4px; width: 150px;">
+                        {% if user_limits.total == 'Unlimited' %}
+                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        {% else %}
+                            <div class="progress-bar bg-primary" style="width: {% widthratio user_limits.used user_limits.total 100 %}%"></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 rounded-4 shadow-sm">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Inquirer</th>
+                                <th>Property</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inq in inquiries %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ inq.name }}</div>
+                                    <div class="text-muted small">{{ inq.email }}</div>
+                                    <div class="text-muted small">{{ inq.phone }}</div>
+                                </td>
+                                <td>
+                                    <a href="{% url 'properties:property_detail' inq.property.slug %}" class="text-dark text-decoration-none small fw-bold">
+                                        {{ inq.property.title|truncatechars:30 }}
+                                    </a>
+                                </td>
+                                <td class="small text-muted" style="max-width: 300px;">{{ inq.message|truncatewords:15 }}</td>
+                                <td class="small">{{ inq.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="tel:{{ inq.phone }}" class="btn btn-sm btn-outline-success rounded-circle" title="Call"><i class="fas fa-phone"></i></a>
+                                        <a href="mailto:{{ inq.email }}" class="btn btn-sm btn-outline-primary rounded-circle" title="Email"><i class="fas fa-envelope"></i></a>
+                                        <a href="{% url 'conversations:start_conversation' inq.property.id %}" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold small">Chat</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <i class="fas fa-inbox display-4 text-muted mb-3 d-block"></i>
+                                    <p class="text-muted">No inquiries received yet.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

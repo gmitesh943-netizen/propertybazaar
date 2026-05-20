@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  body { background-color: #f8f9fa; }
+  .application-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .step-header {
+    background: #fdfdfd;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 30px 0;
+  }
+  .step-pill {
+    height: 6px; width: 80px; background: #eee; margin: 0 auto; border-radius: 10px;
+  }
+  .step-pill.active { background: #ff6600; box-shadow: 0 0 10px rgba(255, 102, 0, 0.3); }
+  .step-text { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+  .step-text.active { color: #ff6600; }
+  .step-text.inactive { color: #aaa; }
+  
+  .form-section { padding: 50px 80px; }
+  .form-label { font-weight: 700; color: #444; margin-bottom: 10px; font-size: 0.95rem; }
+  .form-control {
+    border-radius: 12px;
+    padding: 15px 20px;
+    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+  }
+  .form-control:focus {
+    background-color: #fff;
+    border-color: #ff6600;
+    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.1);
+  }
+  .summary-box {
+    background: #fdfdfd;
+    border: 1px solid #eee;
+    border-radius: 20px;
+    padding: 30px;
+  }
+  .kv-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px dashed #eee;
+  }
+  .kv-row:last-child { border-bottom: none; }
+  .kv-key { color: #888; font-size: 0.9rem; }
+  .kv-val { font-weight: 700; color: #333; }
+  
+  .action-footer {
+    border-top: 1px solid #eee;
+    padding: 30px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fafafa;
+  }
+  .success-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-radius: 50px;
+      font-weight: 700;
+      margin-bottom: 20px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="application-container">
+    <div class="step-header">
+      <div class="d-flex justify-content-center gap-3 gap-md-5">
+        <div class="text-center">
+          <div class="step-text inactive mb-2">Property</div>
+          <div class="step-pill"></div>
+        </div>
+        <div class="text-center">
+          <div class="step-text inactive mb-2">Employment</div>
+          <div class="step-pill"></div>
+        </div>
+        <div class="text-center">
+          <div class="step-text inactive mb-2">Loan</div>
+          <div class="step-pill"></div>
+        </div>
+        <div class="text-center">
+          <div class="step-text active mb-2">Profile</div>
+          <div class="step-pill active"></div>
+        </div>
+      </div>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-section">
+        {% if submitted %}
+        <div class="text-center mb-5">
+            <div class="success-badge">
+                <i class="fas fa-check-circle"></i> Application Submitted Successfully
+            </div>
+            <h2 class="fw-black h1">Your Request is Received!</h2>
+            <p class="text-muted">Our loan experts will contact you within 24 business hours.</p>
+        </div>
+        {% endif %}
+
+        <div class="row g-5">
+          <div class="col-lg-7">
+            <h2 class="fw-bold mb-2">Personal Identity</h2>
+            <p class="text-muted mb-5">Finalize your application by providing your contact information.</p>
+            
+            <div class="row g-4">
+              <div class="col-12">
+                <label class="form-label">Full Name (As per PAN)</label>
+                <input class="form-control" name="full_name" placeholder="Enter your full name" value="{{ data.full_name }}" required {% if submitted %}readonly{% endif %} />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Mobile Number</label>
+                <div class="input-group">
+                    <span class="input-group-text border-0 bg-light">+91</span>
+                    <input class="form-control" name="phone" inputmode="tel" placeholder="10-digit number" value="{{ data.phone }}" required {% if submitted %}readonly{% endif %} />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email Address</label>
+                <input class="form-control" name="email" type="email" placeholder="you@domain.com" value="{{ data.email }}" required {% if submitted %}readonly{% endif %} />
+              </div>
+            </div>
+            
+            <div class="mt-5 p-4 rounded-4 bg-light">
+                <p class="small text-muted mb-0">
+                    <i class="fas fa-shield-alt me-2 text-primary"></i> 
+                    <strong>Privacy Note:</strong> Your data is encrypted and shared only with our banking partners to process your loan application. We do not sell your personal information to third parties.
+                </p>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="summary-box">
+                <h5 class="fw-bold mb-4">Application Summary</h5>
+                <div class="kv-row"><span class="kv-key">City</span><span class="kv-val">{{ data.city|default:"-" }}</span></div>
+                <div class="kv-row"><span class="kv-key">Property Type</span><span class="kv-val text-capitalize">{{ data.property_type|default:"-" }}</span></div>
+                <div class="kv-row"><span class="kv-key">Property Status</span>                <span class="kv-val text-capitalize">{{ data.property_status|default:"-" }}</span></div>
+                <div class="kv-row"><span class="kv-key">Property Value</span><span class="kv-val">{% if data.property_value %}₹ {{ data.property_value|intcomma }}{% else %}-{% endif %}</span></div>
+                <div class="kv-row"><span class="kv-key">Employment</span><span class="kv-val">{{ data.employment_type|default:"-"|title }}</span></div>
+                <div class="kv-row"><span class="kv-key">Income</span><span class="kv-val">{% if data.monthly_income %}₹ {{ data.monthly_income|intcomma }}{% else %}-{% endif %}</span></div>
+                <div class="kv-row"><span class="kv-key">Loan Requirement</span><span class="kv-val">{% if data.loan_amount %}₹ {{ data.loan_amount|intcomma }}{% else %}-{% endif %}</span></div>
+                <div class="kv-row"><span class="kv-key">Requested Tenure</span><span class="kv-val">{% if data.tenure_years %}{{ data.tenure_years }} Years{% else %}-{% endif %}</span></div>
+                <div class="kv-row"><span class="kv-key">Loan Purpose</span>                <span class="kv-val text-capitalize">{{ data.purpose|default:"-" }}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-footer">
+        {% if not submitted %}
+        <a class="btn btn-outline-secondary px-5 py-3 fw-bold border-0" href="{% url 'properties:loan_application_loan' %}">
+          <i class="fas fa-arrow-left me-2"></i> Back
+        </a>
+        <button type="submit" class="btn btn-primary py-3 px-5 fw-bold shadow-sm" style="border-radius: 14px; font-size: 1.1rem; min-width: 220px;">
+          Submit Application <i class="fas fa-paper-plane ms-2"></i>
+        </button>
+        {% else %}
+        <a class="btn btn-outline-secondary px-5 py-3 fw-bold border-0" href="{% url 'properties:home' %}">
+          <i class="fas fa-home me-2"></i> Back to Home
+        </a>
+        <a class="btn btn-primary py-3 px-5 fw-bold shadow-sm" style="border-radius: 14px;" href="{% url 'properties:emi_calculator' %}">
+          Check EMI Calculator <i class="fas fa-calculator ms-2"></i>
+        </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+

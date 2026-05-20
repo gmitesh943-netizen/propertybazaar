@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Top Real Estate Agents - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'properties:new_projects' %}" class="text-decoration-none">Ahmedabad Encyclopedia</a></li>
+            <li class="breadcrumb-item active">Top Agents</li>
+        </ol>
+    </nav>
+
+    <h2 class="fw-bold mb-4">Real Estate Encyclopedia <span class="text-muted small fw-normal">Ahmedabad</span></h2>
+
+    <!-- Tabs -->
+    <div class="d-flex border-bottom mb-4">
+        <a href="{% url 'properties:new_projects' %}" class="btn border-0 px-4 py-3 rounded-0 text-muted fw-bold">New Projects</a>
+        <a href="{% url 'properties:top_agents' %}" class="btn border-0 px-4 py-3 rounded-0 border-bottom border-danger border-4 fw-bold text-primary">Top Agents</a>
+        <a href="{% url 'properties:encyclopedia_properties' %}" class="btn border-0 px-4 py-3 rounded-0 text-muted fw-bold">Properties</a>
+    </div>
+
+    <h4 class="fw-bold mb-4 border-bottom pb-3">Our Highly Recommended Agents</h4>
+
+    <div class="row g-4">
+        {% for agent in agents %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                <a href="{% url 'properties:agent_detail' agent.pk %}" class="text-decoration-none text-dark">
+                    <div class="p-4 text-center border-bottom bg-light">
+                        {% if agent.profile.profile_image %}
+                            <img src="{{ agent.profile.profile_image.url }}" class="rounded-circle mb-3 border border-4 border-white shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ agent.get_full_name }}&background=d8232a&color=fff&size=100" class="rounded-circle mb-3 border border-4 border-white shadow-sm">
+                        {% endif %}
+                        <h5 class="fw-bold mb-1">{{ agent.get_full_name }}</h5>
+                        <p class="text-muted small mb-0"><i class="fas fa-certificate text-primary me-1"></i> Verified Partner Agent</p>
+                    </div>
+                </a>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
+                        <div class="text-center flex-grow-1 border-end">
+                            <h4 class="fw-bold mb-0">{{ agent.property_count }}</h4>
+                            <p class="x-small text-muted mb-0">Total Projects</p>
+                        </div>
+                        <div class="text-center flex-grow-1">
+                            <h4 class="fw-bold mb-0">{% if agent.property_count > 5 %}4.9{% else %}4.5{% endif %}</h4>
+                            <p class="x-small text-muted mb-0">Rating</p>
+                        </div>
+                    </div>
+                    
+                    <p class="small text-muted mb-4">{{ agent.profile.bio|default:"Experienced real estate agent specializing in Ahmedabad properties. Helping clients find their dream homes since 2018."|truncatewords:20 }}</p>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary rounded-pill fw-bold" onclick="alert('Phone: {{ agent.phone_number }}')"><i class="fas fa-phone-alt me-2"></i> View Number</button>
+                        <a href="{% url 'properties:agent_detail' agent.pk %}" class="btn btn-primary rounded-pill fw-bold">Contact Agent</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <img src="https://img.icons8.com/color/96/worker-male.png" class="mb-3">
+            <h5 class="fw-bold">No agents listed yet</h5>
+            <p class="text-muted">Register as an agent to show up here!</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Stats Banner -->
+    <div class="card border-0 shadow-sm rounded-4 mt-5 bg-primary text-white p-5 text-center">
+        <h2 class="fw-bold mb-3">Are you a Real Estate Professional?</h2>
+        <p class="lead mb-4">Join {{ total_agents }}+ agents and grow your business with PropertyBazaar</p>
+        <div>
+            <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary">Register as Agent</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .x-small { font-size: 0.75rem; }
+    .breadcrumb-item + .breadcrumb-item::before { content: ">"; }
+</style>
+{% endblock %}
+
+
+
+
+
+

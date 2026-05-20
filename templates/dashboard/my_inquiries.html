@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <h4 class="fw-bold mb-4">Property Inquiries</h4>
+        
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="border-0">Property</th>
+                        <th class="border-0">Customer Name</th>
+                        <th class="border-0">Email / Phone</th>
+                        <th class="border-0">Message</th>
+                        <th class="border-0">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inquiry in inquiries %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold">{{ inquiry.property.title }}</div>
+                            <small class="text-muted">{{ inquiry.property.city }}</small>
+                        </td>
+                        <td>{{ inquiry.name }}</td>
+                        <td>
+                            <div>{{ inquiry.email }}</div>
+                            <small class="text-muted">{{ inquiry.phone }}</small>
+                        </td>
+                        <td>
+                            <div class="text-wrap" style="max-width: 300px;">
+                                {{ inquiry.message }}
+                            </div>
+                        </td>
+                        <td>{{ inquiry.created_at|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <img src="https://img.icons8.com/color/96/no-message.png" class="mb-3 opacity-50">
+                            <h5 class="text-muted">No inquiries yet.</h5>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+
+
+
+
+

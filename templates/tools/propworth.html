@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}PropWorth - Property Valuation Tool - PropertyBazaar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .propworth-hero {
+        background: linear-gradient(135deg, #ff6600 0%, #333 100%);
+        color: #fff;
+        padding: 80px 0;
+        border-radius: 0 0 50px 50px;
+    }
+    .valuation-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 40px;
+        margin-top: -100px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        border: 1px solid #eee;
+    }
+    .price-meter {
+        padding: 30px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        text-align: center;
+    }
+    .price-value {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: #ff6600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="propworth-hero text-center">
+    <div class="container">
+        <h1 class="display-4 fw-black mb-3">Estimate Your Property's <span class="text-primary">Worth</span></h1>
+        <p class="lead opacity-75 col-lg-6 mx-auto">Get an instant estimate of any property in Ahmedabad using our AI-powered valuation model.</p>
+    </div>
+</section>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="valuation-card">
+                <form id="valuationForm" class="row g-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Locality</label>
+                        <select id="locality" class="form-select form-select-lg rounded-3">
+                            <option value="6500">Satellite (₹6,500/sqft)</option>
+                            <option value="5500">Bopal (₹5,500/sqft)</option>
+                            <option value="7500">Prahlad Nagar (₹7,500/sqft)</option>
+                            <option value="4500">Gota (₹4,500/sqft)</option>
+                            <option value="8500">Bodakdev (₹8,500/sqft)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Area (sqft)</label>
+                        <input type="number" id="area" class="form-control form-control-lg rounded-3" value="1200">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Property Type</label>
+                        <select id="propType" class="form-select form-select-lg rounded-3">
+                            <option value="1">Apartment</option>
+                            <option value="1.2">Villa / Bungalow</option>
+                            <option value="0.9">Penthouse</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-12 mt-5">
+                        <div class="price-meter">
+                            <h5 class="text-muted text-uppercase small fw-bold mb-3">Estimated Market Value</h5>
+                            <div class="price-value" id="estimatedPrice">₹ 78,00,000</div>
+                            <div class="d-flex justify-content-center gap-4 mt-3">
+                                <div class="text-start">
+                                    <span class="d-block text-muted x-small">Lower Range</span>
+                                    <span class="fw-bold" id="lowerRange">₹ 74L</span>
+                                </div>
+                                <div class="text-start border-start ps-4">
+                                    <span class="d-block text-muted x-small">Upper Range</span>
+                                    <span class="fw-bold" id="upperRange">₹ 82L</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Trends Section -->
+    <div class="mt-5 pt-5">
+        <h3 class="fw-black mb-4 text-center">Why use <span class="text-primary">PropWorth?</span></h3>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="p-4">
+                    <i class="fas fa-bolt text-primary fs-1 mb-3"></i>
+                    <h5 class="fw-bold">Instant Results</h5>
+                    <p class="text-muted small">No need to wait for agents. Get your property value in seconds.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4">
+                    <i class="fas fa-chart-area text-primary fs-1 mb-3"></i>
+                    <h5 class="fw-bold">ML Powered</h5>
+                    <p class="text-muted small">Our algorithm analyzes thousands of recent listings for accuracy.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4">
+                    <i class="fas fa-shield-alt text-primary fs-1 mb-3"></i>
+                    <h5 class="fw-bold">Trusted Data</h5>
+                    <p class="text-muted small">Used by banks and financial institutions for quick assessments.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const locality = document.getElementById('locality');
+        const area = document.getElementById('area');
+        const propType = document.getElementById('propType');
+        const priceDisplay = document.getElementById('estimatedPrice');
+        const lowerRange = document.getElementById('lowerRange');
+        const upperRange = document.getElementById('upperRange');
+
+        function formatCurrency(num) {
+            return '₹ ' + new Intl.NumberFormat('en-IN').format(Math.round(num));
+        }
+        
+        function formatShort(num) {
+            if (num >= 10000000) return '₹ ' + (num/10000000).toFixed(1) + ' Cr';
+            if (num >= 100000) return '₹ ' + (num/100000).toFixed(0) + ' L';
+            return formatCurrency(num);
+        }
+
+        function calculate() {
+            const rate = parseFloat(locality.value);
+            const sqft = parseFloat(area.value) || 0;
+            const multiplier = parseFloat(propType.value);
+            
+            const baseValue = rate * sqft * multiplier;
+            
+            priceDisplay.innerText = formatCurrency(baseValue);
+            lowerRange.innerText = formatShort(baseValue * 0.95);
+            upperRange.innerText = formatShort(baseValue * 1.05);
+        }
+
+        [locality, area, propType].forEach(el => el.addEventListener('input', calculate));
+        calculate();
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+

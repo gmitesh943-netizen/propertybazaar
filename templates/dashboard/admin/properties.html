@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Manage Properties - Admin - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:admin_home' %}" class="text-primary text-decoration-none">Admin</a></li>
+                        <li class="breadcrumb-item active">Properties</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-black mb-0">Manage <span class="text-primary">Properties</span></h2>
+            </div>
+        </div>
+
+        <div class="card border-0 rounded-4 shadow-sm">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Property</th>
+                                <th>Owner</th>
+                                <th>Price</th>
+                                <th>Verified</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prop in properties %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if prop.images.all %}
+                                        <img src="{{ prop.images.first.image.url }}" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0 fw-bold small">{{ prop.title }}</h6>
+                                            <p class="text-muted x-small mb-0">{{ prop.city }} | {{ prop.property_type.name }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <a href="{% url 'dashboard:admin_user_detail' prop.owner.pk %}" class="fw-bold text-primary text-decoration-none">{{ prop.owner.get_full_name }}</a>
+                                        <div class="text-muted">{{ prop.owner.role|title }}</div>
+                                    </div>
+                                </td>
+                                <td class="small fw-bold">₹ {{ prop.price|intword }}</td>
+                                <td>
+                                    {% if prop.verified %}
+                                    <span class="text-success"><i class="fas fa-check-circle me-1"></i>Yes</span>
+                                    {% else %}
+                                    <span class="text-muted"><i class="fas fa-times-circle me-1"></i>No</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {% if prop.status == 'published' %}bg-success{% else %}bg-warning{% endif %} bg-opacity-10 {% if prop.status == 'published' %}text-success{% else %}text-warning{% endif %} rounded-pill px-3">
+                                        {{ prop.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        {% if prop.status == 'draft' %}
+                                        <a href="{% url 'dashboard:approve_property' prop.id %}" class="btn btn-sm btn-success rounded-pill px-3 fw-bold small">Approve</a>
+                                        {% endif %}
+                                        <a href="{% url 'properties:property_detail' prop.slug %}" class="btn btn-sm btn-light rounded-circle"><i class="fas fa-eye"></i></a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light rounded-circle" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+                                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                                                <li><a class="dropdown-item" href="{% url 'dashboard:edit_property' prop.id %}">Edit</a></li>
+                                                <li><a class="dropdown-item text-primary" href="{% url 'dashboard:delete_property' prop.id %}">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

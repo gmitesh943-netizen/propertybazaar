@@ -1,0 +1,529 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-red: #ff6600;
+        --brand-red-dark: #cc5200;
+        --bg-soft: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--bg-soft);
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #ff6600 0%, #333 100%);
+        padding: 60px 0 100px;
+        color: white;
+    }
+
+    .search-wrapper {
+        margin-top: -60px;
+        position: relative;
+        z-index: 100;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .trend-card {
+        border: none;
+        border-radius: 16px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .trend-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+
+    .pulse {
+        animation: pulse-animation 2s infinite;
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: #28a745;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+    @keyframes pulse-animation {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+
+    .locality-badge {
+        font-size: 0.75rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .up-trend { color: #28a745; background: rgba(40, 167, 69, 0.1); }
+    .down-trend { color: #ff6600; background: rgba(220, 53, 69, 0.1); }
+
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+    }
+
+    .sidebar-sticky {
+        position: sticky;
+        top: 20px;
+    }
+
+    .stats-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--brand-red);
+    }
+
+    .nav-pills .nav-link {
+        color: #666;
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 10px 20px;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--brand-red);
+        color: white;
+    }
+
+    .table-custom th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container text-center">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-3" style="font-size: 0.85rem;">
+                <li class="breadcrumb-item"><a href="/" class="text-white-50 text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item text-white-50">Insights</li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Rates & Trends</li>
+            </ol>
+        </nav>
+        <h1 class="display-5 fw-bold mb-3">Ahmedabad Real Estate Market Insights</h1>
+        <p class="lead text-white-50">Explore real-time property rates, rental yields, and investment hotspots.</p>
+    </div>
+</div>
+
+<div class="container search-wrapper">
+    <div class="glass-card p-4">
+        <form id="trendSearchForm" class="row g-3 align-items-center">
+            <div class="col-md-9">
+                <div class="input-group input-group-lg border rounded-3 overflow-hidden">
+                    <span class="input-group-text bg-white border-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="localitySearchInput" class="form-control border-0 shadow-none fs-5" placeholder="Enter locality (e.g. Satellite, Gota, Bopal)..." value="Ahmedabad">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-3 shadow-sm py-3">Analyze Trends</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Price Analysis Card -->
+            <div class="card trend-card shadow-sm border-0 mb-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <h2 class="h4 fw-bold mb-1">Locality Average Price</h2>
+                        <div class="d-flex align-items-center">
+                            <span class="pulse"></span>
+                            <span class="small text-success fw-bold me-3">LIVE MARKET UPDATES</span>
+                            <span class="small text-muted">Last updated: May 2026</span>
+                        </div>
+                    </div>
+                    <div class="nav nav-pills" id="trend-tabs">
+                        <button class="nav-link active me-2" data-bs-toggle="pill">Buy</button>
+                        <button class="nav-link" data-bs-toggle="pill">Rent</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="mainPriceChart"></canvas>
+                </div>
+
+                <div class="mt-4 p-3 bg-light rounded-3">
+                    <div class="row text-center">
+                        <div class="col-md-4 border-end">
+                            <div class="small text-muted mb-1">Average Rate</div>
+                            <div class="stats-value">₹7,450<span class="small fw-normal">/sq.ft</span></div>
+                            <div class="small text-success"><i class="fas fa-caret-up"></i> 5.2% YoY</div>
+                        </div>
+                        <div class="col-md-4 border-end">
+                            <div class="small text-muted mb-1">Price Range</div>
+                            <div class="stats-value">₹5.2K - ₹12K</div>
+                            <div class="small text-muted">Per Locality</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="small text-muted mb-1">Inventory Growth</div>
+                            <div class="stats-value">12.5%</div>
+                            <div class="small text-success"><i class="fas fa-caret-up"></i> High Demand</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rental Yield Card -->
+            <div class="card trend-card shadow-sm border-0 mb-4 p-4">
+                <h2 class="h4 fw-bold mb-4">Rental Yield Analysis</h2>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="rentalYieldChart"></canvas>
+                </div>
+                <p class="small text-muted mt-4">
+                    <i class="fas fa-info-circle me-1"></i> Rental yield is the annual rental income expressed as a percentage of the property's value. 
+                    Ahmedabad's average yield of 3.8% is among the highest for tier-1 cities in India.
+                </p>
+            </div>
+
+            <!-- Market Commentary -->
+            <div class="card trend-card shadow-sm border-0 mb-4 p-4 bg-primary text-white">
+                <h2 class="h4 fw-bold mb-3"><i class="fas fa-chart-line me-2"></i>Expert Market Analysis</h2>
+                <p class="mb-0" style="opacity: 0.9;">
+                    The Ahmedabad residential market is witnessing a major shift towards premium lifestyle projects along the SG Highway and Science City corridor. 
+                    With the completion of the Metro Phase-II, localities like Gota and Thaltej have seen a 15% surge in inquiries. 
+                    Vastrapur continues to remain the most preferred premium residential hub with rental demand growing at 8% annually.
+                </p>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sidebar-sticky">
+                <!-- Top Localities List -->
+                <div class="card trend-card shadow-sm border-0 mb-4 p-4">
+                    <h3 class="h5 fw-bold mb-4">Top Growth Localities</h3>
+                    <div class="locality-list">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-bold">Vastrapur</div>
+                                <div class="small text-muted">Premium Residential</div>
+                            </div>
+                            <span class="locality-badge up-trend">+8.2%</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-bold">Satellite</div>
+                                <div class="small text-muted">Established Hub</div>
+                            </div>
+                            <span class="locality-badge up-trend">+5.1%</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-bold">Bopal</div>
+                                <div class="small text-muted">Emerging Corridor</div>
+                            </div>
+                            <span class="locality-badge up-trend">+6.4%</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-bold">Gota</div>
+                                <div class="small text-muted">Affordable Housing</div>
+                            </div>
+                            <span class="locality-badge up-trend">+4.8%</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold">Bodakdev</div>
+                                <div class="small text-muted">Luxury Living</div>
+                            </div>
+                            <span class="locality-badge up-trend">+3.2%</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-primary w-100 mt-4 fw-bold" data-bs-toggle="modal" data-bs-target="#allLocalitiesModal">View All Localities</button>
+                </div>
+
+                <!-- Ad/CTA -->
+                <div class="card trend-card shadow-sm border-0 p-4 text-center" style="background: linear-gradient(to bottom, #fff, #f8f9fa);">
+                    <img src="{% static 'img/calculator-icon.svg' %}" alt="PropWorth" class="mb-3 mx-auto" style="width: 60px; height: 60px; opacity: 0.2;">
+                    <h4 class="fw-bold">Know your property's value?</h4>
+                    <p class="small text-muted">Get an instant valuation report powered by PB Intelligence.</p>
+                    <a href="{% url 'properties:propworth' %}" class="btn btn-dark w-100 fw-bold">Check PropWorth</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparative Table -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card trend-card shadow-sm border-0 p-4">
+                <h3 class="h5 fw-bold mb-4">Detailed Price Comparison</h3>
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Locality</th>
+                                <th>Avg. Price (₹/sq.ft)</th>
+                                <th>Price Range</th>
+                                <th>6M Change</th>
+                                <th>Trend</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">Satellite</td>
+                                <td>₹8,210</td>
+                                <td>₹7.5K - ₹10K</td>
+                                <td class="text-success">+5.2%</td>
+                                <td><i class="fas fa-chart-line text-success"></i></td>
+                                <td><a href="#" class="btn btn-sm btn-light">View Properties</a></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Vastrapur</td>
+                                <td>₹9,250</td>
+                                <td>₹8.6K - ₹12K</td>
+                                <td class="text-success">+8.2%</td>
+                                <td><i class="fas fa-chart-line text-success"></i></td>
+                                <td><a href="#" class="btn btn-sm btn-light">View Properties</a></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Bopal</td>
+                                <td>₹5,850</td>
+                                <td>₹5.2K - ₹6.8K</td>
+                                <td class="text-success">+6.1%</td>
+                                <td><i class="fas fa-chart-line text-success"></i></td>
+                                <td><a href="#" class="btn btn-sm btn-light">View Properties</a></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Gota</td>
+                                <td>₹5,400</td>
+                                <td>₹4.8K - ₹6.2K</td>
+                                <td class="text-success">+4.5%</td>
+                                <td><i class="fas fa-chart-line text-success"></i></td>
+                                <td><a href="#" class="btn btn-sm btn-light">View Properties</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for All Localities -->
+<div class="modal fade" id="allLocalitiesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">All Localities - Ahmedabad Trends</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-4">
+                    {% for locality in location_options|default:"Satellite,Vastrapur,Bopal,Gota,Chandkheda,Prahlad Nagar,Thaltej,Science City,Bodakdev,Maninagar,Naroda,Nikol,Navrangpura,Ambawadi"|slice:":12" %}
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-3 hover-shadow cursor-pointer border" onclick="handleLocalityClick('{{ locality }}')">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="fw-bold small">{{ locality }}</span>
+                                <span class="badge bg-success-subtle text-success small">+{{ forloop.counter|add:2 }}.{{ forloop.counter }}%</span>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.65rem;">Avg: ₹{{ forloop.counter|add:4 }}K/sq.ft</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Known Localities for Simulation
+    const AHMEDABAD_DATA = {
+        'Satellite': { price: 8210, growth: 5.2, yield: 3.8, color: '#ff6600' },
+        'Vastrapur': { price: 9250, growth: 8.2, yield: 3.5, color: '#0d6efd' },
+        'Bopal': { price: 5850, growth: 6.1, yield: 4.2, color: '#ff6600' },
+        'Gota': { price: 5400, growth: 4.5, yield: 4.5, color: '#198754' },
+        'Prahlad Nagar': { price: 8500, growth: 4.3, yield: 3.9, color: '#0dcaf0' },
+        'Bodakdev': { price: 11000, growth: 3.2, yield: 3.1, color: '#6610f2' },
+        'Chandkheda': { price: 4800, growth: 5.5, yield: 4.4, color: '#fd7e14' },
+        'Science City': { price: 8900, growth: 9.1, yield: 3.3, color: '#20c997' }
+    };
+
+    function generateTrendData(basePrice) {
+        let data = [];
+        let current = basePrice * 0.95;
+        for(let i=0; i<6; i++) {
+            current += (Math.random() * basePrice * 0.02);
+            data.push(Math.round(current));
+        }
+        return data;
+    }
+
+    // Common Chart Options
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20,
+                    font: { family: 'Outfit', size: 12 }
+                }
+            },
+            tooltip: {
+                backgroundColor: '#ff6600',
+                padding: 12,
+                titleFont: { size: 14, weight: 'bold' },
+                bodyFont: { size: 13 },
+                displayColors: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: false,
+                grid: { color: '#f0f0f0', drawBorder: false },
+                ticks: { font: { family: 'Outfit' } }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { font: { family: 'Outfit' } }
+            }
+        }
+    };
+
+    // Price Chart Initialization
+    const ctxPrice = document.getElementById('mainPriceChart').getContext('2d');
+    let priceChart = new Chart(ctxPrice, {
+        type: 'line',
+        data: {
+            labels: ['Jan 26', 'Feb 26', 'Mar 26', 'Apr 26', 'May 26', 'Live'],
+            datasets: [
+                {
+                    label: 'Satellite',
+                    data: generateTrendData(8210),
+                    borderColor: '#ff6600',
+                    backgroundColor: 'rgba(255, 102, 0, 0.05)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Vastrapur',
+                    data: generateTrendData(9250),
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.05)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: chartOptions
+    });
+
+    // Yield Chart Initialization
+    const ctxYield = document.getElementById('rentalYieldChart').getContext('2d');
+    let yieldChart = new Chart(ctxYield, {
+        type: 'bar',
+        data: {
+            labels: ['Satellite', 'Vastrapur', 'Bopal', 'Gota', 'Prahlad Nagar', 'Bodakdev'],
+            datasets: [{
+                label: 'Rental Yield (%)',
+                data: [3.8, 3.5, 4.2, 4.5, 3.9, 3.2],
+                backgroundColor: ['#ff6600', '#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#6610f2'],
+                borderRadius: 8,
+                barThickness: 30
+            }]
+        },
+        options: {
+            ...chartOptions,
+            plugins: { ...chartOptions.plugins, legend: { display: false } }
+        }
+    });
+
+    // Handle Search and Locality Clicks
+    function updateTrends(locality) {
+        const data = AHMEDABAD_DATA[locality] || { 
+            price: 5000 + (Math.random() * 5000), 
+            growth: 2 + (Math.random() * 5),
+            yield: 3 + (Math.random() * 2),
+            color: '#' + Math.floor(Math.random()*16777215).toString(16)
+        };
+
+        // Update Price Chart
+        priceChart.data.datasets[1] = priceChart.data.datasets[0]; // Move old main to secondary
+        priceChart.data.datasets[0] = {
+            label: locality,
+            data: generateTrendData(data.price),
+            borderColor: data.color,
+            backgroundColor: data.color + '10',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+        };
+        priceChart.update();
+
+        // Update Stats UI
+        document.querySelector('.stats-value').innerHTML = `₹${Math.round(data.price).toLocaleString()}<span class="small fw-normal">/sq.ft</span>`;
+        document.querySelector('.h4.fw-bold.mb-1').innerHTML = `Locality Average Price: ${locality}`;
+        
+        // Scroll to chart
+        document.getElementById('mainPriceChart').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    document.getElementById('trendSearchForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = document.getElementById('localitySearchInput').value;
+        if(query) updateTrends(query);
+    });
+
+    function handleLocalityClick(locality) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('allLocalitiesModal'));
+        if(modal) modal.hide();
+        document.getElementById('localitySearchInput').value = locality;
+        updateTrends(locality);
+    }
+
+    // Live Data Simulation
+    setInterval(() => {
+        const lastIndex = priceChart.data.datasets[0].data.length - 1;
+        priceChart.data.datasets.forEach(dataset => {
+            const currentVal = dataset.data[lastIndex];
+            const fluctuation = (Math.random() - 0.5) * 8;
+            dataset.data[lastIndex] = Math.round(currentVal + fluctuation);
+        });
+        priceChart.update('none');
+    }, 2500);
+</script>
+{% endblock %}
+
+
+
+
+
+

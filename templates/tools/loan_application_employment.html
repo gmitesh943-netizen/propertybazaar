@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  body { background-color: #f8f9fa; }
+  .application-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .step-header {
+    background: #fdfdfd;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 30px 0;
+  }
+  .step-pill {
+    height: 6px; width: 80px; background: #eee; margin: 0 auto; border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+  .step-pill.active { background: #ff6600; box-shadow: 0 0 10px rgba(255, 102, 0, 0.3); }
+  .step-text { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+  .step-text.active { color: #ff6600; }
+  .step-text.inactive { color: #aaa; }
+  
+  .form-section {
+    padding: 50px 80px;
+  }
+  .form-label { font-weight: 700; color: #444; margin-bottom: 10px; font-size: 0.95rem; }
+  .form-control, .form-select {
+    border-radius: 12px;
+    padding: 15px 20px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+    background-color: #f9f9f9;
+  }
+  .form-control:focus, .form-select:focus {
+    background-color: #fff;
+    border-color: #ff6600;
+    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.1);
+  }
+  .info-box {
+    background: #fff5f5;
+    border-radius: 16px;
+    padding: 25px;
+    border-left: 5px solid #ff6600;
+  }
+  .doc-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 15px;
+  }
+  .doc-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 102, 0, 0.1);
+    color: #ff6600;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .action-footer {
+    border-top: 1px solid #eee;
+    padding: 30px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fafafa;
+  }
+  @media (max-width: 768px) {
+    .form-section, .action-footer { padding: 30px 20px; }
+    .step-pill { width: 40px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="application-container">
+    <!-- Progress -->
+    <div class="step-header">
+      <div class="d-flex justify-content-center gap-3 gap-md-5">
+        <div class="text-center">
+          <div class="step-text inactive mb-2">Property</div>
+          <div class="step-pill"></div>
+        </div>
+        <div class="text-center">
+          <div class="step-text active mb-2">Employment</div>
+          <div class="step-pill active"></div>
+        </div>
+        <div class="text-center">
+          <div class="step-text inactive mb-2">Loan</div>
+          <div class="step-pill"></div>
+        </div>
+        <div class="text-center">
+          <div class="step-text inactive mb-2">Profile</div>
+          <div class="step-pill"></div>
+        </div>
+      </div>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-section">
+        <div class="row g-5">
+          <div class="col-lg-7">
+            <h2 class="fw-bold mb-2" style="color: #222;">Professional Profile</h2>
+            <p class="text-muted mb-5">Your employment details help us determine your loan eligibility and interest rates.</p>
+            
+            <div class="row g-4">
+              <div class="col-md-6">
+                <label class="form-label">Employment Type</label>
+                <select class="form-select" name="employment_type" id="employmentType" required>
+                  <option value="" {% if not employment_type %}selected{% endif %}>Select Employment</option>
+                  <option value="salaried" {% if employment_type == 'salaried' %}selected{% endif %}>Salaried Individual</option>
+                  <option value="self-employed" {% if employment_type == 'self-employed' %}selected{% endif %}>Self Employed Professional</option>
+                  <option value="business" {% if employment_type == 'business' %}selected{% endif %}>Business Owner</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Organization Type</label>
+                <select class="form-select" name="org_type">
+                  <option value="">Select Org Type</option>
+                  <option value="mnc">MNC</option>
+                  <option value="pvt-ltd">Private Ltd</option>
+                  <option value="public-sector">Public Sector</option>
+                  <option value="govt">Government</option>
+                  <option value="proprietorship">Proprietorship</option>
+                </select>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Industry</label>
+                <select class="form-select" name="industry">
+                  <option value="">Select Industry</option>
+                  <option value="it">IT / Software</option>
+                  <option value="banking">Banking / Finance</option>
+                  <option value="manufacturing">Manufacturing</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="education">Education</option>
+                  <option value="real-estate">Real Estate</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Net Monthly Income (₹)</label>
+                <div class="input-group">
+                  <span class="input-group-text border-0 bg-light">₹</span>
+                  <input class="form-control" name="monthly_income" inputmode="numeric" placeholder="e.g. 75,000" value="{{ monthly_income }}" required />
+                </div>
+                <div class="form-text small">Your average take-home salary</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Total Experience (Years)</label>
+                <input type="number" class="form-control" name="experience" placeholder="e.g. 5" min="0" value="{{ experience }}">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Company / Business Name</label>
+                <input class="form-control" name="company_name" placeholder="e.g. Reliance Industries Ltd" value="{{ company_name }}" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="info-box h-100">
+              <h5 class="fw-bold mb-4" style="color: #ff6600;"><i class="fas fa-file-invoice me-2"></i>Documents Required</h5>
+              <div id="salariedDocs">
+                <div class="doc-item">
+                  <div class="doc-icon"><i class="fas fa-check"></i></div>
+                  <div><span class="fw-bold d-block">Salary Slips</span>Last 3 months' salary slips.</div>
+                </div>
+                <div class="doc-item">
+                  <div class="doc-icon"><i class="fas fa-check"></i></div>
+                  <div><span class="fw-bold d-block">Bank Statements</span>Last 6 months' statement of salary account.</div>
+                </div>
+                <div class="doc-item">
+                  <div class="doc-icon"><i class="fas fa-check"></i></div>
+                  <div><span class="fw-bold d-block">Form 16 / ITR</span>Latest 2 years of Form 16 or ITR.</div>
+                </div>
+              </div>
+              
+              <div id="businessDocs" style="display:none;">
+                <div class="doc-item">
+                  <div class="doc-icon"><i class="fas fa-check"></i></div>
+                  <div><span class="fw-bold d-block">Business Proof</span>Registration certificate or GST records.</div>
+                </div>
+                <div class="doc-item">
+                  <div class="doc-icon"><i class="fas fa-check"></i></div>
+                  <div><span class="fw-bold d-block">ITR with Computation</span>Latest 3 years of ITR with Balance Sheet.</div>
+                </div>
+                <div class="doc-item">
+                  <div class="doc-icon"><i class="fas fa-check"></i></div>
+                  <div><span class="fw-bold d-block">Current A/C Statement</span>Last 6 months' business bank statement.</div>
+                </div>
+              </div>
+              
+              <p class="small text-muted mt-4">* Final document list may vary based on bank policies.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-footer">
+        <a class="btn btn-outline-secondary px-5 py-3 fw-bold border-0" href="{% url 'properties:loan_application' %}">
+          <i class="fas fa-arrow-left me-2"></i> Previous Step
+        </a>
+        <button type="submit" class="btn btn-primary py-3 px-5 fw-bold shadow-sm" style="border-radius: 14px; font-size: 1.1rem; min-width: 220px;">
+          Next: Loan Details <i class="fas fa-chevron-right ms-2"></i>
+        </button>
+      </div>
+    </form>
+
+    <!-- Loan Process Timeline -->
+    <div class="bg-light p-5 border-top">
+      <h5 class="fw-bold mb-4">What happens next?</h5>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="d-flex gap-3">
+            <div class="fw-black h3 text-primary opacity-25">01</div>
+            <div>
+              <p class="fw-bold mb-1">Bank Selection</p>
+              <p class="small text-muted mb-0">Based on your profile, we match you with the best bank offers.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="d-flex gap-3">
+            <div class="fw-black h3 text-primary opacity-25">02</div>
+            <div>
+              <p class="fw-bold mb-1">Field Visit</p>
+              <p class="small text-muted mb-0">Bank representative visits for document pick-up and verification.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="d-flex gap-3">
+            <div class="fw-black h3 text-primary opacity-25">03</div>
+            <div>
+              <p class="fw-bold mb-1">Sanction</p>
+              <p class="small text-muted mb-0">Formal approval letter is issued within 3-5 working days.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('employmentType').addEventListener('change', function() {
+    const salaried = document.getElementById('salariedDocs');
+    const business = document.getElementById('businessDocs');
+    if (this.value === 'salaried') {
+      salaried.style.display = 'block';
+      business.style.display = 'none';
+    } else if (this.value === 'business' || this.value === 'self-employed') {
+      salaried.style.display = 'none';
+      business.style.display = 'block';
+    }
+  });
+</script>
+{% endblock %}
+
+
+
+
+
+
+

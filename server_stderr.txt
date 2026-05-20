@@ -1,0 +1,459 @@
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (ckeditor.W001) django-ckeditor bundles CKEditor 4.22.1 which isn't supported anymore and which does have unfixed security issues, see for example https://ckeditor.com/cke4/release/CKEditor-4.24.0-LTS . You should consider strongly switching to a different editor (maybe CKEditor 5 respectively django-ckeditor-5 after checking whether the CKEditor 5 license terms work for you) or switch to the non-free CKEditor 4 LTS package. See https://ckeditor.com/ckeditor-4-support/ for more on this. (Note! This notice has been added by the django-ckeditor developers and we are not affiliated with CKSource and were not involved in the licensing change, so please refrain from complaining to us. Thanks.)
+?: settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: settings.ACCOUNT_LOGIN_METHODS = {'email'}
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+?: settings.ACCOUNT_USERNAME_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 4 issues (0 silenced).
+[13/May/2026 22:23:38] "GET / HTTP/1.1" 200 107721
+[13/May/2026 22:23:38,821] - Broken pipe from ('127.0.0.1', 59205)
+[13/May/2026 22:23:43] "GET / HTTP/1.1" 200 107721
+[13/May/2026 22:23:45] "GET /static/css/style.css HTTP/1.1" 304 0
+[13/May/2026 22:23:45] "GET / HTTP/1.1" 200 107721
+[13/May/2026 22:23:46] "GET /static/img/interior_banner.png HTTP/1.1" 304 0
+[13/May/2026 22:24:10] "GET /accounts/login/ HTTP/1.1" 200 46315
+[13/May/2026 22:24:23] "GET / HTTP/1.1" 200 107795
+[13/May/2026 22:24:23] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 22:24:23] "GET /static/img/interior_banner.png HTTP/1.1" 304 0
+[13/May/2026 22:24:26] "POST /user/login/ HTTP/1.1" 302 0
+[13/May/2026 22:24:26] "GET /user/verify-otp/ HTTP/1.1" 200 45732
+[13/May/2026 22:24:41] "POST /user/verify-otp/ HTTP/1.1" 302 0
+[13/May/2026 22:24:41] "GET /dashboard/ HTTP/1.1" 200 46712
+[13/May/2026 22:24:41] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 200 116842
+[13/May/2026 22:24:48] "GET /subscriptions/status/ HTTP/1.1" 200 47273
+[13/May/2026 22:27:20] "GET /subscriptions/status/ HTTP/1.1" 200 48166
+[13/May/2026 22:27:20] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 22:27:22] "GET /subscriptions/status/ HTTP/1.1" 200 48166
+[13/May/2026 22:27:25] "GET /subscriptions/plans/ HTTP/1.1" 200 51572
+[13/May/2026 22:27:28] "GET /subscriptions/status/ HTTP/1.1" 302 0
+[13/May/2026 22:27:28] "GET /accounts/login/?next=/subscriptions/status/ HTTP/1.1" 200 46349
+[13/May/2026 22:27:28,715] - Broken pipe from ('127.0.0.1', 64599)
+[13/May/2026 22:27:35] "GET /subscriptions/status/ HTTP/1.1" 200 48166
+[13/May/2026 22:27:37] "GET /subscriptions/plans/ HTTP/1.1" 200 51572
+[13/May/2026 22:28:19] "GET /subscriptions/status/ HTTP/1.1" 302 0
+[13/May/2026 22:28:19] "GET /subscriptions/plans/ HTTP/1.1" 302 0
+[13/May/2026 22:28:19] "GET /accounts/login/?next=/subscriptions/status/ HTTP/1.1" 200 46349
+[13/May/2026 22:28:19] "GET /accounts/login/?next=/subscriptions/plans/ HTTP/1.1" 200 46348
+[13/May/2026 22:28:19,450] - Broken pipe from ('127.0.0.1', 64606)
+[13/May/2026 22:28:19,457] - Broken pipe from ('127.0.0.1', 64607)
+[13/May/2026 22:28:29] "GET /subscriptions/status/ HTTP/1.1" 200 48166
+[13/May/2026 22:28:38] "GET /subscriptions/status/ HTTP/1.1" 200 48166
+[13/May/2026 22:28:40] "GET /subscriptions/status/ HTTP/1.1" 200 48166
+[13/May/2026 22:28:51] "GET /subscriptions/status/ HTTP/1.1" 200 48166
+[13/May/2026 22:29:15] "GET /dashboard/ HTTP/1.1" 200 46418
+[13/May/2026 22:29:17] "GET /subscriptions/status/ HTTP/1.1" 200 48166
+[13/May/2026 22:29:19] "GET /subscriptions/plans/ HTTP/1.1" 200 52255
+[13/May/2026 22:30:05] "GET / HTTP/1.1" 200 107795
+[13/May/2026 22:30:05] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 22:33:16] "GET / HTTP/1.1" 200 107779
+[13/May/2026 22:33:16,667] - Broken pipe from ('127.0.0.1', 58506)
+[13/May/2026 22:34:36] "GET /properties/?city=Ambawadi&lat=23.022366566508374&lng=72.54289150223485&type=apartment&max_price= HTTP/1.1" 200 50758
+[13/May/2026 22:34:36] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 22:34:52] "GET /properties/?city=Ambawadi&listing_type=sale&type=apartment&min_price=&max_price=&bedrooms=1&furnishing=semi-furnished&possession=ready_to_move&rera=on&sort=newest HTTP/1.1" 200 50804
+[13/May/2026 22:34:59] "GET /properties/?listing_type=rent&verified=True HTTP/1.1" 200 80922
+[13/May/2026 22:34:59] "GET /media/property_images/retail-storefront-in-rest-of-ahmedabad.jpg HTTP/1.1" 200 58347
+[13/May/2026 22:34:59] "GET /media/property_images/premium-workspace-in-rest-of-ahmedabad.jpg HTTP/1.1" 200 57641
+[13/May/2026 22:34:59] "GET /media/property_images/luxury-villa-in-rest-of-ahmedabad.jpg HTTP/1.1" 200 80415
+[13/May/2026 22:34:59] "GET /media/property_images/modern-flat-in-rest-of-ahmedabad.jpg HTTP/1.1" 200 68303
+[13/May/2026 22:34:59] "GET /media/property_images/retail-storefront-in-naroda.jpg HTTP/1.1" 200 58347
+[13/May/2026 22:34:59] "GET /media/property_images/premium-workspace-in-naroda.jpg HTTP/1.1" 200 57641
+[13/May/2026 22:34:59] "GET /media/property_images/luxury-villa-in-naroda.jpg HTTP/1.1" 200 80415
+[13/May/2026 22:34:59] "GET /media/property_images/retail-storefront-in-bopal-south-bopal.jpg HTTP/1.1" 200 58347
+[13/May/2026 22:34:59] "GET /media/property_images/modern-flat-in-naroda.jpg HTTP/1.1" 200 68303
+[13/May/2026 22:35:08] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&bedrooms=2&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 50772
+[13/May/2026 22:35:15] "GET /properties/?city=&listing_type=&type=&min_price=&max_price=&bedrooms=2&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 50764
+[13/May/2026 22:35:19] "GET /properties/?city=&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 50764
+[13/May/2026 22:35:26] "GET /properties/?city=&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 50764
+[13/May/2026 22:35:47] "GET /properties/?listing_type=rent&featured=True HTTP/1.1" 200 80915
+[13/May/2026 22:37:04] "GET /properties/?city=&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 80767
+[13/May/2026 22:37:34] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 67149
+[13/May/2026 22:37:38] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&bedrooms=2&furnishing=&possession=&sort=newest HTTP/1.1" 200 80845
+[13/May/2026 22:37:38] "GET /media/property_images/modern-flat-in-chandkheda.jpg HTTP/1.1" 200 68303
+[13/May/2026 22:37:38] "GET /media/property_images/modern-flat-in-bopal-south-bopal.jpg HTTP/1.1" 200 68303
+[13/May/2026 22:37:38] "GET /media/property_images/modern-flat-in-vaishnodevi-gota-zundal.jpg HTTP/1.1" 200 68303
+[13/May/2026 22:37:42] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&bedrooms=3&furnishing=&possession=&sort=newest HTTP/1.1" 200 77166
+C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\apps\properties\views.py changed, reloading.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (ckeditor.W001) django-ckeditor bundles CKEditor 4.22.1 which isn't supported anymore and which does have unfixed security issues, see for example https://ckeditor.com/cke4/release/CKEditor-4.24.0-LTS . You should consider strongly switching to a different editor (maybe CKEditor 5 respectively django-ckeditor-5 after checking whether the CKEditor 5 license terms work for you) or switch to the non-free CKEditor 4 LTS package. See https://ckeditor.com/ckeditor-4-support/ for more on this. (Note! This notice has been added by the django-ckeditor developers and we are not affiliated with CKSource and were not involved in the licensing change, so please refrain from complaining to us. Thanks.)
+?: settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: settings.ACCOUNT_LOGIN_METHODS = {'email'}
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+?: settings.ACCOUNT_USERNAME_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 4 issues (0 silenced).
+[13/May/2026 22:37:54] "GET /property/luxury-apartment-in-chandkheda-19/ HTTP/1.1" 200 58002
+[13/May/2026 22:38:00] "GET /wishlist/toggle/29/ HTTP/1.1" 302 0
+Internal Server Error: /property/luxury-apartment-in-chandkheda-19/
+Traceback (most recent call last):
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: subscriptions_buyerpropertyviewhistory.user_id, subscriptions_buyerpropertyviewhistory.property_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\apps\subscriptions\decorators.py", line 29, in _wrapped_view
+    record_property_view(request.user, property_obj)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\apps\subscriptions\utils.py", line 51, in record_property_view
+    BuyerPropertyViewHistory.objects.create(user=user, property=property_obj)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\query.py", line 665, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\query.py", line 1873, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: subscriptions_buyerpropertyviewhistory.user_id, subscriptions_buyerpropertyviewhistory.property_id
+[13/May/2026 22:38:00] "GET /property/luxury-apartment-in-chandkheda-19/ HTTP/1.1" 500 179816
+[13/May/2026 22:38:26] "GET /properties/?listing_type=rent&featured=True HTTP/1.1" 200 63907
+[13/May/2026 22:38:26,252] - Broken pipe from ('127.0.0.1', 60616)
+[13/May/2026 22:38:27] "GET /properties/?listing_type=sale&bedrooms=3&min_price=100000&max_price=10000000 HTTP/1.1" 200 53845
+[13/May/2026 22:38:27,886] - Broken pipe from ('127.0.0.1', 60618)
+Internal Server Error: /property/luxury-apartment-in-chandkheda-19/
+Traceback (most recent call last):
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: subscriptions_buyerpropertyviewhistory.user_id, subscriptions_buyerpropertyviewhistory.property_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\apps\subscriptions\decorators.py", line 29, in _wrapped_view
+    record_property_view(request.user, property_obj)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\apps\subscriptions\utils.py", line 51, in record_property_view
+    BuyerPropertyViewHistory.objects.create(user=user, property=property_obj)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\query.py", line 665, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\query.py", line 1873, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: subscriptions_buyerpropertyviewhistory.user_id, subscriptions_buyerpropertyviewhistory.property_id
+[13/May/2026 22:39:27] "GET /property/luxury-apartment-in-chandkheda-19/ HTTP/1.1" 500 179953
+C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\apps\subscriptions\utils.py changed, reloading.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (ckeditor.W001) django-ckeditor bundles CKEditor 4.22.1 which isn't supported anymore and which does have unfixed security issues, see for example https://ckeditor.com/cke4/release/CKEditor-4.24.0-LTS . You should consider strongly switching to a different editor (maybe CKEditor 5 respectively django-ckeditor-5 after checking whether the CKEditor 5 license terms work for you) or switch to the non-free CKEditor 4 LTS package. See https://ckeditor.com/ckeditor-4-support/ for more on this. (Note! This notice has been added by the django-ckeditor developers and we are not affiliated with CKSource and were not involved in the licensing change, so please refrain from complaining to us. Thanks.)
+?: settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: settings.ACCOUNT_LOGIN_METHODS = {'email'}
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+?: settings.ACCOUNT_USERNAME_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 4 issues (0 silenced).
+[13/May/2026 22:40:08] "GET /property/luxury-apartment-in-chandkheda-19/ HTTP/1.1" 200 58293
+[13/May/2026 22:40:08] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 22:40:11] "GET /property/luxury-apartment-in-chandkheda-19/ HTTP/1.1" 302 0
+[13/May/2026 22:40:11] "GET /subscriptions/plans/ HTTP/1.1" 302 0
+[13/May/2026 22:40:11] "GET /accounts/login/?next=/subscriptions/plans/ HTTP/1.1" 200 46689
+[13/May/2026 22:40:11] "GET /property/luxury-apartment-in-chandkheda-19/ HTTP/1.1" 302 0
+[13/May/2026 22:40:11] "GET /subscriptions/plans/ HTTP/1.1" 302 0
+[13/May/2026 22:40:11] "GET /accounts/login/?next=/subscriptions/plans/ HTTP/1.1" 200 46689
+[13/May/2026 22:40:12,107] - Broken pipe from ('127.0.0.1', 53950)
+[13/May/2026 22:40:12,145] - Broken pipe from ('127.0.0.1', 53951)
+[13/May/2026 22:40:20] "GET / HTTP/1.1" 200 107853
+[13/May/2026 22:41:24] "GET / HTTP/1.1" 200 107853
+[13/May/2026 22:41:34] "GET /properties/?listing_type=rent&featured=True HTTP/1.1" 200 63981
+[13/May/2026 22:41:46] "GET /properties/?featured=True&city=&listing_type=sale&type=apartment&min_price=&max_price=&bedrooms=3&furnishing=&possession=&sort=newest HTTP/1.1" 200 57416
+[13/May/2026 22:43:01] "GET /properties/?featured=True&city=&listing_type=sale&type=apartment&min_price=&max_price=&bedrooms=3&furnishing=&possession=&sort=newest HTTP/1.1" 200 57416
+[13/May/2026 22:43:03] "GET /property/modern-apartment-with-amenities-in-satellite-6/ HTTP/1.1" 200 58663
+[13/May/2026 22:43:16] "GET / HTTP/1.1" 200 107853
+[13/May/2026 22:44:23] "GET /dashboard/ HTTP/1.1" 200 46418
+[13/May/2026 22:44:23] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 22:45:24] "GET /properties/?listing_type=rent&featured=True HTTP/1.1" 200 66453
+[13/May/2026 22:45:24] "GET / HTTP/1.1" 200 110325
+[13/May/2026 22:45:24] "GET /static/css/style.css HTTP/1.1" 200 10018
+[13/May/2026 22:45:24,819] - Broken pipe from ('127.0.0.1', 58589)
+[13/May/2026 22:45:24,867] - Broken pipe from ('127.0.0.1', 58588)
+[13/May/2026 22:45:24,914] - Broken pipe from ('127.0.0.1', 58587)
+[13/May/2026 22:47:02] "GET /dashboard/ HTTP/1.1" 200 48964
+[13/May/2026 22:47:10] "GET /properties/?listing_type=rent&verified=True HTTP/1.1" 200 53390
+[13/May/2026 22:47:13] "GET /properties/?city=&listing_type=rent&type=&min_price=&max_price=&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 53398
+[13/May/2026 22:47:15] "GET /properties/?city=&listing_type=rent&type=&min_price=&max_price=&bedrooms=3&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 53405
+[13/May/2026 22:47:19] "GET /properties/?listing_type=rent&verified=True HTTP/1.1" 200 53390
+[13/May/2026 22:47:21] "GET /properties/?listing_type=rent&verified=True HTTP/1.1" 200 53390
+[13/May/2026 22:47:31] "GET /properties/?listing_type=rent&type=apartment HTTP/1.1" 200 83559
+[13/May/2026 22:47:37] "GET /properties/?listing_type=rent&featured=True HTTP/1.1" 200 66527
+[13/May/2026 22:47:42] "GET /properties/?listing_type=rent&verified=True HTTP/1.1" 200 53390
+[13/May/2026 22:47:46] "GET /properties/?listing_type=rent&verified=True HTTP/1.1" 200 53390
+[13/May/2026 22:48:40] "GET /properties/?city=&listing_type=rent&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 53413
+[13/May/2026 22:48:42] "GET /properties/?city=&listing_type=rent&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 53413
+[13/May/2026 22:48:48] "GET /properties/?city=&listing_type=&type=&min_price=&max_price=&bedrooms=3&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 53397
+[13/May/2026 22:48:48] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 22:48:53] "GET /properties/?city=&listing_type=&type=villa&min_price=&max_price=&bedrooms=3&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 53405
+[13/May/2026 22:49:01] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 53405
+[13/May/2026 22:49:46] "GET /bank-offers/?bank=sbi HTTP/1.1" 200 58222
+[13/May/2026 22:49:53] "GET /properties/?listing_type=rent&type=apartment HTTP/1.1" 200 83559
+[13/May/2026 22:49:56] "GET /property/modern-flat-in-rest-of-ahmedabad/ HTTP/1.1" 200 58909
+[13/May/2026 22:51:46] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 71410
+[13/May/2026 22:51:46,620] - Broken pipe from ('127.0.0.1', 56295)
+[13/May/2026 22:53:07] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 71747
+[13/May/2026 22:53:07] "GET /properties/?listing_type=rent&featured=True HTTP/1.1" 200 67707
+[13/May/2026 22:53:07,960] - Broken pipe from ('127.0.0.1', 56302)
+[13/May/2026 22:53:07,960] - Broken pipe from ('127.0.0.1', 56301)
+[13/May/2026 22:55:52] "GET /properties/?city=&listing_type=rent&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 64509
+[13/May/2026 22:55:52] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 22:55:59] "GET /properties/?city=&listing_type=rent&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&verified=on&sort=newest HTTP/1.1" 200 64516
+[13/May/2026 22:56:02] "GET /properties/?city=&listing_type=rent&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&rera=on&verified=on&sort=newest HTTP/1.1" 200 64523
+[13/May/2026 22:56:06] "GET /properties/?city=&listing_type=rent&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&rera=on&verified=on&featured=on&sort=newest HTTP/1.1" 200 60853
+[13/May/2026 22:56:12] "GET /properties/?city=&listing_type=rent&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 64509
+[13/May/2026 22:56:14] "GET /properties/ HTTP/1.1" 200 84725
+[13/May/2026 22:56:19] "GET /properties/?page=2 HTTP/1.1" 200 84986
+[13/May/2026 22:56:19] "GET /media/property_images/premium-workspace-in-bopal-south-bopal.jpg HTTP/1.1" 200 57641
+[13/May/2026 22:56:19] "GET /media/property_images/luxury-villa-in-bopal-south-bopal.jpg HTTP/1.1" 200 80415
+[13/May/2026 22:56:19] "GET /media/property_images/retail-storefront-in-chandkheda.jpg HTTP/1.1" 200 58347
+[13/May/2026 22:56:19] "GET /media/property_images/premium-workspace-in-chandkheda.jpg HTTP/1.1" 200 57641
+[13/May/2026 22:56:19] "GET /media/property_images/luxury-villa-in-chandkheda.jpg HTTP/1.1" 200 80415
+[13/May/2026 22:56:19] "GET /media/property_images/premium-workspace-in-vaishnodevi-gota-zundal.jpg HTTP/1.1" 200 57641
+[13/May/2026 22:56:19] "GET /media/property_images/retail-storefront-in-vaishnodevi-gota-zundal.jpg HTTP/1.1" 200 58347
+[13/May/2026 22:56:21] "GET /properties/?page=3 HTTP/1.1" 200 85633
+[13/May/2026 22:56:21] "GET /media/property_images/luxury-villa-in-vaishnodevi-gota-zundal.jpg HTTP/1.1" 200 80415
+[13/May/2026 22:56:25] "GET /properties/?city=&listing_type=sale&type=&min_price=&max_price=&furnishing=&possession=&sort=newest HTTP/1.1" 200 84874
+[13/May/2026 22:56:30] "GET /properties/?city=&listing_type=rent&type=&min_price=&max_price=&furnishing=&possession=&sort=newest HTTP/1.1" 200 84857
+[13/May/2026 22:56:35] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&furnishing=&possession=&sort=newest HTTP/1.1" 200 85150
+[13/May/2026 22:56:39] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 85207
+[13/May/2026 22:56:41] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 85207
+[13/May/2026 22:58:07] "GET /properties/?city=&listing_type=&type=apartment&min_price=&max_price=&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 85207
+[13/May/2026 22:58:14] "GET / HTTP/1.1" 200 110399
+[13/May/2026 23:02:23] "GET / HTTP/1.1" 200 110399
+[13/May/2026 23:02:23] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 23:02:24] "GET /static/img/interior_banner.png HTTP/1.1" 304 0
+C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\apps\properties\views.py changed, reloading.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (ckeditor.W001) django-ckeditor bundles CKEditor 4.22.1 which isn't supported anymore and which does have unfixed security issues, see for example https://ckeditor.com/cke4/release/CKEditor-4.24.0-LTS . You should consider strongly switching to a different editor (maybe CKEditor 5 respectively django-ckeditor-5 after checking whether the CKEditor 5 license terms work for you) or switch to the non-free CKEditor 4 LTS package. See https://ckeditor.com/ckeditor-4-support/ for more on this. (Note! This notice has been added by the django-ckeditor developers and we are not affiliated with CKSource and were not involved in the licensing change, so please refrain from complaining to us. Thanks.)
+?: settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: settings.ACCOUNT_LOGIN_METHODS = {'email'}
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+?: settings.ACCOUNT_USERNAME_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 4 issues (0 silenced).
+[13/May/2026 23:04:24] "GET / HTTP/1.1" 200 110399
+[13/May/2026 23:05:10] "GET / HTTP/1.1" 200 111139
+[13/May/2026 23:05:10,247] - Broken pipe from ('127.0.0.1', 60124)
+[13/May/2026 23:05:45] "GET / HTTP/1.1" 200 111213
+[13/May/2026 23:05:59] "GET / HTTP/1.1" 200 111213
+[13/May/2026 23:07:35] "GET / HTTP/1.1" 200 111213
+[13/May/2026 23:07:44] "GET / HTTP/1.1" 200 111213
+[13/May/2026 23:08:02] "GET / HTTP/1.1" 200 111213
+[13/May/2026 23:08:17] "GET / HTTP/1.1" 200 113717
+[13/May/2026 23:08:19] "GET / HTTP/1.1" 200 113643
+[13/May/2026 23:08:19,818] - Broken pipe from ('127.0.0.1', 59277)
+[13/May/2026 23:09:27] "GET /dashboard/properties/add/ HTTP/1.1" 200 72512
+[13/May/2026 23:09:27] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 23:09:27] "GET /static/ckeditor/ckeditor.css HTTP/1.1" 200 672
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor-init.js HTTP/1.1" 200 1526
+[13/May/2026 23:09:28] "GET /static/ckeditor/fixups.js HTTP/1.1" 200 168
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/ckeditor.js HTTP/1.1" 200 759716
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/config.js?t=N5UC HTTP/1.1" 200 336
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/lang/en.js?t=N5UC HTTP/1.1" 200 18228
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/skins/moono-lisa/editor.css?t=N5UC HTTP/1.1" 200 48309
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/styles.js?t=N5UC HTTP/1.1" 200 5577
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/plugins/scayt/dialogs/dialog.css?t=N5UC HTTP/1.1" 200 419
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/plugins/tableselection/styles/tableselection.css?t=N5UC HTTP/1.1" 200 1145
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/plugins/scayt/skins/moono-lisa/scayt.css?t=N5UC HTTP/1.1" 200 381
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/plugins/dialog/styles/dialog.css?t=N5UC HTTP/1.1" 200 249
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/plugins/copyformatting/styles/copyformatting.css?t=N5UC HTTP/1.1" 200 1511
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/skins/moono-lisa/icons.png?t=4a1fb11f44 HTTP/1.1" 200 12237
+[13/May/2026 23:09:28] "GET /static/ckeditor/ckeditor/contents.css?t=N5UC HTTP/1.1" 200 3092
+[13/May/2026 23:09:39] "GET /accounts/logout/ HTTP/1.1" 200 47740
+[13/May/2026 23:09:41] "GET / HTTP/1.1" 200 113717
+[13/May/2026 23:09:52] "GET / HTTP/1.1" 200 113717
+[13/May/2026 23:10:15] "GET /properties/?city=Usmanpura&lat=23.036511045481397&lng=72.56117552518846&type=&max_price= HTTP/1.1" 200 53954
+[13/May/2026 23:10:31] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 53978
+[13/May/2026 23:10:33] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 53978
+C:\Users\gmite\Downloads\INTERSHIP WORK\PropertyBazaar_Pytn - Copy\apps\properties\views.py changed, reloading.
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (ckeditor.W001) django-ckeditor bundles CKEditor 4.22.1 which isn't supported anymore and which does have unfixed security issues, see for example https://ckeditor.com/cke4/release/CKEditor-4.24.0-LTS . You should consider strongly switching to a different editor (maybe CKEditor 5 respectively django-ckeditor-5 after checking whether the CKEditor 5 license terms work for you) or switch to the non-free CKEditor 4 LTS package. See https://ckeditor.com/ckeditor-4-support/ for more on this. (Note! This notice has been added by the django-ckeditor developers and we are not affiliated with CKSource and were not involved in the licensing change, so please refrain from complaining to us. Thanks.)
+?: settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: settings.ACCOUNT_LOGIN_METHODS = {'email'}
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+?: settings.ACCOUNT_USERNAME_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+System check identified 4 issues (0 silenced).
+[13/May/2026 23:13:36] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 72057
+[13/May/2026 23:14:46] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 72057
+[13/May/2026 23:14:57] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 80378
+[13/May/2026 23:14:59] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_desc HTTP/1.1" 200 80378
+[13/May/2026 23:15:03] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 80378
+[13/May/2026 23:15:05] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 80378
+[13/May/2026 23:15:10] "GET /properties/?lat=23.036511045481397&lng=72.56117552518846&city=navranpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=newest HTTP/1.1" 200 80304
+[13/May/2026 23:15:10,913] - Broken pipe from ('127.0.0.1', 63875)
+[13/May/2026 23:15:38] "GET /properties/?lat=23.03605934251651&lng=72.56049156188966&city=Gulbai+tekra&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 80379
+[13/May/2026 23:15:45] "GET /properties/?lat=23.03605934251651&lng=72.56049156188966&city=Gulbai+tekra&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 80379
+[13/May/2026 23:16:10] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=apartment&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 62265
+[13/May/2026 23:16:16] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 69020
+[13/May/2026 23:16:16] "GET /media/property_images/1_kSYxcLt.png HTTP/1.1" 200 475640
+[13/May/2026 23:16:16] "GET /media/property_images/1_jLM6Ez0.png HTTP/1.1" 200 475640
+[13/May/2026 23:18:24] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 69776
+[13/May/2026 23:18:24,199] - Broken pipe from ('127.0.0.1', 63964)
+[13/May/2026 23:18:52] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 69850
+[13/May/2026 23:18:52] "GET /media/profile_images/WhatsApp_Image_2026-02-08_at_7_PfzsbHm.12.00_PM_1.jpeg HTTP/1.1" 304 0
+[13/May/2026 23:20:49] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 69915
+[13/May/2026 23:20:49,269] - Broken pipe from ('127.0.0.1', 63974)
+[13/May/2026 23:21:21] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 69989
+[13/May/2026 23:21:24] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 69989
+[13/May/2026 23:22:32] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 69688
+[13/May/2026 23:22:32,552] - Broken pipe from ('127.0.0.1', 54239)
+[13/May/2026 23:22:44] "GET /properties/?lat=&lng=&city=Navrangpura&listing_type=&type=&min_price=&max_price=&bedrooms=4&furnishing=&possession=&sort=price_asc HTTP/1.1" 200 69762

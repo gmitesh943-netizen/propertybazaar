@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-left">
+        <h1 class="auth-benefit-title">Things you Can Do with PropertyBazaar Account</h1>
+        
+        <div class="auth-benefit-item">
+            <div class="auth-benefit-icon"><i class="fas fa-check"></i></div>
+            <div class="auth-benefit-text">
+                <h5>Post one Single Property for FREE</h5>
+                <p>Reach thousands of buyers instantly.</p>
+            </div>
+        </div>
+
+        <div class="auth-benefit-item">
+            <div class="auth-benefit-icon"><i class="fas fa-check"></i></div>
+            <div class="auth-benefit-text">
+                <h5>Set property alerts for your requirement</h5>
+                <p>Get notified about new listings.</p>
+            </div>
+        </div>
+
+        <div class="auth-benefit-item">
+            <div class="auth-benefit-icon"><i class="fas fa-check"></i></div>
+            <div class="auth-benefit-text">
+                <h5>Get accessed by over 1 Lakh buyers</h5>
+                <p>Showcase your property to a massive audience.</p>
+            </div>
+        </div>
+    </div>
+    <div class="auth-right">
+        <div class="auth-card">
+            <h3 class="fw-bold mb-4">Login</h3>
+            
+            <form method="POST" action="{% url 'accounts:login' %}" autocomplete="off">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">Are you</label>
+                    <div class="role-toggle d-flex gap-2">
+                        <input type="radio" class="btn-check" name="role" id="buyer" value="buyer" checked>
+                        <label class="btn btn-outline-primary" for="buyer">Buyer/Owner</label>
+                        
+                        <input type="radio" class="btn-check" name="role" id="agent" value="agent">
+                        <label class="btn btn-outline-primary" for="agent">Agent/Builder</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="login_id" class="form-label fw-bold small text-muted">Email or Mobile No.</label>
+                    <input type="text" name="login_id" id="login_id" class="form-control py-3" placeholder="e.g. email@example.com" autocomplete="off" required>
+                </div>
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <label for="password" class="form-label fw-bold small text-muted mb-0">Password</label>
+                    <a href="{% url 'accounts:forgot_password' %}" class="small text-primary text-decoration-none">Forgot Password?</a>
+                </div>
+                <div class="mb-3">
+                    <input type="password" name="password" id="password" class="form-control py-3" placeholder="Enter your password" autocomplete="new-password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mt-3" style="background-color: #ff6600; border: none;">Login</button>
+            </form>
+
+            <!-- <div class="text-center mt-4 pt-3 border-top">
+                <p class="text-muted">Or login using</p>
+                <div class="d-flex justify-content-center gap-3">
+                    {% load socialaccount %}
+                    <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark rounded-pill px-4 py-2">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" class="me-2"> Google
+                    </a>
+                </div>
+            </div> -->
+
+            <div class="text-center mt-5">
+                <p class="mb-0">New to PropertyBazaar? <a href="{% url 'accounts:register' %}" class="text-primary fw-bold text-decoration-none">Sign Up</a></p>
+                <div class="mt-3 pt-3 border-top">
+                    <a href="{% url 'dashboard:admin_login' %}" class="text-muted small text-decoration-none"><i class="fas fa-user-shield me-1"></i> Admin Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

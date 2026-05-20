@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load property_tags %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+{% endblock %}
+
+
+{% block title %}{{ post.title }} - PropertyBazaar Insights{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-red: #ff385c;
+        --brand-red-dark: #bd1e59;
+        --text-main: #ff6600;
+        --text-body: #444;
+        --accent-glow: rgba(255, 56, 92, 0.1);
+    }
+
+    body {
+        background-color: #fff;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .post-header {
+        background: radial-gradient(circle at top right, #fdfdfd, #f8f9fa);
+        padding: 100px 0 60px;
+        position: relative;
+    }
+
+    .post-category {
+        display: inline-block;
+        color: #ff6600;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.75rem;
+        margin-bottom: 25px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 8px 24px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+
+    .post-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        line-height: 1.1;
+        color: var(--text-main);
+        margin-bottom: 40px;
+        letter-spacing: -1px;
+    }
+
+    .post-meta-top {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        color: #666;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .post-author-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        object-fit: cover;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .post-hero-img {
+        width: 100%;
+        max-height: 650px;
+        object-fit: cover;
+        border-radius: 40px;
+        margin-bottom: 80px;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.15);
+    }
+
+    .article-content {
+        font-size: 1.25rem;
+        line-height: 1.9;
+        color: var(--text-body);
+    }
+
+    .article-content p {
+        margin-bottom: 35px;
+    }
+
+    .article-content h2 {
+        font-weight: 900;
+        margin: 80px 0 40px;
+        font-size: 2.2rem;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+    }
+
+    .sidebar-widget {
+        background: #fff;
+        border-radius: 32px;
+        padding: 40px;
+        margin-bottom: 40px;
+        position: sticky;
+        top: 120px;
+        border: 1px solid #f0f0f0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+
+    .share-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f8f8;
+        color: var(--text-main);
+        margin-right: 12px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
+    }
+
+    .share-btn:hover {
+        background: var(--brand-red);
+        color: white;
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 10px 20px rgba(255, 56, 92, 0.2);
+    }
+
+    .author-bio {
+        background: #fcfcfc;
+        border-radius: 32px;
+        padding: 50px;
+        margin-top: 100px;
+        border: 1px solid #f0f0f0;
+        display: flex;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .admin-controls {
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .control-btn {
+        width: 65px;
+        height: 65px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ff6600;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        color: white;
+        transition: all 0.4s;
+    }
+
+    .control-btn:hover {
+        background: var(--brand-red);
+        transform: scale(1.1) rotate(5deg);
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="post-header">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-10">
+                <span class="post-category">
+                    {% if post.tags.exists %}{{ post.tags.first.name }}{% else %}Insights{% endif %}
+                </span>
+                <h1 class="post-title">{{ post.title }}</h1>
+                
+                <div class="post-meta-top justify-content-center">
+                    <div class="d-flex align-items-center">
+                        <img src="{% static 'img/default-avatar.png' %}" class="post-author-img me-2" alt="Author">
+                        <span><strong>{{ post.author.get_full_name|default:post.author.email }}</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="far fa-calendar-alt me-2"></i>
+                        <span>{{ post.created_at|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="far fa-clock me-2"></i>
+                        <span>{{ post.content|striptags|wordcount|divide:200|floatformat:0|default:5 }} min read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            {% if post.thumbnail %}
+                <img src="{{ post.thumbnail.url }}" class="post-hero-img" alt="{{ post.title }}">
+            {% endif %}
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="article-content">
+                        {{ post.content|safe }}
+                    </div>
+
+                    <div class="author-bio">
+                        <img src="{% static 'img/default-avatar.png' %}" style="width: 100px; height: 100px; border-radius: 50%;" alt="Author">
+                        <div>
+                            <h4 class="fw-bold mb-2">Written by {{ post.author.get_full_name|default:post.author.email }}</h4>
+                            <p class="text-muted mb-0">Our resident real estate strategist specializing in Indian market trends and urban development. Helping you make smarter property decisions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="sidebar-widget">
+                        <h5 class="fw-bold mb-4">Share Insights</h5>
+                        <div class="d-flex mb-5">
+                            <a href="#" class="share-btn"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="share-btn"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="share-btn"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" class="share-btn"><i class="fas fa-link"></i></a>
+                        </div>
+
+                        <h5 class="fw-bold mb-4">Related Tags</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for tag in post.tags.all %}
+                                <a href="#" class="btn btn-sm btn-white border rounded-pill px-3 fw-bold small">{{ tag.name }}</a>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mt-5 p-4 bg-white rounded-4 text-center border">
+                            <h6 class="fw-bold">Newsletter</h6>
+                            <p class="small text-muted">Join 10,000+ subscribers for weekly insights.</p>
+                            <input type="email" class="form-control form-control-sm mb-2" placeholder="Email">
+                            <button class="btn btn-primary btn-sm w-100 fw-bold">Subscribe</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_staff %}
+    <div class="admin-controls">
+        <a href="{% url 'blog:post_update' post.slug %}" class="control-btn" title="Edit Article"><i class="fas fa-edit fa-lg"></i></a>
+        <a href="{% url 'blog:post_delete' post.slug %}" class="control-btn text-primary" title="Delete Article"><i class="fas fa-trash fa-lg"></i></a>
+    </div>
+{% endif %}
+{% endblock %}
+
+
+
+
+
+

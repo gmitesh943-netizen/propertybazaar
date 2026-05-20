@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Properties for Sale in Ahmedabad - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="container py-5 bg-light min-vh-100">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Home</a></li>
+            <li class="breadcrumb-item active">Ahmedabad Encyclopedia</li>
+            <li class="breadcrumb-item active">Properties</li>
+        </ol>
+    </nav>
+
+    <h2 class="fw-bold mb-4">Real Estate Encyclopedia <span class="text-muted small fw-normal">Ahmedabad</span></h2>
+
+    <!-- Tabs -->
+    <div class="mb-5">
+        <div class="d-flex border-bottom">
+            <a href="{% url 'properties:new_projects' %}" class="btn border-0 px-4 py-3 rounded-0 text-muted fw-bold">New Projects</a>
+            <a href="{% url 'properties:top_agents' %}" class="btn border-0 px-4 py-3 rounded-0 text-muted fw-bold">Top Agents</a>
+            <a href="{% url 'properties:encyclopedia_properties' %}" class="btn border-0 px-4 py-3 rounded-0 border-bottom border-danger border-4 fw-bold text-primary">Properties</a>
+        </div>
+    </div>
+
+    <h4 class="fw-bold mb-4">{{ total_count }} results | Properties for Sale in Ahmedabad</h4>
+
+    <div class="alert alert-info border-0 rounded-4 py-3 mb-4 d-flex align-items-center" style="background: #e1f5fe; color: #0277bd;">
+        <i class="fas fa-map-marker-alt me-3 fs-5"></i>
+        <span class="fw-bold">Add Localities for more relevant results <i class="fas fa-arrow-right ms-2"></i></span>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-9">
+            {% for property in properties %}
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden property-listing-card">
+                <div class="row g-0">
+                    <!-- Left: Image Section -->
+                    <div class="col-md-4 position-relative">
+                        {% if property.images.all %}
+                            <img src="{{ property.images.first.image.url }}" class="h-100 w-100" style="object-fit: cover; min-height: 280px;">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="h-100 w-100" style="object-fit: cover; min-height: 280px;">
+                        {% endif %}
+                        <span class="badge bg-dark bg-opacity-75 position-absolute top-0 start-0 m-3 px-3 py-2 rounded-3 small">
+                            <i class="fas fa-camera me-1"></i> {{ property.images.count|add:"5" }}+ Photos
+                        </span>
+                        <div class="position-absolute bottom-0 start-0 w-100 p-2 text-white small" style="background: rgba(0,0,0,0.5);">
+                            Posted: {{ property.created_at|timesince }} ago
+                        </div>
+                    </div>
+
+                    <!-- Middle: Details Section -->
+                    <div class="col-md-5 p-4 border-end d-flex flex-column">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge border border-success text-success px-2 py-1 rounded-1 x-small fw-bold me-2 text-uppercase">
+                                <i class="fas fa-check me-1"></i> Zero Brokerage
+                            </span>
+                            <div class="ms-auto text-muted small">
+                                <i class="far fa-heart me-3 cursor-pointer"></i>
+                                <i class="fas fa-share-alt me-3 cursor-pointer"></i>
+                                <i class="fas fa-ellipsis-v cursor-pointer"></i>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-1">{{ property.bedrooms }} BHK {{ property.category.name }} for Sale in {{ property.title }}, {{ property.city }}</h5>
+                        <p class="text-muted small mb-3">{{ property.title }}</p>
+
+                        <div class="info-grid mt-2 mb-3">
+                            <div class="info-item">
+                                <span class="info-label">SUPER AREA</span>
+                                <span class="info-value text-nowrap">{{ property.area }} sqft</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">STATUS</span>
+                                <span class="info-value">Ready to Move</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">TRANSACTION</span>
+                                <span class="info-value">New Property</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">FURNISHING</span>
+                                <span class="info-value">Unfurnished</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">BATHROOMS</span>
+                                <span class="info-value">{{ property.bathrooms }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">CAR PARKING</span>
+                                <span class="info-value">1 Covered</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto">
+                            <p class="small text-muted mb-0 listing-description">
+                                A lifestyle full of exciting privileges Being positioned in the prime location of {{ property.city }} offering residences that reflect richness & opulence in the sheer sense...
+                                <span class="text-primary cursor-pointer fw-bold">Read More</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Pricing Section -->
+                    <div class="col-md-3 p-4 d-flex flex-column justify-content-between bg-white text-center text-md-start">
+                        <div>
+                            <h3 class="fw-bold mb-0">₹{{ property.price|intword }}</h3>
+                            <p class="x-small text-muted mb-4">₹{% widthratio property.price property.area 1 %} per sqft</p>
+                        </div>
+
+                        <div class="d-grid gap-2 mb-4">
+                            <button class="btn btn-outline-primary rounded-pill fw-bold py-2" onclick="openContactModal('{{ property.id }}', '{{ property.title }}')">Request Callback</button>
+                            <button class="btn btn-primary rounded-pill fw-bold py-2" onclick="openContactModal('{{ property.id }}', '{{ property.title }}')">Get Info</button>
+                            <a href="{% url 'properties:emi_calculator' %}?amount={{ property.price }}" class="btn btn-link text-decoration-none text-muted small fw-bold">
+                                <i class="fas fa-calculator me-1"></i> Check Loan EMI
+                            </a>
+                        </div>
+
+                        <div class="mt-auto pt-3 border-top">
+                            <p class="x-small text-muted mb-0">Builder: <span class="fw-bold text-dark">{{ property.owner.get_full_name }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <img src="https://img.icons8.com/color/96/nothing-found.png" class="mb-3">
+                <h5 class="fw-bold">No results found</h5>
+                <p class="text-muted">Try adjusting your filters.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Right: Sidebar -->
+        <div class="col-lg-3">
+            <!-- Home Loan Banner -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-primary text-white">
+                <div class="p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-white rounded-circle p-2 me-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-hand-holding-usd text-primary fs-5"></i>
+                        </div>
+                        <h6 class="fw-bold mb-0">Home Loan Assistance</h6>
+                    </div>
+                    <p class="small opacity-75 mb-4">Get home loans starting from <strong class="text-white">8.40%*</strong> p.a. from top banks.</p>
+                    <div class="d-grid">
+                        <a href="{% url 'properties:loan_application' %}" class="btn btn-white btn-sm fw-bold rounded-pill py-2" style="background: white; color: #ff6600;">Apply Now</a>
+                    </div>
+                </div>
+                <div class="bg-dark bg-opacity-10 py-2 px-4 text-center">
+                    <span class="x-small">SBI | HDFC | AXIS | ICICI</span>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h6 class="fw-bold mb-3">Popular Localities</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">Sardar Patel Ring Road</span>
+                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">SG Highway</span>
+                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">Bopal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Modal (Same as before) -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalPropertyTitle">Get Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="inquiryForm" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Your Name</label>
+                        <input type="text" name="name" class="form-control rounded-3" value="{{ request.user.get_full_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Email Address</label>
+                        <input type="email" name="email" class="form-control rounded-3" value="{{ request.user.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Phone Number</label>
+                        <input type="text" name="phone" class="form-control rounded-3" placeholder="e.g. +91 98765 43210" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Message</label>
+                        <textarea name="message" class="form-control rounded-3" rows="3" required>I am interested in this property. Please contact me with more details.</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 fw-bold">Send Inquiry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .property-listing-card { transition: all 0.3s ease; border: 1px solid #eee !important; }
+    .property-listing-card:hover { border-color: #ff6600 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; }
+    
+    .info-grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 20px 10px; 
+    }
+    .info-item { 
+        display: flex; 
+        flex-direction: column;
+    }
+    .info-label { 
+        font-size: 11px; 
+        color: #888; 
+        font-weight: 600; 
+        text-transform: uppercase; 
+        margin-bottom: 4px; 
+        display: block; 
+    }
+    .info-value { 
+        font-size: 14px; 
+        color: #222; 
+        font-weight: 700; 
+        display: block; 
+    }
+    
+    .x-small { font-size: 11px; }
+    .cursor-pointer { cursor: pointer; }
+    .listing-description { 
+        line-height: 1.6; 
+        display: -webkit-box; 
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical; 
+        overflow: hidden; 
+        margin-top: 15px;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before { content: ">"; }
+</style>
+
+<script>
+function openContactModal(propertyId, propertyTitle) {
+    const modal = new bootstrap.Modal(document.getElementById('contactModal'));
+    const form = document.getElementById('inquiryForm');
+    document.getElementById('modalPropertyTitle').innerText = 'Inquiry for ' + propertyTitle;
+    form.action = '/inquiries/send/' + propertyId + '/';
+    modal.show();
+}
+
+document.getElementById('inquiryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = this;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Sending...';
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Your inquiry has been sent successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('contactModal')).hide();
+        } else {
+            alert('Error: ' + JSON.stringify(data.errors));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Send Inquiry';
+    });
+});
+</script>
+{% endblock %}
+
+
+
+
+
+

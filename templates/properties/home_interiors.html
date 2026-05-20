@@ -1,0 +1,1180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --pb-red: #ff6600;
+        --pb-red-dark: #cc5200;
+    }
+
+    .interiors-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        padding: 100px 0;
+        color: white;
+    }
+
+    .hero-form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        color: #333;
+    }
+
+    /* USP Styles */
+    .usp-section {
+        padding: 60px 0;
+        background: white;
+    }
+
+    .usp-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .usp-item {
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .usp-icon-container {
+        width: 80px;
+        height: 80px;
+        border: 1px solid #e0d5cd;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: #8d6e63;
+    }
+
+    .icon-square span.miqe-text {
+        font-weight: 800;
+        color: var(--pb-red);
+        font-size: 1.4rem;
+    }
+
+    .usp-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: #555;
+        line-height: 1.4;
+    }
+
+    .section-padding {
+        padding: 80px 0;
+    }
+
+    .gallery-card {
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+        height: 350px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+    .gallery-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        padding: 20px;
+        color: white;
+    }
+
+    .step-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+        height: 100%;
+        border: 1px solid #eee;
+        text-align: center;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: var(--pb-red);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-weight: bold;
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #eee;
+    }
+
+    .brand-logo {
+        filter: grayscale(1);
+        opacity: 0.6;
+        transition: all 0.3s;
+        max-width: 120px;
+    }
+
+    .brand-logo:hover {
+        filter: grayscale(0);
+        opacity: 1;
+    }
+
+    /* Infinite Logo Ticker */
+    .brand-slider {
+        overflow: hidden;
+        padding: 40px 0;
+        background: white;
+        white-space: nowrap;
+        position: relative;
+    }
+
+    .brand-slider:before,
+    .brand-slider:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        width: 150px;
+        height: 100%;
+        z-index: 2;
+    }
+
+    .brand-slider:before {
+        left: 0;
+        background: linear-gradient(to right, white, transparent);
+    }
+
+    .brand-slider:after {
+        right: 0;
+        background: linear-gradient(to left, white, transparent);
+    }
+
+    .brand-track {
+        display: inline-block;
+        animation: scroll 60s linear infinite;
+    }
+
+    @keyframes scroll {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    .brand-card {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 220px;
+        height: 140px;
+        background: white;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        margin: 0 15px;
+        padding: 20px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .brand-card:hover {
+        border-color: var(--pb-red);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .brand-card img {
+        max-height: 50px;
+        max-width: 100%;
+        margin-bottom: 15px;
+        filter: none;
+        /* Keep colors */
+        opacity: 1;
+    }
+
+    .brand-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #666;
+    }
+
+    /* Gallery Styles */
+    .gallery-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .gallery-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 40px;
+    }
+
+    .gallery-tab {
+        padding: 10px 30px;
+        border-radius: 40px;
+        border: 1px solid #eee;
+        background: white;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #666;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+
+    .gallery-tab.active {
+        background: #b68d6d;
+        color: white;
+        border-color: #b68d6d;
+        box-shadow: 0 4px 10px rgba(182, 141, 109, 0.3);
+    }
+
+    .main-gallery-view {
+        position: relative;
+        width: 100%;
+        height: 650px;
+        border-radius: 30px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .main-gallery-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .gallery-overlay-text {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 80px 40px 50px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+        color: white;
+        text-align: center;
+    }
+
+    .gallery-quote {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    .gallery-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 55px;
+        height: 55px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        z-index: 10;
+        border: none;
+        transition: all 0.3s;
+    }
+
+    .gallery-nav-btn:hover {
+        background: var(--pb-red);
+        color: white;
+    }
+
+    .gallery-nav-prev {
+        left: 25px;
+    }
+
+    .gallery-nav-next {
+        right: 25px;
+    }
+
+    .thumbnail-scroll {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding: 10px 0 20px;
+        scrollbar-width: none;
+    }
+
+    .thumb-item {
+        flex: 0 0 180px;
+        height: 120px;
+        border-radius: 18px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .thumb-item.active {
+        border-color: #b68d6d;
+        transform: scale(1.05);
+    }
+
+    .thumb-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .btn-pb-red {
+        background: var(--pb-red);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-pb-red:hover {
+        background: var(--pb-red-dark);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    /* Process Section */
+    .process-section {
+        padding: 60px 0;
+        background-color: #f6efe2;
+        border-top-right-radius: 80px;
+        margin-top: 40px;
+        position: relative;
+    }
+
+    .process-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px 15px;
+        height: 100%;
+        position: relative;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+        transition: all 0.4s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .process-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px 15px;
+        height: 100%;
+        position: relative;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.03);
+        transition: all 0.4s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .process-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+    }
+
+    .process-hexagon {
+        width: 60px;
+        height: 60px;
+        background: #b68d6d;
+        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: white;
+        font-size: 24px;
+    }
+
+    .process-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #2c2c2c;
+        margin-bottom: 8px;
+        line-height: 1.2;
+    }
+
+    .process-desc {
+        font-size: 0.8rem;
+        color: #666;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    .testimonial-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .video-preview {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1.4;
+        background: #000;
+    }
+
+    .play-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+    }
+
+    .testimonial-content {
+        padding: 20px;
+    }
+
+    .testimonial-content p {
+        font-size: 0.85rem;
+    }
+
+    .customer-name {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    .customer-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+        text-align: center;
+    }
+
+    .meta-item {
+        font-size: 0.85rem;
+        color: #777;
+        line-height: 1.4;
+    }
+
+    .meta-item b {
+        display: block;
+        color: #ff6600;
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-top: 2px;
+    }
+
+    /* Responsiveness Media Queries */
+    @media (max-width: 991px) {
+        .interiors-hero {
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .interiors-hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .interiors-hero h2 {
+            font-size: 1.8rem;
+        }
+        
+        .hero-form-card {
+            margin-top: 40px;
+        }
+        
+        .usp-wrapper {
+            justify-content: center;
+        }
+        
+        .usp-item {
+            flex: 0 0 45%;
+        }
+        
+        .main-gallery-view {
+            height: 450px;
+        }
+        
+        .gallery-quote {
+            font-size: 1.8rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .section-padding {
+            padding: 50px 0;
+        }
+        
+        .gallery-tabs {
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            scrollbar-width: none;
+        }
+        
+        .gallery-tab {
+            white-space: nowrap;
+            padding: 8px 20px;
+        }
+        
+        .main-gallery-view {
+            height: 300px;
+            border-radius: 20px;
+        }
+        
+        .gallery-quote {
+            font-size: 1.3rem;
+        }
+        
+        .gallery-nav-btn {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .thumb-item {
+            flex: 0 0 140px;
+            height: 90px;
+        }
+        
+        .process-section {
+            border-top-right-radius: 40px;
+        }
+        
+        .brand-card {
+            width: 160px;
+            height: 110px;
+        }
+        
+        .brand-name {
+            font-size: 11px;
+        }
+        
+        .meta-item b {
+            font-size: 0.9rem;
+        }
+        
+        .usp-item {
+            flex: 0 0 48%;
+        }
+        
+        .usp-icon-container {
+            width: 60px;
+            height: 60px;
+            font-size: 1.4rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .interiors-hero h1 {
+            font-size: 2rem;
+        }
+        
+        .usp-item {
+            flex: 0 0 100%;
+        }
+        
+        .customer-meta {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Back Navigation -->
+<div class="container pt-4">
+    <a href="{% url 'properties:home' %}" class="btn d-inline-flex align-items-center gap-2 text-dark fw-bold"
+        style="text-decoration: none; transition: transform 0.3s;" onmouseover="this.style.transform='translateX(-5px)'"
+        onmouseout="this.style.transform='translateX(0)'">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Home</span>
+    </a>
+</div>
+
+<!-- Hero Section -->
+<section class="interiors-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="display-3 fw-bold mb-3">Transform Your Home Hassle-Free</h1>
+                <h2 class="display-5 fw-bold mb-4">Home Interiors from <span class="text-warning">₹ 3 Lac</span></h2>
+                <ul class="list-unstyled mb-5 fs-5">
+                    <li class="mb-2"><i class="fas fa-check-circle me-2 text-warning"></i> Trusted Quality</li>
+                    <li class="mb-2"><i class="fas fa-check-circle me-2 text-warning"></i> Transparent Price</li>
+                    <li class="mb-2"><i class="fas fa-check-circle me-2 text-warning"></i> Timely Delivery</li>
+                </ul>
+                <div class="d-flex gap-3">
+                    <div class="bg-white p-3 rounded-pill text-dark d-flex align-items-center gap-2 px-4 shadow">
+                        <i class="fas fa-phone-alt text-primary"></i>
+                        <span class="fw-bold">+91 9870 260 930</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="hero-form-card">
+                    <h3 class="fw-bold mb-4">Begin your dream space here</h3>
+                    <form>
+                        <div class="mb-3">
+                            <input type="text" class="form-control py-3" placeholder="Full Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control py-3" placeholder="Email Address" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="tel" class="form-control py-3" placeholder="Phone Number" required>
+                        </div>
+                        <div class="mb-4">
+                            <select class="form-select py-3">
+                                <option selected disabled>Select City</option>
+                                <option>Ahmedabad</option>
+                                <option>Surat</option>
+                                <option>Vadodara</option>
+                                <option>Rajkot</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-pb-red w-100 py-3 fs-5 shadow">Book your site
+                            visit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- USP Section -->
+<section class="usp-section border-bottom">
+    <div class="container">
+        <div class="usp-wrapper">
+            <div class="usp-item">
+                <div class="usp-icon-container">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="usp-text-label">10 Years<br>Warranty</div>
+            </div>
+            <div class="usp-item">
+                <div class="usp-icon-container">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="usp-text-label">Transparent<br>Pricing</div>
+            </div>
+            <div class="usp-item">
+                <div class="usp-icon-container">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="usp-text-label">Unmatched<br>Quality & Finish</div>
+            </div>
+            <div class="usp-item">
+                <div class="usp-icon-container">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="usp-text-label">Dedicated<br>RM</div>
+            </div>
+            <div class="usp-item">
+                <div class="usp-icon-container">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="usp-text-label">Stringent<br>quality checks</div>
+            </div>
+            <div class="usp-item">
+                <div class="usp-icon-container">
+                    <span class="miqe-brand">MIQE</span>
+                </div>
+                <div class="usp-text-label">Real-time<br>Cost Estimates</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Design Gallery Section -->
+<section class="section-padding bg-white">
+    <div class="container text-center mb-4">
+        <h2 class="fw-bold">We Don't Just Design Homes. We Shape the Way You Live.</h2>
+        <p class="text-muted">Browse real home makeovers that blend comfort, practicality, and positive vibes - designed
+            with heart and purpose.</p>
+    </div>
+
+    <div class="gallery-container px-3">
+        <!-- Tabs -->
+        <div class="gallery-tabs">
+            <div class="gallery-tab active" data-category="living">Living Room</div>
+            <div class="gallery-tab" data-category="bedroom">Bed Room</div>
+            <div class="gallery-tab" data-category="kitchen">Kitchen</div>
+            <div class="gallery-tab" data-category="bathroom">Bathroom</div>
+            <div class="gallery-tab" data-category="kids">Kids Room</div>
+        </div>
+
+        <!-- Main View -->
+        <div class="main-gallery-view">
+            <button class="gallery-nav-btn gallery-nav-prev"><i class="fas fa-chevron-left"></i></button>
+            <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80"
+                id="mainGalleryImg" class="main-gallery-img">
+            <div class="gallery-overlay-text">
+                <p class="gallery-quote">"Designed for moments that matter"</p>
+            </div>
+            <button class="gallery-nav-btn gallery-nav-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <!-- Thumbnails -->
+        <div class="thumbnail-scroll" id="thumbContainer">
+            <!-- Will be populated by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- Turn Your Vision into Reality Section -->
+<section class="process-section">
+    <div class="process-bg-container">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">The Magic Interiors Signature Experience</h2>
+                <p class="text-muted">A seamless design journey, guided by expertise and tailored with precision at every step.</p>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Testimonial on the Left -->
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <a href="https://www.youtube.com/watch?v=5azBWr7-Rzs" target="_blank" class="video-preview d-block" style="text-decoration: none;">
+                            <img src="https://img.youtube.com/vi/5azBWr7-Rzs/maxresdefault.jpg" alt="Video Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="play-btn">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </a>
+                        <div class="testimonial-content">
+                            <p>"They transformed their house into a dream home with Magic Interiors"</p>
+                            <span class="customer-name">Kavita</span>
+                            <div class="customer-meta">
+                                <div class="meta-item">
+                                    Budget
+                                    <b>₹4.5 lacs</b>
+                                </div>
+                                <div class="meta-item">
+                                    Home
+                                    <b>3BHK</b>
+                                </div>
+                                <div class="meta-item">
+                                    City
+                                    <b>Delhi</b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6 Cards on the Right -->
+                <div class="col-lg-8">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="process-card">
+                                <div class="process-hexagon"><i class="fas fa-link"></i></div>
+                                <h4 class="process-title">Magic Connect</h4>
+                                <p class="process-desc">Connect with your RM to share all your interior needs.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="process-card">
+                                <div class="process-hexagon"><i class="fas fa-gem"></i></div>
+                                <h4 class="process-title">Magic Choice</h4>
+                                <p class="process-desc">Choose from 75+ curated interior design brands, all in one place.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="process-card">
+                                <div class="process-hexagon"><i class="fas fa-calculator"></i></div>
+                                <h4 class="process-title">Magic Estimator</h4>
+                                <p class="process-desc">Get instant, personalized budget estimates with our MiQE tool.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="process-card">
+                                <div class="process-hexagon"><i class="fas fa-balance-scale"></i></div>
+                                <h4 class="process-title">Magic Compare</h4>
+                                <p class="process-desc">Compare quotes from top brands and choose the best with ease.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="process-card">
+                                <div class="process-hexagon"><i class="fas fa-file-signature"></i></div>
+                                <h4 class="process-title">Magic Assurance</h4>
+                                <p class="process-desc">We ensure smooth documentation and project activation.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="process-card">
+                                <div class="process-hexagon"><i class="fas fa-clipboard-check"></i></div>
+                                <h4 class="process-title">Magic Check</h4>
+                                <p class="process-desc">We ensure multiple quality checks and smooth handover.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Brands Section -->
+<section class="bg-light border-top border-bottom py-5">
+    <div class="container text-center mb-5">
+        <h2 class="fw-bold mb-3">Our Signature Brand Collective</h2>
+        <p class="text-muted mx-auto" style="max-width: 800px;">A curated selection of premium interior partners, chosen
+            for their timeless design, impeccable quality, and enduring craftsmanship.</p>
+    </div>
+    <div class="brand-slider">
+        <div class="brand-track">
+            <!-- First Set of 15 Logos -->
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=google.com&sz=128" alt="Google">
+                <div class="brand-name">Google Home</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=samsung.com&sz=128" alt="Samsung">
+                <div class="brand-name">Samsung Smart</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=amazon.in&sz=128" alt="Amazon">
+                <div class="brand-name">Amazon Alexa</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=lg.com&sz=128" alt="LG">
+                <div class="brand-name">LG Signature</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=sony.com&sz=128" alt="Sony">
+                <div class="brand-name">Sony Audio</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=hm.com&sz=128" alt="H&M">
+                <div class="brand-name">H&M Home</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=nike.com&sz=128" alt="Nike">
+                <div class="brand-name">Nike Wellness</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=apple.com&sz=128" alt="Apple">
+                <div class="brand-name">Apple Home</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=128" alt="Microsoft">
+                <div class="brand-name">Microsoft Surface</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=tesla.com&sz=128" alt="Tesla">
+                <div class="brand-name">Tesla Energy</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=ibm.com&sz=128" alt="IBM">
+                <div class="brand-name">IBM Cloud</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=netflix.com&sz=128" alt="Netflix">
+                <div class="brand-name">Netflix Living</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=pepsi.com&sz=128" alt="Pepsi">
+                <div class="brand-name">Pepsi Cool</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=cocacola.com&sz=128" alt="Coca Cola">
+                <div class="brand-name">Classic Vibe</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=panasonic.com&sz=128" alt="Panasonic">
+                <div class="brand-name">Panasonic Appliances</div>
+            </div>
+
+            <!-- Repeat for Loop -->
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=google.com&sz=128" alt="Google">
+                <div class="brand-name">Google Home</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=samsung.com&sz=128" alt="Samsung">
+                <div class="brand-name">Samsung Smart</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=amazon.in&sz=128" alt="Amazon">
+                <div class="brand-name">Amazon Alexa</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=lg.com&sz=128" alt="LG">
+                <div class="brand-name">LG Signature</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=sony.com&sz=128" alt="Sony">
+                <div class="brand-name">Sony Audio</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=hm.com&sz=128" alt="H&M">
+                <div class="brand-name">H&M Home</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=nike.com&sz=128" alt="Nike">
+                <div class="brand-name">Nike Wellness</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=apple.com&sz=128" alt="Apple">
+                <div class="brand-name">Apple Home</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=128" alt="Microsoft">
+                <div class="brand-name">Microsoft Surface</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=tesla.com&sz=128" alt="Tesla">
+                <div class="brand-name">Tesla Energy</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=ibm.com&sz=128" alt="IBM">
+                <div class="brand-name">IBM Cloud</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=netflix.com&sz=128" alt="Netflix">
+                <div class="brand-name">Netflix Living</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=pepsi.com&sz=128" alt="Pepsi">
+                <div class="brand-name">Pepsi Cool</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=cocacola.com&sz=128" alt="Coca Cola">
+                <div class="brand-name">Classic Vibe</div>
+            </div>
+            <div class="brand-card">
+                <img src="https://www.google.com/s2/favicons?domain=panasonic.com&sz=128" alt="Panasonic">
+                <div class="brand-name">Panasonic Appliances</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="section-padding bg-white">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-5">Frequently Asked Questions</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item faq-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#faq1">
+                                How much does home interior cost?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Our packages start from ₹3 Lac for essential interior setups. The final cost depends on
+                                materials, design complexity, and space size.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item faq-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#faq2">
+                                What is the timeline for completion?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                We usually complete standard interior projects within 45-60 days after design
+                                finalization.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item faq-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#faq3">
+                                Do you provide warranty on your work?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, we provide a 10-year warranty on all our modular furniture and a 1-year service
+                                warranty.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bottom CTA -->
+<section class="section-padding bg-dark text-white text-center">
+    <div class="container">
+        <h2 class="display-5 fw-bold mb-4">Ready to build your dream home?</h2>
+        <p class="fs-5 mb-5 opacity-75">Talk to our design experts today and get a free quote.</p>
+        <button class="btn btn-pb-red btn-lg px-5 py-3">Book Free Consultation</button>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const galleryData = {
+        living: {
+            quote: "Designed for moments that matter",
+            images: [
+                'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1631679706909-1844bbd07221?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1616489953149-8f6f57388701?q=80&w=1200&auto=format&fit=crop'
+            ]
+        },
+        bedroom: {
+            quote: "Your personal sanctuary of calm",
+            images: [
+                'https://images.unsplash.com/photo-1616594192358-af773d63dcd9?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=1200&auto=format&fit=crop'
+            ]
+        },
+        kitchen: {
+            quote: "Where flavors meet fine design",
+            images: [
+                'https://images.unsplash.com/photo-1556912177-c54030639a60?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1200&auto=format&fit=crop'
+            ]
+        },
+        bathroom: {
+            quote: "Luxury in every detail",
+            images: [
+                'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1620626011761-9963d7521476?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1604014237800-1c9102c219da?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1507652313519-d4511f7b4ad2?q=80&w=1200&auto=format&fit=crop'
+            ]
+        },
+        kids: {
+            quote: "A world of imagination and joy",
+            images: [
+                'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1618219944342-824e40a13285?q=80&w=1200&auto=format&fit=crop'
+            ]
+        }
+    };
+
+    let currentCategory = 'living';
+    let currentIndex = 0;
+
+    const mainImg = document.getElementById('mainGalleryImg');
+    const thumbContainer = document.getElementById('thumbContainer');
+    const tabs = document.querySelectorAll('.gallery-tab');
+    const quoteEl = document.querySelector('.gallery-quote');
+
+    function updateGallery(category, index = 0) {
+        currentCategory = category;
+        currentIndex = index;
+        const categoryData = galleryData[category];
+        const images = categoryData.images;
+
+        // Update main image
+        mainImg.style.opacity = 0;
+        setTimeout(() => {
+            mainImg.src = images[index];
+            mainImg.style.opacity = 1;
+            quoteEl.textContent = `"${categoryData.quote}"`;
+        }, 200);
+
+        // Update thumbnails
+        thumbContainer.innerHTML = '';
+        images.forEach((img, i) => {
+            const thumb = document.createElement('div');
+            thumb.className = `thumb-item ${i === index ? 'active' : ''}`;
+            thumb.innerHTML = `<img src="${img}">`;
+            thumb.onclick = () => updateGallery(category, i);
+            thumbContainer.appendChild(thumb);
+
+            // Scroll thumbnail into view
+            if (i === index) {
+                thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        });
+
+        // Update active tab
+        tabs.forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.category === category);
+        });
+    }
+
+    // Tab clicks
+    tabs.forEach(tab => {
+        tab.onclick = () => updateGallery(tab.dataset.category, 0);
+    });
+
+    // Nav buttons
+    document.querySelector('.gallery-nav-next').onclick = () => {
+        const images = galleryData[currentCategory].images;
+        const nextIndex = (currentIndex + 1) % images.length;
+        updateGallery(currentCategory, nextIndex);
+    };
+
+    document.querySelector('.gallery-nav-prev').onclick = () => {
+        const images = galleryData[currentCategory].images;
+        const prevIndex = (currentIndex - 1 + images.length) % images.length;
+        updateGallery(currentCategory, prevIndex);
+    };
+
+    // Initialize
+    updateGallery('living');
+</script>
+{% endblock %}
+
+
+
+
+

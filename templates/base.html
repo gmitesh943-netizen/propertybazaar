@@ -1,0 +1,1156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PropertyBazaar - Find Your Dream Home{% endblock %}</title>
+    <meta name="description"
+        content="{% block meta_description %}PropertyBazaar is the leading real estate platform to buy, sell, or rent properties.{% endblock %}">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    {% block extra_head %}{% endblock %}
+    {% block extra_css %}{% endblock %}
+
+    <style>
+        :root {
+            --brand-red: #ff6600;
+            --brand-red-dark: #cc5200;
+            --bs-primary: #ff6600;
+            --bs-primary-rgb: 255, 102, 0;
+            --bs-link-color: #ff6600;
+            --bs-link-hover-color: #cc5200;
+            --primary-blue: #ff6600;
+        }
+
+        .text-primary {
+            color: var(--brand-red) !important;
+        }
+
+        .bg-primary {
+            background-color: var(--brand-red) !important;
+        }
+
+        .border-primary {
+            border-color: var(--brand-red) !important;
+        }
+
+        .bg-primary-subtle {
+            background-color: rgba(255, 102, 0, 0.10) !important;
+        }
+
+        .text-primary-emphasis {
+            color: var(--brand-red-dark) !important;
+        }
+
+        .border-primary-subtle {
+            border-color: rgba(255, 102, 0, 0.24) !important;
+        }
+
+        .link-primary {
+            color: var(--brand-red) !important;
+        }
+
+        .btn-primary {
+            --bs-btn-bg: var(--brand-red);
+            --bs-btn-border-color: var(--brand-red);
+            --bs-btn-hover-bg: var(--brand-red-dark);
+            --bs-btn-hover-border-color: var(--brand-red-dark);
+            --bs-btn-active-bg: var(--brand-red-dark);
+            --bs-btn-active-border-color: var(--brand-red-dark);
+            --bs-btn-disabled-bg: var(--brand-red);
+            --bs-btn-disabled-border-color: var(--brand-red);
+        }
+
+        .btn-outline-primary {
+            --bs-btn-color: var(--brand-red);
+            --bs-btn-border-color: var(--brand-red);
+            --bs-btn-hover-bg: var(--brand-red);
+            --bs-btn-hover-border-color: var(--brand-red);
+            --bs-btn-active-bg: var(--brand-red);
+            --bs-btn-active-border-color: var(--brand-red);
+            --bs-btn-disabled-color: var(--brand-red);
+            --bs-btn-disabled-border-color: var(--brand-red);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--brand-red);
+            border-color: var(--brand-red);
+        }
+
+        .form-check-input:focus,
+        .form-control:focus,
+        .form-select:focus,
+        .btn-check:focus+.btn,
+        .btn:focus {
+            border-color: rgba(255, 102, 0, 0.55);
+            box-shadow: 0 0 0 0.25rem rgba(255, 102, 0, 0.18);
+        }
+
+        .progress-bar {
+            background-color: var(--brand-red);
+        }
+
+        .page-link {
+            color: var(--brand-red);
+        }
+
+        .active>.page-link,
+        .page-link.active {
+            background-color: var(--brand-red);
+            border-color: var(--brand-red);
+        }
+
+        a {
+            color: var(--bs-link-color);
+        }
+
+        a:hover {
+            color: var(--bs-link-hover-color);
+        }
+
+        .mega-menu-title {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #ff6600 !important;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .mega-column {
+            min-height: 250px;
+        }
+
+        /* Submenu Styling */
+        .has-submenu {
+            position: relative;
+        }
+
+        .submenu-panel {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            width: 300px;
+            background: white;
+            z-index: 1050;
+            margin-left: 0;
+            border-radius: 8px;
+        }
+
+        .has-submenu:hover>.submenu-panel {
+            display: block;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        /* Orange Theme Overrides */
+        .text-danger,
+        .text-primary {
+            color: #ff6600 !important;
+        }
+
+        .bg-danger,
+        .bg-primary {
+            background-color: #ff6600 !important;
+        }
+
+        .btn-danger,
+        .btn-primary {
+            background-color: #ff6600 !important;
+            border-color: #ff6600 !important;
+            color: white !important;
+        }
+
+        .btn-danger:hover,
+        .btn-primary:hover {
+            background-color: #cc5200 !important;
+            border-color: #cc5200 !important;
+            color: white !important;
+        }
+
+        .border-danger,
+        .border-primary {
+            border-color: #ff6600 !important;
+        }
+
+        .hover-red:hover {
+            color: #ff6600 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- MagicBricks Style Navbar -->
+    {% if not hide_navbar %}
+    <header class="main-header border-bottom shadow-sm bg-white position-relative">
+        <!-- Top Orange Bar -->
+        <div class="top-nav" style="background-color: #ff6600; color: white; padding: 8px 0;">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-4">
+                    <a class="navbar-brand fw-bold fs-3 m-0 text-decoration-none" href="{% url 'properties:home' %}"
+                        style="letter-spacing: -1.5px; color: white;">
+                        propertybazaar
+                    </a>
+                    <!-- City Mega Menu -->
+                    <div class="dropdown dropdown-hover position-static">
+                        <button class="btn btn-sm text-white dropdown-toggle border-0 fw-semibold btn-city"
+                            data-bs-toggle="dropdown" style="font-size: 15px;">
+                            Ahmedabad <i class="fas fa-chevron-down ms-1" style="font-size: 10px;"></i>
+                        </button>
+                        <div class="dropdown-menu border-0 shadow-lg mt-0 w-100 p-0 mega-menu"
+                            style="left:0; right:0; top: 100%; border-top: 1px solid #eee !important;">
+                            <div class="container py-4">
+                                <div class="row">
+                                    <!-- Gujarat Cities Section -->
+                                    <div class="col-md-9 border-end">
+                                        <div class="d-flex align-items-center mb-4">
+                                            
+                                            <h6 class="fw-bold mb-0" style="color: #333;">GUJARAT CITIES</h6>
+                                        </div>
+                                        <div class="row g-4">
+                                            <!-- Ahmedabad Section -->
+                                            <div class="col-md-4">
+                                                <div class="has-submenu mb-3">
+                                                    <p class="fw-bold text-danger mb-2 cursor-pointer">
+                                                        Ahmedabad <i
+                                                            class="fas fa-chevron-right small float-end mt-1"></i>
+                                                    </p>
+                                                    <div class="submenu-panel shadow p-3 bg-white">
+                                                        <h6 class="fw-bold border-bottom pb-1 small">Popular Areas</h6>
+                                                        <ul class="list-unstyled small lh-lg row row-cols-2 g-1">
+                                                            <li>Bopal</li>
+                                                            <li>Satellite</li>
+                                                            <li>SG Highway</li>
+                                                            <li>Prahlad Nagar</li>
+                                                            <li>Vastrapur</li>
+                                                            <li>Thaltej</li>
+                                                            <li>Maninagar</li>
+                                                            <li>Ghatlodia</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <ul class="list-unstyled small lh-lg text-muted">
+                                                    <li>Gandhinagar</li>
+                                                    <li>Mehsana</li>
+                                                    <li>Kadi</li>
+                                                </ul>
+                                            </div>
+                                            <!-- Surat Section -->
+                                            <div class="col-md-4">
+                                                <div class="has-submenu mb-3">
+                                                    <p class="fw-bold text-dark mb-2 cursor-pointer">
+                                                        Surat <i class="fas fa-chevron-right small float-end mt-1"></i>
+                                                    </p>
+                                                    <div class="submenu-panel shadow p-3 bg-white">
+                                                        <h6 class="fw-bold border-bottom pb-1 small">Surat Localities
+                                                        </h6>
+                                                        <ul class="list-unstyled small lh-lg row row-cols-2 g-1">
+                                                            <li>Adajan</li>
+                                                            <li>Vesu</li>
+                                                            <li>Varachha</li>
+                                                            <li>Katargam</li>
+                                                            <li>Piplod</li>
+                                                            <li>Pal</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <ul class="list-unstyled small lh-lg text-muted">
+                                                    <li>Navsari</li>
+                                                    <li>Vapi</li>
+                                                    <li>Valsad</li>
+                                                </ul>
+                                            </div>
+                                            <!-- Vadodara Section -->
+                                            <div class="col-md-4">
+                                                <div class="has-submenu mb-3">
+                                                    <p class="fw-bold text-dark mb-2 cursor-pointer">
+                                                        Vadodara <i
+                                                            class="fas fa-chevron-right small float-end mt-1"></i>
+                                                    </p>
+                                                    <div class="submenu-panel shadow p-3 bg-white">
+                                                        <h6 class="fw-bold border-bottom pb-1 small">Vadodara Localities
+                                                        </h6>
+                                                        <ul class="list-unstyled small lh-lg row row-cols-2 g-1">
+                                                            <li>Alkapuri</li>
+                                                            <li>Gotri</li>
+                                                            <li>Akota</li>
+                                                            <li>Waghodia</li>
+                                                            <li>Sayajigunj</li>
+                                                            <li>Manjalpur</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <ul class="list-unstyled small lh-lg text-muted">
+                                                    <li>Anand</li>
+                                                    <li>Bharuch</li>
+                                                    <li>Nadiad</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 pt-3 border-top">
+                                            <p class="fw-bold small mb-3" style="color: #666;">Other Major Cities</p>
+                                            <div class="row row-cols-5 g-2 small text-muted">
+                                                <div class="fw-bold text-dark">Rajkot</div>
+                                                <div>Bhavnagar</div>
+                                                <div>Jamnagar</div>
+                                                <div>Junagadh</div>
+                                                <div>Morbi</div>
+                                                <div>Surendranagar</div>
+                                                <div>Gandhidham</div>
+                                                <div>Veraval</div>
+                                                <div>Porbandar</div>
+                                                <div>Anjar</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- International Cities -->
+                                    <div class="col-md-3 ps-4">
+                                        <div class="d-flex align-items-center mb-4">
+                                            
+                                            <h6 class="fw-bold mb-0" style="color: #333;">International</h6>
+                                        </div>
+                                        <ul class="list-unstyled small lh-xl" style="color: #444;">
+                                            <li class="mb-2"><i class="fas fa-home me-2 text-muted"></i> NRI Home</li>
+                                            <li class="mb-2">🇺🇸 US</li>
+                                            <li class="mb-2">🇦🇪 UAE</li>
+                                            <li class="mb-2">🇨🇦 Canada</li>
+                                            <li class="mb-2">🇦🇺 Australia</li>
+                                            <li class="mb-2">🇸🇬 Singapore</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-4">
+                    <div class="dropdown dropdown-hover">
+                        {% if user.is_authenticated %}
+                        {% if active_subscription %}
+                        <a href="{% url 'subscriptions:status' %}" class="btn btn-sm text-white border-0 fw-semibold">
+                            <i class="fas fa-crown text-warning me-1"></i> My Subscription
+                        </a>
+                        {% else %}
+                        {% if user_limits.remaining == 0 or user_limits.remaining == '0' %}
+                        <a href="{% url 'subscriptions:plan_list' %}"
+                            class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3">
+                            Upgrade Plan
+                        </a>
+                        {% else %}
+                        <a href="{% url 'subscriptions:plan_list' %}"
+                            class="btn btn-sm text-white border-0 fw-semibold">
+                            PB Prime <i class="fas fa-chevron-down ms-1" style="font-size: 10px;"></i>
+                        </a>
+                        {% endif %}
+                        {% endif %}
+                        {% else %}
+                        <a href="{% url 'subscriptions:plan_list' %}"
+                            class="btn btn-sm text-white border-0 fw-semibold">
+                            PB Prime <i class="fas fa-chevron-down ms-1" style="font-size: 10px;"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="dropdown dropdown-hover">
+                        <button
+                            class="btn btn-sm text-white dropdown-toggle border-0 fw-semibold d-flex align-items-center"
+                            data-bs-toggle="dropdown" style="gap: 5px;">
+                            {% if user.is_authenticated %}
+                            {% if user.profile.profile_image %}
+                            <img src="{{ user.profile.profile_image.url }}" class="rounded-circle"
+                                style="width:25px; height:25px; object-fit:cover; border: 1px solid white;">
+                            {% else %}
+                            <i class="fas fa-user-circle fs-5"></i>
+                            {% endif %}
+                            <span>{{ user.first_name|default:user.email|truncatechars:12 }}</span>
+                            {% else %}
+                            Login
+                            {% endif %}
+                            <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2 py-3"
+                            style="min-width: 200px; border-radius: 10px;">
+                            {% if user.is_authenticated %}
+                            <li class="px-3 mb-2 small fw-bold text-muted">Welcome, {{ user.first_name }}</li>
+                            {% if user.is_superuser %}
+                            <li><a class="dropdown-item fw-bold text-danger" href="{% url 'dashboard:admin_home' %}"><i
+                                        class="fas fa-user-shield me-2"></i> Admin Panel</a></li>
+                            {% endif %}
+                            {% if user.role == 'agent' or user.role == 'builder' %}
+                            <li><a class="dropdown-item fw-bold text-primary"
+                                    href="{% url 'inquiries:lead_dashboard' %}">
+                                    Lead Manager</a></li>
+                            {% endif %}
+                            {% if not user.is_superuser %}
+                            <li><a class="dropdown-item" href="{% url 'dashboard:home' %}"><i
+                                        class="fas fa-chart-line me-2 text-secondary"></i> My Activity</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'conversations:chat_list' %}"><i
+                                        class="fas fa-envelope me-2 text-secondary"></i> Messages</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i
+                                        class="fas fa-user me-2 text-secondary"></i> My Profile</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'account_logout' %}"><i
+                                        class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                            {% else %}
+                            <li><a class="dropdown-item" href="{% url 'account_login' %}"><i
+                                        class="fas fa-sign-in-alt me-2 text-secondary"></i> Sign In</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:register' %}"><i
+                                        class="fas fa-user-plus me-2 text-secondary"></i> New User? Register</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% if user.is_authenticated %}
+                    {% if user.role == 'agent' or user.role == 'builder' %}
+                    <a href="{% url 'dashboard:add_property' %}"
+                        class="btn btn-light rounded-pill px-4 fw-bold text-dark border-0 shadow-sm"
+                        style="font-size: 14px;">
+                        Post Property <span class="badge bg-warning text-dark ms-1" style="font-size: 10px;">FREE</span>
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'account_login' %}"
+                        class="btn btn-light rounded-pill px-4 fw-bold text-dark border-0 shadow-sm"
+                        style="font-size: 14px;">
+                        Post Property <span class="badge bg-warning text-dark ms-1" style="font-size: 10px;">FREE</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom White Navigation -->
+        <nav class="navbar navbar-expand-lg bg-white py-0">
+            <div class="container">
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav gap-4">
+                        <li class="nav-item dropdown dropdown-hover position-static">
+                            <a class="nav-link text-dark fw-semibold dropdown-toggle border-0" href="#"
+                                data-bs-toggle="dropdown">
+                                Buy <i class="fas fa-chevron-down ms-1" style="font-size: 8px;"></i>
+                            </a>
+                            <div class="dropdown-menu border-0 shadow-lg mt-0 w-100 p-0 mega-menu-content"
+                                style="border-top: 1px solid #eee !important;">
+                                <div class="container py-4">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <!-- Popular Choices -->
+                                        <div class="mega-column border-end pe-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Popular Choices</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}"
+                                                        class="text-decoration-none text-muted hover-red">Ready to Move</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}"
+                                                        class="text-decoration-none text-muted hover-red">Owner Properties</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}"
+                                                        class="text-decoration-none text-muted hover-red">Budget Homes</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?featured=True"
+                                                        class="text-decoration-none text-muted hover-red">Premium Homes</a></li>
+                                                <li>
+                                                    <a href="{% url 'properties:new_projects' %}"
+                                                        class="text-decoration-none text-muted hover-red">
+                                                        New Projects <span
+                                                            class="badge bg-warning text-dark ms-1 rounded-pill"
+                                                            style="font-size: 8px;">NEW</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!-- Property Types -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Property Types</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?type=1"
+                                                        class="text-decoration-none text-muted hover-red">Flats in Ahmedabad</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?type=3"
+                                                        class="text-decoration-none text-muted hover-red">House for sale in
+                                                        Ahmedabad...</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?type=2"
+                                                        class="text-decoration-none text-muted hover-red">Villa in Ahmedabad</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?category=1"
+                                                        class="text-decoration-none text-muted hover-red">Property in
+                                                        Ahmedabad</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?type=7"
+                                                        class="text-decoration-none text-muted hover-red">Plots for sale in
+                                                        Ahmedabad...</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?type=5"
+                                                        class="text-decoration-none text-muted hover-red">Shop for sale in
+                                                        Ahmedabad...</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- Budget -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Budget</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?max_price=5000000"
+                                                        class="text-decoration-none text-muted hover-red">Under ₹ 50 Lac</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?min_price=5000000&max_price=10000000"
+                                                        class="text-decoration-none text-muted hover-red">₹ 50 Lac - ₹ 1 Cr</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?min_price=10000000&max_price=15000000"
+                                                        class="text-decoration-none text-muted hover-red">₹ 1 Cr - ₹ 1.5 Cr</a>
+                                                </li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?min_price=15000000"
+                                                        class="text-decoration-none text-muted hover-red"><i
+                                                            class="fas fa-money-bill-trend-up me-2"></i>Above ₹ 1.5
+                                                        Cr</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- Explore -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Explore</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?search=Ahmedabad"
+                                                        class="text-decoration-none text-muted hover-red">Localities in
+                                                        Ahmedabad</a></li>
+                                                <li><a href="{% url 'properties:new_projects' %}"
+                                                        class="text-decoration-none text-muted hover-red">Projects in
+                                                        Ahmedabad</a></li>
+                                                <li><a href="{% url 'properties:top_agents' %}"
+                                                        class="text-decoration-none text-muted hover-red">Find an Agent</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- Buying Tools -->
+                                        <div class="mega-column ps-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Buying Tools</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:propworth' %}"
+                                                        class="text-decoration-none text-muted hover-red">PropWorth</a></li>
+                                                <li><a href="{% url 'properties:rates_trends' %}"
+                                                        class="text-decoration-none text-muted hover-red">Rates & Trends</a></li>
+                                                <li><a href="{% url 'properties:buy_vs_rent' %}"
+                                                        class="text-decoration-none text-muted hover-red">Buy vs Rent</a></li>
+                                                <li><a href="{% url 'properties:tips_guides' %}"
+                                                        class="text-decoration-none text-muted hover-red">Tips and Guides</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown dropdown-hover position-static">
+                            <a class="nav-link text-dark fw-semibold dropdown-toggle border-0" href="#"
+                                data-bs-toggle="dropdown">
+                                Rent <i class="fas fa-chevron-down ms-1" style="font-size: 8px;"></i>
+                            </a>
+                            <div class="dropdown-menu border-0 shadow-lg mt-0 w-100 p-0 mega-menu-content"
+                                style="border-top: 1px solid #eee !important;">
+                                <div class="container py-4">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <!-- Column 1 -->
+                                        <div class="mega-column border-end pe-3" style="width: 25%;">
+                                            <h6 class="fw-bold mb-3 small mega-menu-title"
+                                                style="color: #ff6600 !important; text-transform: uppercase;">Properties
+                                                in
+                                                Ahmedabad</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                {% for ptype in nav_property_types %}
+                                                <li><a href="{% url 'properties:property_list' %}?listing_type=rent&type={{ ptype.slug }}"
+                                                        class="text-decoration-none text-dark hover-red"><strong>{{ ptype.rent_count }}+</strong> {{ ptype.name }}</a></li>
+                                                {% empty %}
+                                                <li><span class="text-muted small">No properties found</span></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        <!-- Column 2 -->
+                                        <div class="mega-column border-end px-3" style="width: 25%;">
+                                            <h6 class="fw-bold mb-3 small mega-menu-title"
+                                                style="color: #ff6600 !important; text-transform: uppercase;">Featured
+                                                Collections</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                {% if nav_owner_count > 0 %}
+                                                <li><a href="{% url 'properties:property_list' %}?listing_type=rent&role=owner"
+                                                        class="text-decoration-none text-dark hover-red"><strong>{{ nav_owner_count }}+</strong> Owner Properties</a></li>
+                                                {% endif %}
+                                                {% if nav_verified_count > 0 %}
+                                                <li><a href="{% url 'properties:property_list' %}?listing_type=rent&verified=True"
+                                                        class="text-decoration-none text-dark hover-red"><strong>{{ nav_verified_count }}+</strong> Verified Properties</a>
+                                                </li>
+                                                {% endif %}
+                                                {% if nav_exclusive_count > 0 %}
+                                                <li><a href="{% url 'properties:property_list' %}?listing_type=rent&featured=True"
+                                                        class="text-decoration-none text-dark hover-red"><strong>{{ nav_exclusive_count }}+</strong> Exclusive Properties</a>
+                                                </li>
+                                                {% endif %}
+                                                {% if nav_bachelor_count > 0 %}
+                                                <li><a href="{% url 'properties:property_list' %}?listing_type=rent&amenity=bachelor"
+                                                        class="text-decoration-none text-dark hover-red"><strong>{{ nav_bachelor_count }}+</strong> Bachelor Friendly Homes</a>
+                                                </li>
+                                                {% endif %}
+                                                {% if nav_owner_count == 0 and nav_verified_count == 0 and nav_exclusive_count == 0 and nav_bachelor_count == 0 %}
+                                                <li><span class="text-muted small">No collections found</span></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                        <!-- Column 3 -->
+                                        <div class="mega-column border-end px-3" style="width: 25%;">
+                                            <h6 class="fw-bold mb-3 small mega-menu-title"
+                                                style="color: #ff6600 !important; text-transform: uppercase;">Budget
+                                                Friendly
+                                                homes</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                {% if nav_under_10k > 0 %}
+                                                <li><a href="{% url 'properties:property_list' %}?listing_type=rent&max_price=10000"
+                                                        class="text-decoration-none text-dark hover-red">Options under
+                                                        Rs 10,000 ({{ nav_under_10k }}+)</a></li>
+                                                {% endif %}
+                                                {% if nav_under_15k > 0 %}
+                                                <li><a href="{% url 'properties:property_list' %}?listing_type=rent&max_price=15000"
+                                                        class="text-decoration-none text-dark hover-red">Options under
+                                                        Rs 15,000 ({{ nav_under_15k }}+)</a></li>
+                                                {% endif %}
+                                                {% if nav_under_20k > 0 %}
+                                                <li><a href="{% url 'properties:property_list' %}?listing_type=rent&max_price=20000"
+                                                        class="text-decoration-none text-dark hover-red">Options under
+                                                        Rs 20,000 ({{ nav_under_20k }}+)</a></li>
+                                                {% endif %}
+                                                {% if nav_under_10k == 0 and nav_under_15k == 0 and nav_under_20k == 0 %}
+                                                <li><span class="text-muted small">No budget options found</span></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                        <!-- Column 4 -->
+                                        <div class="mega-column ps-3" style="width: 25%;">
+                                            <h6 class="fw-bold mb-3 small mega-menu-title"
+                                                style="color: #ff6600 !important; text-transform: uppercase;">Rental
+                                                Assistance</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="#" class="text-decoration-none text-dark hover-red">Rent
+                                                        Near Workplace</a></li>
+                                                <li><a href="{% url 'properties:top_agents' %}"
+                                                        class="text-decoration-none text-dark hover-red">Find an
+                                                        Agent</a></li>
+                                                <li><a href="#" class="text-decoration-none text-dark hover-red">Ask a
+                                                        Question</a></li>
+                                                <li><a href="#" class="text-decoration-none text-dark hover-red">Set a
+                                                        Property Alert</a></li>
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}"
+                                                        class="text-decoration-none text-dark hover-red">Explore
+                                                        Localities</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="text-center border-top pt-3 mt-2">
+                                        <a href="{% url 'properties:encyclopedia_properties' %}?listing_type=2"
+                                            class="text-decoration-none text-muted fw-bold small">View More</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown dropdown-hover position-static">
+                            <a class="nav-link text-dark fw-semibold dropdown-toggle border-0" href="#"
+                                data-bs-toggle="dropdown">
+                                Sell <i class="fas fa-chevron-down ms-1" style="font-size: 8px;"></i>
+                            </a>
+                            <div class="dropdown-menu border-0 shadow-lg mt-0 w-100 p-0 mega-menu-content"
+                                style="border-top: 1px solid #eee !important;">
+                                <div class="container py-4">
+                                    <div class="row">
+                                        <!-- For Owner -->
+                                        <div class="col-md-4 border-end pe-4">
+                                            <h6 class="fw-bold mb-3 small mega-menu-title"
+                                                style="text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                                                For Owner</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                {% if user.role == 'agent' or user.role == 'builder' or not user.is_authenticated %}
+                                                <li>
+                                                    <a href="{% url 'dashboard:add_property' %}"
+                                                        class="text-decoration-none text-dark hover-red">
+                                                        Post Property <span
+                                                            class="badge bg-warning text-dark ms-2 rounded-pill px-2 py-1"
+                                                            style="font-size: 9px;">FREE</span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                                <li><a href="{% url 'dashboard:home' %}"
+                                                        class="text-decoration-none text-dark hover-red">My
+                                                        Dashboard</a></li>
+                                                <li>
+                                                    <hr class="my-2" style="border-color: #eee;">
+                                                </li>
+                                                <li><a href="#" class="text-decoration-none text-dark hover-red">Sell /
+                                                        Rent Ad Packages</a></li>
+                                                <li><span class="text-muted small">+91 9870 260 930 / <a href="#"
+                                                            class="text-secondary text-decoration-underline hover-red">Email
+                                                            Us</a></span></li>
+                                            </ul>
+                                        </div>
+                                        <!-- For Agent & Builder -->
+                                        <div class="col-md-4 border-end px-4">
+                                            <h6 class="fw-bold mb-3 small mega-menu-title"
+                                                style="text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                                                For Agent & Builder</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'dashboard:home' %}"
+                                                        class="text-decoration-none text-dark hover-red">My
+                                                        Dashboard</a></li>
+                                                <li><a href="#"
+                                                        class="text-decoration-none text-dark hover-red">Developer
+                                                        Lounge</a></li>
+                                                <li><a href="#" class="text-decoration-none text-dark hover-red">Sales
+                                                        Enquiry</a></li>
+                                                <li>
+                                                    <hr class="my-2" style="border-color: #eee;">
+                                                </li>
+                                                <li><a href="#" class="text-decoration-none text-dark hover-red">Ad
+                                                        Packages</a></li>
+                                                <li><span class="text-muted small">0120-5135525</span></li>
+                                            </ul>
+                                        </div>
+                                        <!-- Selling Tools -->
+                                        <div class="col-md-4 ps-4">
+                                            <h6 class="fw-bold mb-3 small mega-menu-title"
+                                                style="text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                                                Selling Tools</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="#"
+                                                        class="text-decoration-none text-dark hover-red">Property
+                                                        Valuation</a></li>
+                                                <li><a href="{% url 'properties:top_agents' %}"
+                                                        class="text-decoration-none text-dark hover-red">Find an
+                                                        Agent</a></li>
+                                                <li><a href="{% url 'properties:rates_trends' %}"
+                                                        class="text-decoration-none text-dark hover-red">Rates &
+                                                        Trends</a></li>
+                                                <li><a href="{% url 'properties:propworth' %}"
+                                                        class="text-decoration-none text-dark hover-red">PropWorth</a>
+                                                </li>
+                                                <li><a href="#"
+                                                        class="text-decoration-none text-dark hover-red">Digipin</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown dropdown-hover position-static">
+                            <a class="nav-link text-dark fw-semibold dropdown-toggle border-0" href="#"
+                                data-bs-toggle="dropdown">
+                                Home Loans <i class="fas fa-chevron-down ms-1" style="font-size: 8px;"></i>
+                            </a>
+                            <div class="dropdown-menu border-0 shadow-lg mt-0 w-100 p-0 mega-menu-content"
+                                style="border-top: 1px solid #eee !important;">
+                                <div class="container py-4">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <!-- Apply Now -->
+                                        <div class="mega-column border-end pe-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Apply Now</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:loan_application' %}"
+                                                        class="text-decoration-none text-muted hover-red">Home Loans</a>
+                                                </li>
+                                                <li><a href="{% url 'properties:loan_application' %}?type=balance-transfer"
+                                                        class="text-decoration-none text-muted hover-red">Balance
+                                                        Transfer</a></li>
+                                                <li><a href="{% url 'properties:loan_application' %}?type=lap"
+                                                        class="text-decoration-none text-muted hover-red">Loan Against
+                                                        Property</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- Partners -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Partners</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?bank=sbi"
+                                                        class="text-decoration-none text-muted hover-red">SBI Home
+                                                        Loan</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?bank=hdfc"
+                                                        class="text-decoration-none text-muted hover-red">HDFC Home
+                                                        Loan</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?bank=axis"
+                                                        class="text-decoration-none text-muted hover-red">Axis Home
+                                                        Loan</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?bank=kotak"
+                                                        class="text-decoration-none text-muted hover-red">Kotak Home
+                                                        Loan</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}"
+                                                        class="text-decoration-none text-muted hover-red">More Banks</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!-- Explore -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Explore</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:emi_calculator' %}"
+                                                        class="text-decoration-none text-muted hover-red">Home Loan EMI
+                                                        Calculator</a></li>
+                                                <li><a href="{% url 'properties:loan_eligibility' %}"
+                                                        class="text-decoration-none text-muted hover-red">Home Loan
+                                                        Eligibility</a></li>
+                                                <li><a href="{% url 'properties:stamp_duty' %}"
+                                                        class="text-decoration-none text-muted hover-red">Stamp Duty
+                                                        Calculator</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}"
+                                                        class="text-decoration-none text-muted hover-red">Get Home Loan
+                                                        Offers</a></li>
+                                                <li><a href="#" class="text-decoration-none text-muted hover-red">Check
+                                                        Credit Score</a></li>
+                                                <li><a href="#" class="text-decoration-none text-muted hover-red">Home
+                                                        Loan Prepayment</a></li>
+                                                <li><a href="#" class="text-decoration-none text-muted hover-red">Home
+                                                        Loan Interest Rate</a></li>
+                                                <li><a href="{% url 'properties:tips_guides' %}"
+                                                        class="text-decoration-none text-muted hover-red">Home Loan
+                                                        Documentation</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- EMI Calculators -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">EMI
+                                                Calculators</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:emi_calculator' %}"
+                                                        class="text-decoration-none text-muted hover-red">SBI Home Loan
+                                                        EMI Calculator</a></li>
+                                                <li><a href="{% url 'properties:emi_calculator' %}"
+                                                        class="text-decoration-none text-muted hover-red">HDFC Home Loan
+                                                        EMI Calculator</a></li>
+                                                <li><a href="{% url 'properties:emi_calculator' %}"
+                                                        class="text-decoration-none text-muted hover-red">Axis Bank Home
+                                                        Loan EMI Calculator</a></li>
+                                                <li><a href="{% url 'properties:emi_calculator' %}"
+                                                        class="text-decoration-none text-muted hover-red">Bajaj Home
+                                                        Loan EMI Calculator</a></li>
+                                                <li><a href="{% url 'properties:emi_calculator' %}"
+                                                        class="text-decoration-none text-muted hover-red">Kotak Home
+                                                        Loan EMI Calculator</a></li>
+                                                <li><a href="{% url 'properties:emi_calculator' %}"
+                                                        class="text-decoration-none text-muted hover-red">L&T Home Loan
+                                                        EMI Calculator</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- Interest Rates -->
+                                        <div class="mega-column ps-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Interest Rates
+                                            </h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?view=interest&sbi=1"
+                                                        class="text-decoration-none text-muted hover-red">SBI Home Loan
+                                                        Interest Rate</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?view=interest&hdfc=1"
+                                                        class="text-decoration-none text-muted hover-red">HDFC Home Loan
+                                                        Interest Rate</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?view=interest&axis=1"
+                                                        class="text-decoration-none text-muted hover-red">Axis Bank Home
+                                                        Loan Interest Rate</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?view=interest&kotak=1"
+                                                        class="text-decoration-none text-muted hover-red">Kotak Bank
+                                                        Interest Rate</a></li>
+                                                <li><a href="{% url 'properties:bank_offers_detail' %}?view=interest&lt=1"
+                                                        class="text-decoration-none text-muted hover-red">L&T Home Loan
+                                                        Interest Rate</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown dropdown-hover">
+                            <a class="nav-link text-dark fw-semibold dropdown-toggle border-0" href="#"
+                                data-bs-toggle="dropdown">
+                                Home Interiors <i class="fas fa-chevron-down ms-1" style="font-size: 8px;"></i>
+                            </a>
+                            <div class="dropdown-menu border-0 shadow-lg p-3"
+                                style="min-width: 280px; border-radius: 12px; margin-top: 0;">
+                                <div class="px-2 pb-2 mb-2 border-bottom">
+                                    <span class="small fw-bold text-muted text-uppercase"
+                                        style="letter-spacing: 0.5px; font-size: 11px;">Explore our services</span>
+                                </div>
+                                <a class="dropdown-item py-2 px-2 hover-red rounded"
+                                    href="{% url 'properties:home_interiors' %}"
+                                    style="font-size: 14px; font-weight: 500; color: #333;">
+                                    Home Interior Design Services
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown dropdown-hover position-static">
+                            <a class="nav-link text-dark fw-semibold dropdown-toggle border-0" href="#"
+                                data-bs-toggle="dropdown">
+                                PB Advice <span class="badge bg-warning text-dark ms-1"
+                                    style="font-size: 9px; vertical-align: middle;">NEW</span> <i
+                                    class="fas fa-chevron-down ms-1" style="font-size: 8px;"></i>
+                            </a>
+                            <div class="dropdown-menu border-0 shadow-lg mt-0 w-100 p-0 mega-menu-content"
+                                style="border-top: 1px solid #eee !important;">
+                                <div class="container py-4">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <!-- Interior Designers Near You -->
+                                        <div class="mega-column border-end pe-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Interior
+                                                Designers Near You</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:home_interiors' %}"
+                                                        class="text-decoration-none text-muted hover-red">Interior
+                                                        Designers Delhi</a></li>
+                                                <li><a href="{% url 'properties:home_interiors' %}"
+                                                        class="text-decoration-none text-muted hover-red">Interior
+                                                        Designers Gurgaon</a></li>
+                                                <li><a href="{% url 'properties:home_interiors' %}"
+                                                        class="text-decoration-none text-muted hover-red">Interior
+                                                        Designers Bangalore</a></li>
+                                                <li><a href="{% url 'properties:home_interiors' %}"
+                                                        class="text-decoration-none text-muted hover-red">Interior
+                                                        Designers Pune</a></li>
+                                                <li><a href="{% url 'properties:home_interiors' %}"
+                                                        class="text-decoration-none text-muted hover-red">Interior
+                                                        Designers Hyderabad</a></li>
+                                                <li><a href="{% url 'properties:home_interiors' %}"
+                                                        class="text-decoration-none text-muted hover-red">Interior
+                                                        Designers Chennai</a></li>
+                                                <li><a href="{% url 'properties:home_interiors' %}"
+                                                        class="text-decoration-none text-muted hover-red">Interior
+                                                        Designers Mumbai</a></li>
+                                                <li><a href="{% url 'properties:home_interiors' %}"
+                                                        class="text-decoration-none text-muted hover-red">Interior
+                                                        Designers Noida</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- MB Research -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">MB Research
+                                            </h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'blog:post_list' %}"
+                                                        class="text-decoration-none text-muted hover-red">Research &
+                                                        Insights</a></li>
+                                                <li><a href="{% url 'properties:rates_trends' %}"
+                                                        class="text-decoration-none text-muted hover-red">Prop Index</a>
+                                                </li>
+                                                <li><a href="#" class="text-decoration-none text-muted hover-red">Find
+                                                        Pincode</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- Services & Tools -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Services &
+                                                Tools</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:propworth' %}"
+                                                        class="text-decoration-none text-muted hover-red">Property
+                                                        Valuation</a></li>
+                                                <li><a href="{% url 'properties:rates_trends' %}"
+                                                        class="text-decoration-none text-muted hover-red">Rates &
+                                                        Trends</a></li>
+                                                <li><a href="{% url 'properties:area_converter' %}"
+                                                        class="text-decoration-none text-muted hover-red">Area
+                                                        Converter</a></li>
+                                                <li><a href="{% url 'properties:propworth' %}"
+                                                        class="text-decoration-none text-muted hover-red">PropWorth</a>
+                                                </li>
+                                                <li><a href="{% url 'properties:buy_vs_rent' %}"
+                                                        class="text-decoration-none text-muted hover-red">Buy v/s
+                                                        Rent</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- Localities & Projects -->
+                                        <div class="mega-column border-end px-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">Localities &
+                                                Projects</h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li><a href="{% url 'properties:encyclopedia_properties' %}?city=Ahmedabad"
+                                                        class="text-decoration-none text-muted hover-red">Localities in
+                                                        Ahmedabad</a></li>
+                                                <li><a href="#"
+                                                        class="text-decoration-none text-muted hover-red">Locality
+                                                        Review Videos</a></li>
+                                                <li><a href="#"
+                                                        class="text-decoration-none text-muted hover-red">Compare
+                                                        Localities</a></li>
+                                                <li><a href="{% url 'properties:new_projects' %}"
+                                                        class="text-decoration-none text-muted hover-red">New Projects
+                                                        in Ahmedabad</a></li>
+                                                <li><a href="#"
+                                                        class="text-decoration-none text-muted hover-red">Project Review
+                                                        Videos</a></li>
+                                                <li><a href="#" class="text-decoration-none text-muted hover-red">MBTV
+                                                        Videos</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- News & Blogs -->
+                                        <div class="mega-column ps-3" style="width: 20%;">
+                                            <h6 class="fw-bold mb-3 small text-uppercase mega-menu-title">News & Blogs
+                                            </h6>
+                                            <ul class="list-unstyled small lh-lg">
+                                                <li>
+                                                    <a href="{% url 'blog:post_list' %}"
+                                                        class="text-decoration-none text-muted hover-red">
+                                                        Latest Blogs
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'blog:post_list' %}?category=lifestyle"
+                                                        class="text-decoration-none text-muted hover-red">
+                                                        Lifestyle
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'blog:post_list' %}?category=policies"
+                                                        class="text-decoration-none text-muted hover-red">
+                                                        Policies
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'blog:post_list' %}?category=finance-legal"
+                                                        class="text-decoration-none text-muted hover-red">
+                                                        Finance & Legal
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'blog:post_list' %}?category=city-blogs"
+                                                        class="text-decoration-none text-muted hover-red">
+                                                        City Blogs
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'blog:post_list' %}?category=property-news"
+                                                        class="text-decoration-none text-muted hover-red">
+                                                        Property News
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'blog:post_list' %}?category=trending-web-stories"
+                                                        class="text-decoration-none text-muted hover-red">
+                                                        Trending Web Stories
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown dropdown-hover">
+                            <a class="nav-link text-dark fw-semibold dropdown-toggle border-0" href="#"
+                                data-bs-toggle="dropdown">
+                                Help <i class="fas fa-chevron-down ms-1" style="font-size: 8px;"></i>
+                            </a>
+                            <div class="dropdown-menu border-0 shadow-lg p-3"
+                                style="min-width: 200px; border-radius: 12px; margin-top: 0;">
+                                <a class="dropdown-item py-2 px-3 hover-red rounded mb-1" href="#"
+                                    style="font-size: 14px; font-weight: 500; color: #333;">
+                                    Help Center
+                                </a>
+                                <a class="dropdown-item py-2 px-3 hover-red rounded mb-1" href="#"
+                                    style="font-size: 14px; font-weight: 500; color: #333;">
+                                    Sales Enquiry
+                                </a>
+                                <a class="dropdown-item py-2 px-3 hover-red rounded" href="#"
+                                    style="font-size: 14px; font-weight: 500; color: #333;">
+                                    Chat with Us
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    {% endif %}
+
+    <!-- Messages -->
+    <div class="container mt-3">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-white pt-5 pb-4 mt-5" style="background-color: #ff6600;">
+        <div class="container text-center text-md-start">
+            <div class="row text-center text-md-start">
+                <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                    <h5 class="mb-4 fw-bold" style="letter-spacing: -1px; font-size: 1.5rem; color: white;">
+                        propertybazaar
+                    </h5>
+                    <p>The most trusted real estate platform. Find your dream property with ease.</p>
+                </div>
+                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 font-weight-bold">Quick Links</h5>
+                    <p><a href="{% url 'properties:property_list' %}"
+                            class="text-white text-decoration-none">Listings</a></p>
+                    <p><a href="#" class="text-white text-decoration-none">About Us</a></p>
+                    <p><a href="{% url 'blog:post_list' %}" class="text-white text-decoration-none">Blog</a></p>
+                </div>
+                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 font-weight-bold">Contact</h5>
+                    <p><i class="fas fa-home me-3"></i> kalawad road , rajkot</p>
+                    <p><i class="fas fa-envelope me-3"></i> info@propertybazaar.com</p>
+                    <p><i class="fas fa-phone me-3"></i> +91 8780102206</p>
+                </div>
+            </div>
+            <hr class="mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-7 col-lg-8">
+                    <p>© 2026 All rights reserved by: <strong class="text-primary">PropertyBazaar</strong></p>
+                </div>
+                <div class="col-md-5 col-lg-4">
+                    <div class="text-center text-md-end">
+                        <ul class="list-unstyled list-inline">
+                            <li class="list-inline-item"><a href="#" class="btn-floating btn-sm text-white"
+                                    style="font-size: 23px;"><i class="fab fa-facebook"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="btn-floating btn-sm text-white"
+                                    style="font-size: 23px;"><i class="fab fa-twitter"></i></a></li>
+                            <li class="list-inline-item"><a href="#" class="btn-floating btn-sm text-white"
+                                    style="font-size: 23px;"><i class="fab fa-instagram"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    {% block extra_js %}
+    {% if user.is_authenticated %}
+    <script>
+        setInterval(function () {
+            fetch("{% url 'accounts:ping_time' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            }).catch(e => console.log(e));
+        }, 60000); // Ping every 1 minute
+    </script>
+    {% endif %}
+    {% endblock %}
+</body>
+
+</html>
+
+
+

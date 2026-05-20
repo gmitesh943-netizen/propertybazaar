@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Stamp Duty & Registration Calculator - PropertyBazaar{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-blue: #0d6efd;
+        --light-bg: #f8f9fa;
+    }
+    .calculator-card {
+        background: #fff;
+        border-radius: 24px;
+        border: 1px solid #f0f0f0;
+        box-shadow: 0 15px 45px rgba(0,0,0,0.05);
+        padding: 40px;
+    }
+    .result-panel {
+        background: var(--light-bg);
+        border-radius: 20px;
+        padding: 30px;
+    }
+    .cost-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 1px dashed #dee2e6;
+    }
+    .cost-item:last-child { border-bottom: none; }
+    .total-cost {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--primary-blue);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h6 class="text-primary fw-bold text-uppercase">Financial Tools</h6>
+        <h1 class="fw-black display-5 mb-3">Stamp Duty <span class="text-primary">& Registration</span></h1>
+        <p class="text-muted col-lg-6 mx-auto">Calculate the estimated stamp duty and registration charges for your property purchase across different states in India.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="calculator-card h-100">
+                <form id="stampDutyForm">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Property Value (₹)</label>
+                        <input type="number" id="propValue" class="form-control form-control-lg rounded-3" value="5000000" step="100000">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">State</label>
+                        <select id="stateSelect" class="form-select form-select-lg rounded-3">
+                            <option value="6" data-reg="1">Maharashtra (6%)</option>
+                            <option value="5" data-reg="1">Karnataka (5%)</option>
+                            <option value="7" data-reg="1">Tamil Nadu (7%)</option>
+                            <option value="6" data-reg="1" selected>Gujarat (4.9% + 1%)</option>
+                            <option value="6" data-reg="1">Delhi (6%)</option>
+                            <option value="7" data-reg="1.1">Uttar Pradesh (7%)</option>
+                            <option value="5" data-reg="1">Haryana (5%)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Gender of Owner</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check border p-3 rounded-3 flex-fill text-center">
+                                <input class="form-check-input d-none" type="radio" name="gender" id="male" value="male" checked>
+                                <label class="form-check-label w-100 cursor-pointer" for="male">
+                                    <i class="fas fa-male mb-2 fs-4 d-block"></i> Male
+                                </label>
+                            </div>
+                            <div class="form-check border p-3 rounded-3 flex-fill text-center">
+                                <input class="form-check-input d-none" type="radio" name="gender" id="female" value="female">
+                                <label class="form-check-label w-100 cursor-pointer" for="female">
+                                    <i class="fas fa-female mb-2 fs-4 d-block"></i> Female
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="calculator-card h-100">
+                <h4 class="fw-bold mb-4">Cost Breakdown</h4>
+                <div class="result-panel mb-4">
+                    <div class="cost-item">
+                        <span class="text-muted">Stamp Duty Charges</span>
+                        <span class="fw-bold" id="stampValue">₹ 3,00,000</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="text-muted">Registration Fees</span>
+                        <span class="fw-bold" id="regValue">₹ 50,000</span>
+                    </div>
+                    <div class="pt-4 mt-2 border-top text-center">
+                        <p class="small text-muted text-uppercase mb-1">Total Estimated Cost</p>
+                        <div class="total-cost" id="totalValue">₹ 3,50,000</div>
+                    </div>
+                </div>
+                <div class="alert alert-info border-0 rounded-4">
+                    <small><i class="fas fa-info-circle me-2"></i> Note: These are estimated values. Actual charges may vary based on municipal limits and property type.</small>
+                </div>
+                <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold mt-3 shadow-sm">Download Breakdown PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const propValueInput = document.getElementById('propValue');
+        const stateSelect = document.getElementById('stateSelect');
+        const genderRadios = document.querySelectorAll('name="gender"');
+        
+        const stampValue = document.getElementById('stampValue');
+        const regValue = document.getElementById('regValue');
+        const totalValue = document.getElementById('totalValue');
+
+        function formatCurrency(num) {
+            return '₹ ' + new Intl.NumberFormat('en-IN').format(Math.round(num));
+        }
+
+        function calculate() {
+            const val = parseFloat(propValueInput.value) || 0;
+            const selectedOption = stateSelect.options[stateSelect.selectedIndex];
+            let stampRate = parseFloat(selectedOption.value);
+            const regRate = parseFloat(selectedOption.dataset.reg);
+            
+            const isFemale = document.getElementById('female').checked;
+            if (isFemale) stampRate -= 1; // 1% discount for female owners in most states
+
+            const stamp = (val * stampRate) / 100;
+            const reg = (val * regRate) / 100;
+            const total = stamp + reg;
+
+            stampValue.innerText = formatCurrency(stamp);
+            regValue.innerText = formatCurrency(reg);
+            totalValue.innerText = formatCurrency(total);
+        }
+
+        [propValueInput, stateSelect].forEach(el => el.addEventListener('input', calculate));
+        document.getElementById('male').addEventListener('change', calculate);
+        document.getElementById('female').addEventListener('change', calculate);
+
+        calculate();
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+

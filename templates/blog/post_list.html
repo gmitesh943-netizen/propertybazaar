@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load property_tags %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+{% endblock %}
+
+
+{% block title %}Real Estate Blog & Insights - PropertyBazaar{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --brand-red: #ff385c; /* Modern bright red */
+        --brand-red-dark: #bd1e59;
+        --bg-glass: rgba(255, 255, 255, 0.7);
+        --accent-blue: #4a90e2;
+    }
+
+    body {
+        background-color: #fcfcfc;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .blog-hero {
+        background: radial-gradient(circle at top right, #333, #000);
+        padding: 100px 0;
+        color: white;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blog-hero::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,56,92,0.1) 0%, transparent 70%);
+        animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0); }
+        50% { transform: translate(5%, 5%); }
+        100% { transform: translate(0, 0); }
+    }
+
+    .post-card {
+        border: none;
+        border-radius: 24px;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--bg-glass);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        height: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+
+    .post-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .post-thumbnail-wrapper {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        margin: 15px;
+    }
+
+    .post-thumbnail {
+        height: 260px;
+        object-fit: cover;
+        width: 100%;
+        transition: transform 0.8s ease;
+    }
+
+    .post-card:hover .post-thumbnail {
+        transform: scale(1.1);
+    }
+
+    .post-badge {
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        padding: 6px 14px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        color: #ff6600;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        z-index: 2;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .post-card:hover .post-badge {
+        background: var(--brand-red);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .post-content {
+        padding: 30px;
+    }
+
+
+    .post-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        line-height: 1.3;
+        margin-bottom: 15px;
+        color: #ff6600;
+        transition: color 0.3s;
+    }
+
+    .post-card:hover .post-title {
+        color: var(--brand-red);
+    }
+
+    .post-meta {
+        font-size: 0.85rem;
+        color: #888;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .post-excerpt {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 30px;
+        line-height: 1.7;
+    }
+
+    .sidebar-card {
+        border: none;
+        border-radius: 24px;
+        padding: 30px;
+        background: #fff;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+
+    .tag-link {
+        display: inline-block;
+        padding: 8px 18px;
+        background: #f8f8f8;
+        color: #666;
+        border-radius: 14px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .tag-link:hover, .tag-link.active {
+        background: var(--brand-red) !important;
+        color: white !important;
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px rgba(255, 56, 92, 0.2);
+    }
+
+    .create-post-btn {
+        background: linear-gradient(45deg, var(--brand-red), var(--brand-red-dark));
+        color: white;
+        border: none;
+        padding: 15px 35px;
+        border-radius: 16px;
+        font-weight: 800;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .create-post-btn:hover {
+        transform: scale(1.1);
+        color: white;
+        box-shadow: 0 15px 30px rgba(255, 56, 92, 0.3);
+    }
+
+    .pagination .page-link {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px !important;
+        border: none;
+        margin: 0 5px;
+        font-weight: 700;
+        color: #333;
+        transition: all 0.3s;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: var(--brand-red);
+        box-shadow: 0 10px 20px rgba(255, 56, 92, 0.2);
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="blog-hero">
+    <div class="container text-center">
+        {% if current_category %}
+            {% for cat in categories %}
+                {% if cat.slug == current_category %}
+                    <h1 class="display-4 fw-bold mb-3"><i class="{{ cat.icon }} me-3"></i>{{ cat.name }}</h1>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <h1 class="display-4 fw-bold mb-3">Expert Real Estate Insights</h1>
+        {% endif %}
+        <p class="lead opacity-75 mb-4">Your go-to source for property trends, investment advice, and home decor.</p>
+        {% if user.is_staff %}
+            <a href="{% url 'blog:post_create' %}" class="btn create-post-btn shadow-lg">
+                <i class="fas fa-plus-circle me-2"></i> Create New Post
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <!-- Main Blog List -->
+        <div class="col-lg-8">
+            {% if posts %}
+                <div class="row g-4">
+                    {% for post in posts %}
+                        <div class="col-md-12">
+                            <article class="post-card d-md-flex">
+                                <div class="post-thumbnail-wrapper col-md-5">
+                                    <a href="{% url 'blog:post_detail' post.slug %}">
+                                        {% if post.thumbnail %}
+                                            <img src="{{ post.thumbnail.url }}" class="post-thumbnail" alt="{{ post.title }}">
+                                        {% else %}
+                                            <div class="post-thumbnail d-flex align-items-center justify-content-center" 
+                                                 style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                                                <div class="text-center opacity-50">
+                                                    <i class="fas fa-newspaper fa-3x mb-2 text-primary"></i>
+                                                    <p class="small fw-bold text-uppercase mb-0">Insights</p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                    </a>
+                                    {% if post.category %}
+                                        <span class="post-badge" style="background: var(--brand-red);">{{ post.category.name }}</span>
+                                    {% elif post.tags.exists %}
+                                        <span class="post-badge">{{ post.tags.first.name }}</span>
+                                    {% endif %}
+                                    
+                                    {% if user.is_staff %}
+                                        <div class="admin-actions">
+                                            <a href="{% url 'blog:post_update' post.slug %}" class="admin-btn" title="Edit"><i class="fas fa-edit"></i></a>
+                                            <a href="{% url 'blog:post_delete' post.slug %}" class="admin-btn text-primary" title="Delete"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="post-content col-md-7">
+                                    <div class="post-meta">
+                                        <span><i class="far fa-user me-1 text-primary"></i> {{ post.author.get_full_name|default:post.author.email }}</span>
+                                        <span><i class="far fa-calendar-alt me-1 text-primary"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                    <h2 class="post-title">
+                                        <a href="{% url 'blog:post_detail' post.slug %}" class="text-decoration-none text-dark">{{ post.title }}</a>
+                                    </h2>
+                                    <div class="post-excerpt">
+                                        {{ post.content|striptags|truncatewords:30 }}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a href="{% url 'blog:post_detail' post.slug %}" class="text-primary fw-bold text-decoration-none">
+                                            READ ARTICLE <i class="fas fa-arrow-right ms-1"></i>
+                                        </a>
+                                        <span class="small text-muted"><i class="far fa-clock me-1"></i> {{ post.content|striptags|wordcount|divide:200|floatformat:0|default:5 }} min</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                    <nav class="mt-5">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item"><a class="page-link shadow-sm border-0 rounded-circle mx-1" href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}"><i class="fas fa-chevron-left"></i></a></li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                    <a class="page-link shadow-sm border-0 rounded-circle mx-1" href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item"><a class="page-link shadow-sm border-0 rounded-circle mx-1" href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}"><i class="fas fa-chevron-right"></i></a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+                    <img src="{% static 'img/no-posts.svg' %}" alt="No posts" style="width: 200px; opacity: 0.1;" class="mb-4">
+                    <h3 class="fw-bold text-muted">No posts found in this category.</h3>
+                    <p class="text-muted">Stay tuned for upcoming property insights!</p>
+                    <a href="{% url 'blog:post_list' %}" class="btn btn-outline-primary rounded-pill px-4 mt-3">View All Posts</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sidebar-card">
+                <h3 class="h5 fw-bold mb-4 border-bottom pb-3">Search Insights</h3>
+                <form action="{% url 'blog:post_list' %}" method="GET">
+                    <div class="input-group bg-light rounded-3 p-1">
+                        <input type="text" name="q" class="form-control border-0 bg-transparent shadow-none" placeholder="Find articles...">
+                        <button class="btn btn-primary rounded-3 px-3" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="sidebar-card">
+                <h3 class="h5 fw-bold mb-4 border-bottom pb-3">Categories</h3>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'blog:post_list' %}" class="tag-link {% if not current_category %}active{% endif %}" style="{% if not current_category %}background: var(--brand-red); color: white;{% endif %}">All Posts</a>
+                    {% for cat in categories %}
+                        <a href="{% url 'blog:post_list' %}?category={{ cat.slug }}" class="tag-link {% if current_category == cat.slug %}active{% endif %}" style="{% if current_category == cat.slug %}background: var(--brand-red); color: white;{% endif %}">
+                            <i class="{{ cat.icon }} me-1"></i> {{ cat.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="sidebar-card bg-primary text-white border-0 overflow-hidden position-relative">
+                <div class="position-relative z-index-1">
+                    <h3 class="h5 fw-bold mb-3">Newsletter</h3>
+                    <p class="small opacity-75 mb-4">Get the latest property market updates delivered to your inbox weekly.</p>
+                    <form action="#">
+                        <input type="email" class="form-control border-0 mb-2 py-2 fs-7" placeholder="Email Address">
+                        <button class="btn btn-light w-100 fw-bold py-2">Join Journal</button>
+                    </form>
+                </div>
+                <i class="fas fa-envelope position-absolute" style="bottom: -20px; right: -20px; font-size: 100px; opacity: 0.1;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

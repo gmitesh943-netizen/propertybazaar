@@ -1,0 +1,1510 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}PropertyBazaar - Find Your Perfect Home{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let map;
+        let marker;
+        const cityInput = document.getElementById('cityInput');
+        const locateMeBtn = document.getElementById('locateMeBtn');
+        const latInput = document.getElementById('latInput');
+        const lngInput = document.getElementById('lngInput');
+        const defaultArea = 'Ahmedabad';
+
+        function resetLocateButton() {
+            locateMeBtn.innerHTML = '<i class="fas fa-crosshairs text-primary"></i>';
+        }
+
+        function setManualLocationMessage(message) {
+            cityInput.value = '';
+            cityInput.placeholder = message;
+            cityInput.focus();
+        }
+
+        function fillAreaFromCoordinates(lat, lng) {
+            latInput.value = lat;
+            lngInput.value = lng;
+
+            return fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.address || {};
+                    const area = address.suburb || address.neighbourhood || address.residential || address.city_district || address.city || defaultArea;
+                    cityInput.value = area;
+                    return area;
+                })
+                .catch(() => {
+                    cityInput.value = defaultArea;
+                    return defaultArea;
+                });
+        }
+
+        // Initialize Map when modal opens
+        const mapModal = document.getElementById('mapModal');
+        mapModal.addEventListener('shown.bs.modal', function () {
+            if (!map) {
+                // Default center to Ahmedabad
+                map = L.map('map').setView([23.0225, 72.5714], 12);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                map.on('click', function(e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    
+                    if (marker) {
+                        marker.setLatLng(e.latlng);
+                    } else {
+                        marker = L.marker(e.latlng).addTo(map);
+                    }
+
+                    fillAreaFromCoordinates(lat, lng);
+                });
+            }
+            map.invalidateSize();
+        });
+
+        // Geolocation Logic
+        locateMeBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                locateMeBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-primary"></i>';
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
+                    fillAreaFromCoordinates(lat, lng).finally(resetLocateButton);
+                }, function(error) {
+                    if (error.code === error.PERMISSION_DENIED) {
+                        setManualLocationMessage('Allow location permission or enter area manually');
+                    } else {
+                        setManualLocationMessage('Could not get location. Enter area manually');
+                    }
+                    resetLocateButton();
+                });
+            } else {
+                setManualLocationMessage('Location not supported. Enter area manually');
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-wrapper">
+    <div class="container">
+        <h1 class="hero-title">Welcome back! Start your <strong>#PataBadloLifeBadlo</strong> Journey</h1>
+        
+        <div class="search-tabs">
+            <a href="{% url 'properties:property_list' %}?listing_type=sale" class="tab-link active">Buy</a>
+            <a href="{% url 'properties:property_list' %}?listing_type=rent" class="tab-link">Rent</a>
+            <a href="#" class="tab-link special">PropertyBazaar Homes</a>
+            <a href="#" class="tab-link">PG</a>
+            <a href="#" class="tab-link">Plot</a>
+            <a href="#" class="tab-link">Commercial</a>
+            <a href="#" class="tab-link">Post Free Property Ad</a>
+        </div>
+
+        <form action="{% url 'properties:property_list' %}" method="GET" class="main-search-container">
+            <div class="search-input-group">
+                <div class="search-input-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" id="cityInput" name="city" placeholder="Enter Area (e.g. Satellite)" list="areaOptions">
+                    <input type="hidden" id="latInput" name="lat">
+                    <input type="hidden" id="lngInput" name="lng">
+                    <datalist id="areaOptions">
+                        {% for area in areas %}
+                            <option value="{{ area }}">
+                        {% endfor %}
+                    </datalist>
+                    <button type="button" class="btn btn-sm btn-light border-0 ms-2" data-bs-toggle="modal" data-bs-target="#mapModal" title="Pick from Map">
+                        <i class="fas fa-map text-primary"></i>
+                    </button>
+                    <button type="button" id="locateMeBtn" class="btn btn-sm btn-light border-0 ms-1" title="Use My Current Location">
+                        <i class="fas fa-crosshairs text-primary"></i>
+                    </button>
+                </div>
+                <div class="search-input-item">
+                    <i class="fas fa-home"></i>
+                    <select name="type">
+                        <option value="">Flat</option>
+                        {% for type in property_types %}
+                            <option value="{{ type.slug }}">{{ type.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="search-input-item">
+                    <i class="fas fa-rupee-sign"></i>
+                    <select name="max_price">
+                        <option value="">Budget</option>
+                        <option value="500000">Under 5 Lac</option>
+                        <option value="1000000">Under 10 Lac</option>
+                        <option value="5000000">Under 50 Lac</option>
+                        <option value="10000000">Under 1 Cr</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn-search-main">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
+    </div>
+</section>
+
+<div class="container py-5">
+    <!-- Property Slider Section -->
+    <section class="mb-5 position-relative">
+        <h2 class="section-title mb-4">Handpicked Properties in Ahmedabad</h2>
+        
+        <!-- Lun Dev Style Slider -->
+        <div class="carousel-custom">
+            <!-- list item -->
+            <div class="list">
+                {% for property in featured_properties %}
+                <div class="item">
+                    {% if property.images.all %}
+                    <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80" alt="default">
+                    {% endif %}
+                    <div class="content">
+                        <div class="author">PropertyBazaar</div>
+                        <div class="title text-truncate">{{ property.title }}</div>
+                        <div class="topic">{{ property.property_type.name }}</div>
+                        <div class="des">
+                            {{ property.description|truncatewords:20|striptags }}
+                            <br><br>
+                            <span class="text-warning fs-5 fw-bold">₹ {{ property.price|intcomma }}</span> | {{ property.city }}, Ahmedabad
+                        </div>
+                        <div class="buttons">
+                            <a href="{% url 'properties:property_detail' property.slug %}" class="btn btn-primary">SEE MORE</a>
+                            <a href="{% url 'inquiries:send_inquiry' property.id %}" class="btn btn-outline-light">INQUIRE</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- thumbnail -->
+            <div class="thumbnail">
+                {% for property in featured_properties %}
+                <div class="item">
+                    {% if property.images.all %}
+                    <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" alt="default">
+                    {% endif %}
+                    <div class="content">
+                        <div class="title text-truncate">{{ property.title }}</div>
+                        <div class="description">₹ {{ property.price|intword }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- arrows -->
+            <div class="arrows">
+                <button id="prev"><i class="fas fa-chevron-left"></i></button>
+                <button id="next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <!-- time running -->
+            <div class="time"></div>
+        </div>
+
+        <style>
+            /* Carousel Custom Styles (Lun Dev Style) */
+            .carousel-custom {
+                height: 600px;
+                width: 100%;
+                overflow: hidden;
+                position: relative;
+                border-radius: 20px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                background-color: #000;
+            }
+            .carousel-custom .list .item {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                inset: 0 0 0 0;
+            }
+            .carousel-custom .list .item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                filter: brightness(0.6);
+            }
+            .carousel-custom .list .item .content {
+                position: absolute;
+                top: 20%;
+                width: 1140px;
+                max-width: 80%;
+                left: 5%;
+                transform: translateX(0);
+                padding-right: 30%;
+                box-sizing: border-box;
+                color: #fff;
+                text-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            }
+            .carousel-custom .list .item .author {
+                font-weight: bold;
+                letter-spacing: 5px;
+                text-transform: uppercase;
+                color: #fff;
+            }
+            .carousel-custom .list .item .title,
+            .carousel-custom .list .item .topic {
+                font-size: 3em;
+                font-weight: bold;
+                line-height: 1.2em;
+            }
+            .carousel-custom .list .item .topic {
+                color: #ff6600;
+            }
+            .carousel-custom .list .item .buttons {
+                display: flex;
+                gap: 15px;
+                margin-top: 25px;
+            }
+            .carousel-custom .list .item .buttons .btn {
+                padding: 10px 25px;
+                font-weight: bold;
+                letter-spacing: 2px;
+                border-radius: 5px;
+            }
+            .carousel-custom .list .item .buttons .btn-outline-light {
+                border: 2px solid #fff;
+                background: transparent;
+            }
+            .carousel-custom .list .item .buttons .btn-outline-light:hover {
+                background: #fff;
+                color: #000;
+            }
+            /* thumbnail */
+            .carousel-custom .thumbnail {
+                position: absolute;
+                bottom: 50px;
+                left: 50%;
+                width: max-content;
+                z-index: 100;
+                display: flex;
+                gap: 20px;
+            }
+            .carousel-custom .thumbnail .item {
+                width: 150px;
+                height: 220px;
+                flex-shrink: 0;
+                position: relative;
+            }
+            .carousel-custom .thumbnail .item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 20px;
+                border: 2px solid #fff;
+            }
+            .carousel-custom .thumbnail .content {
+                color: #fff;
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                background: rgba(0,0,0,0.5);
+                padding: 5px;
+                border-radius: 10px;
+            }
+            .carousel-custom .thumbnail .content .title {
+                font-weight: bold;
+                font-size: 12px;
+            }
+            .carousel-custom .thumbnail .content .description {
+                font-weight: 300;
+                font-size: 11px;
+            }
+            /* arrows */
+            .carousel-custom .arrows {
+                position: absolute;
+                top: 80%;
+                left: 5%;
+                z-index: 100;
+                display: flex;
+                gap: 15px;
+            }
+            .carousel-custom .arrows button {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                background-color: rgba(255,255,255,0.2);
+                border: none;
+                color: #fff;
+                font-size: 18px;
+                transition: 0.3s;
+                cursor: pointer;
+            }
+            .carousel-custom .arrows button:hover {
+                background-color: #fff;
+                color: #000;
+            }
+            /* animation */
+            .carousel-custom .list .item:nth-child(1) {
+                z-index: 1;
+            }
+            .carousel-custom .list .item:nth-child(1) .content .author,
+            .carousel-custom .list .item:nth-child(1) .content .title,
+            .carousel-custom .list .item:nth-child(1) .content .topic,
+            .carousel-custom .list .item:nth-child(1) .content .des,
+            .carousel-custom .list .item:nth-child(1) .content .buttons {
+                transform: translateY(50px);
+                filter: blur(20px);
+                opacity: 0;
+                animation: showContent 0.5s 1s linear 1 forwards;
+            }
+            @keyframes showContent{
+                to{
+                    transform: translateY(0);
+                    filter: blur(0);
+                    opacity: 1;
+                }
+            }
+            .carousel-custom .list .item:nth-child(1) .content .title { animation-delay: 1.2s !important; }
+            .carousel-custom .list .item:nth-child(1) .content .topic { animation-delay: 1.4s !important; }
+            .carousel-custom .list .item:nth-child(1) .content .des { animation-delay: 1.6s !important; }
+            .carousel-custom .list .item:nth-child(1) .content .buttons { animation-delay: 1.8s !important; }
+            
+            /* next click */
+            .carousel-custom.next .list .item:nth-child(1) img {
+                width: 150px;
+                height: 220px;
+                position: absolute;
+                bottom: 50px;
+                left: 50%;
+                border-radius: 30px;
+                animation: showImage 0.5s linear 1 forwards;
+            }
+            @keyframes showImage {
+                to {
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 0;
+                }
+            }
+            .carousel-custom.next .thumbnail .item:nth-last-child(1) {
+                overflow: hidden;
+                animation: showThumbnail 0.5s linear 1 forwards;
+            }
+            @keyframes showThumbnail {
+                from { width: 0; opacity: 0; }
+            }
+            .carousel-custom.next .thumbnail {
+                animation: effectNext 0.5s linear 1 forwards;
+            }
+            @keyframes effectNext {
+                from { transform: translateX(150px); }
+            }
+            
+            /* running time */
+            .carousel-custom .time {
+                position: absolute;
+                z-index: 100;
+                width: 0%;
+                height: 5px;
+                background-color: #ff6600;
+                left: 0;
+                top: 0;
+            }
+            .carousel-custom.next .time, .carousel-custom.prev .time {
+                animation: runningTime 1.5s linear 1 forwards;
+            }
+            @keyframes runningTime {
+                from { width: 100%; }
+                to { width: 0; }
+            }
+            
+            /* prev click */
+            .carousel-custom.prev .list .item:nth-child(2) { z-index: 2; }
+            .carousel-custom.prev .list .item:nth-child(2) img {
+                animation: outFrame 0.5s linear 1 forwards;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+            }
+            @keyframes outFrame {
+                to {
+                    width: 150px;
+                    height: 220px;
+                    bottom: 50px;
+                    left: 50%;
+                    border-radius: 20px;
+                }
+            }
+            .carousel-custom.prev .thumbnail .item:nth-child(1) {
+                overflow: hidden;
+                opacity: 0;
+                animation: showThumbnail 0.5s linear 1 forwards;
+            }
+            .carousel-custom.prev .list .item:nth-child(2) .content .author,
+            .carousel-custom.prev .list .item:nth-child(2) .content .title,
+            .carousel-custom.prev .list .item:nth-child(2) .content .topic,
+            .carousel-custom.prev .list .item:nth-child(2) .content .des,
+            .carousel-custom.prev .list .item:nth-child(2) .content .buttons {
+                animation: contentOut 1.5s linear 1 forwards !important;
+            }
+            @keyframes contentOut {
+                to {
+                    transform: translateY(-150px);
+                    filter: blur(20px);
+                    opacity: 0;
+                }
+            }
+            .snapshot-box { background: #fff; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+            .snapshot-stats { display: flex; justify-content: space-between; margin-top: 30px; border-top: 1px solid #eee; pt-4; }
+            .snap-stat { text-align: center; padding: 20px; flex: 1; }
+            .snap-stat:not(:last-child) { border-end: 1px solid #eee; }
+            
+            /* Custom Tool Icons */
+            .tool-icon-box {
+                font-size: 2.5rem;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                height: 60px;
+                color: #333;
+            }
+            .tool-icon-red { color: #ff6600; }
+            .tool-card {
+                background: #fff;
+                border-radius: 20px;
+                padding: 30px;
+                height: 100%;
+                border: 1px solid #f0f0f0;
+                transition: all 0.3s ease;
+            }
+            .tool-card:hover {
+                border-color: #ff6600;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+                transform: translateY(-5px);
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                let nextDom = document.getElementById('next');
+                let prevDom = document.getElementById('prev');
+                let carouselDom = document.querySelector('.carousel-custom');
+                let SliderDom = carouselDom.querySelector('.list');
+                let thumbnailBorderDom = document.querySelector('.thumbnail');
+                let timeDom = document.querySelector('.time');
+
+                let timeRunning = 1500;
+                let timeAutoNext = 5000;
+                let runTimeOut;
+                let runNextAuto;
+
+                // Move first thumbnail to end to sync with main slider initially if needed
+                // But the Lun Dev design usually assumes item 1 is active, and thumbnail 1 is the next one.
+                // We will move the first item in thumbnail to the end to match Lun Dev logic.
+                let thumbnailItemsDom = thumbnailBorderDom.querySelectorAll('.item');
+                if (thumbnailItemsDom.length > 0) {
+                    thumbnailBorderDom.appendChild(thumbnailItemsDom[0]);
+                }
+
+                if(nextDom) {
+                    nextDom.onclick = function() { showSlider('next'); }
+                }
+                if(prevDom) {
+                    prevDom.onclick = function() { showSlider('prev'); }
+                }
+
+                runNextAuto = setTimeout(() => {
+                    if(nextDom) nextDom.click();
+                }, timeAutoNext);
+
+                function showSlider(type) {
+                    let SliderItemsDom = SliderDom.querySelectorAll('.item');
+                    let thumbnailItemsDom = document.querySelectorAll('.carousel-custom .thumbnail .item');
+                    
+                    if (type === 'next') {
+                        SliderDom.appendChild(SliderItemsDom[0]);
+                        thumbnailBorderDom.appendChild(thumbnailItemsDom[0]);
+                        carouselDom.classList.add('next');
+                    } else {
+                        SliderDom.prepend(SliderItemsDom[SliderItemsDom.length - 1]);
+                        thumbnailBorderDom.prepend(thumbnailItemsDom[thumbnailItemsDom.length - 1]);
+                        carouselDom.classList.add('prev');
+                    }
+
+                    clearTimeout(runTimeOut);
+                    runTimeOut = setTimeout(() => {
+                        carouselDom.classList.remove('next');
+                        carouselDom.classList.remove('prev');
+                    }, timeRunning);
+
+                    clearTimeout(runNextAuto);
+                    runNextAuto = setTimeout(() => {
+                        if(nextDom) nextDom.click();
+                    }, timeAutoNext);
+                }
+            });
+        </script>
+    </section>
+
+    <!-- Featured Properties (MagicBricks Cards) -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0">Featured Projects</h2>
+            <a href="{% url 'properties:new_projects' %}" class="text-primary fw-bold text-decoration-none">See all Projects <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for property in featured_properties|slice:":2" %}
+            <div class="col-md-6">
+                <a href="{% url 'properties:property_detail' property.slug %}" class="text-decoration-none text-dark">
+                    <div class="project-card h-100">
+                        <div class="project-img-wrapper">
+                            {% if property.images.all %}
+                            <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                            {% else %}
+                            <img src="https://images.unsplash.com/photo-1545324418-f1d3ac157359?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="{{ property.title }}">
+                            {% endif %}
+                        </div>
+                        <div class="project-footer bg-white border-top">
+                            <div class="project-info-text">
+                                <h5 class="fw-bold mb-0">{{ property.title }}</h5>
+                                <p class="text-muted small mb-0">by {{ property.owner.get_full_name|default:"PropertyBazaar Group" }}</p>
+                                <p class="text-muted small mb-0">{{ property.city }}, Ahmedabad</p>
+                            </div>
+                            <div class="text-end">
+                                <p class="fw-bold mb-0">{{ property.bedrooms }} BHK {{ property.property_type.name }}</p>
+                                <p class="text-primary fw-bold mb-0">₹ {{ property.price|intcomma }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Popular Owner Properties -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0">Popular Owner Properties</h2>
+            <a href="#" class="text-primary fw-bold text-decoration-none">See all Properties <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="row g-3">
+            {% for property in popular_owner_properties %}
+            <div class="col-md-3">
+                <div class="property-mini-card">
+                    {% if property.images.all %}
+                    <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="default">
+                    {% endif %}
+                    <div class="p-3">
+                        <h6 class="fw-bold mb-1">{{ property.bedrooms }} BHK Flat</h6>
+                        <p class="text-primary fw-bold mb-1">₹{{ property.price|intword }} | {{ property.area }} sqft</p>
+                        <p class="text-muted small mb-2">{{ property.city }}</p>
+                        <span class="badge bg-light text-dark">Ready to Move</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Builders/Companies Section -->
+    <section class="mb-5 pb-5 mt-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold display-5">Make the <span class="text-primary">Right Choice</span></h1>
+            <p class="text-muted fs-5">Gets you to hear directly from the leaders of these brands before you make your big decision.</p>
+        </div>
+
+        <div class="row g-4">
+            {% for builder in builders %}
+            <div class="col-md-4">
+                <div class="builder-card border shadow-sm rounded-4 bg-white p-4 h-100 d-flex flex-column">
+                    <!-- Company Logo -->
+                    <div class="text-center mb-4 pb-4 border-bottom">
+                        {% if builder.logo %}
+                        <img src="{{ builder.logo.url }}" alt="{{ builder.name }}" style="max-height: 50px; max-width: 100%; object-fit: contain;">
+                        {% else %}
+                        <h4 class="fw-bold text-secondary">{{ builder.name }}</h4>
+                        {% endif %}
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="row g-0 mb-4 pb-4 border-bottom">
+                        <div class="col-6 border-end text-center pe-2">
+                            <h5 class="fw-bold mb-1">{{ builder.stat1_value }}</h5>
+                            <p class="text-muted small mb-0">{{ builder.stat1_label }}</p>
+                        </div>
+                        <div class="col-6 text-center ps-2">
+                            <h5 class="fw-bold mb-1">{{ builder.stat2_value }}</h5>
+                            <p class="text-muted small mb-0">{{ builder.stat2_label }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Leader Info -->
+                    <div class="mt-auto d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            {% if builder.leader_image %}
+                            <img src="{{ builder.leader_image.url }}" alt="{{ builder.leader_name }}" class="rounded-circle me-3" style="width: 45px; height: 45px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                                <i class="fas fa-user text-secondary"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h6 class="fw-bold mb-0" style="font-size: 14px;">{{ builder.leader_name }}</h6>
+                                <p class="text-muted mb-0" style="font-size: 11px;">{{ builder.leader_designation }}</p>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; padding: 0;">
+                            <i class="fas fa-chevron-right" style="font-size: 12px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Extra Services Banner -->
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: linear-gradient(to right, #fff, #f8f9fa);">
+                    <div class="row g-0">
+                        <div class="col-md-8 p-4">
+                            <h4 class="fw-bold text-primary">Transform your Home with</h4>
+                            <h2 class="fw-bold mb-3">PropertyInteriors</h2>
+                            <ul class="list-unstyled small mb-4">
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Compare 300+ top verified brands</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Calculate costs instantly</li>
+                            </ul>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary rounded-pill px-4">Get Designers</button>
+                                <button class="btn btn-outline-primary rounded-pill px-4">Get Quote</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-100 h-100" style="object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: #333; color: #fff;">
+                    <div class="p-4">
+                        <h4 class="fw-bold"><i class="fas fa-shield-alt text-primary me-2"></i> PropWorth</h4>
+                        <h2 class="fw-bold mb-3">Check Estimated Price of any Property</h2>
+                        <p class="small opacity-75">98% accuracy backed by ML models</p>
+                        <div class="input-group mb-3" style="max-width: 400px;">
+                            <input type="text" class="form-control rounded-start-pill border-0" placeholder="Enter Project/Locality">
+                            <button class="btn btn-primary rounded-end-pill px-4">Get Estimate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Explore Localities Section -->
+    <section class="mb-5">
+        <div class="row g-4 align-items-stretch">
+            <div class="col-md-3">
+                <div class="explore-card h-100">
+                    <h2 class="fw-bold mb-3">Explore Popular Localities in Ahmedabad</h2>
+                    <p class="text-muted small mb-0">Find properties in the most sought-after areas</p>
+                </div>
+            </div>
+            {% for locality in popular_localities %}
+            <div class="col-md-3">
+                <a href="{% url 'properties:property_list' %}?city={{ locality.name|urlencode }}&listing_type=sale" class="locality-card text-decoration-none text-dark h-100 d-flex flex-column">
+                    <div>
+                        <h6 class="fw-bold mb-1">{{ locality.name }} <i class="fas fa-external-link-alt small opacity-50 ms-2"></i></h6>
+                        <p class="text-muted small mb-2">
+                            {% if locality.min_price_per_sqft and locality.max_price_per_sqft %}
+                                ₹{{ locality.min_price_per_sqft|floatformat:0 }} - {{ locality.max_price_per_sqft|floatformat:0 }} per sqft
+                            {% else %}
+                                {{ locality.total_count }} listed properties
+                            {% endif %}
+                        </p>
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="text-warning small me-2"><i class="fas fa-star"></i> {{ locality.rating }}</span>
+                            <span class="text-muted small">{{ locality.review_count }} Reviews</span>
+                        </div>
+                    </div>
+                    <div class="locality-badge mt-auto">{{ locality.property_count }} Properties for Sale <i class="fas fa-arrow-right ms-1"></i></div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-md-9">
+                <div class="locality-card h-100 d-flex align-items-center">
+                    <p class="text-muted mb-0">Add published properties with locations to generate popular locality insights.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Advice & Tools Section -->
+    <section class="mb-5 py-4">
+        <h2 class="fw-bold mb-4" style="font-size: 1.8rem; border-left: 4px solid #ff6600; padding-left: 15px;">Advice & Tools</h2>
+        <div class="row g-4">
+            <!-- EMI Calculator -->
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'properties:emi_calculator' %}" class="advice-card text-center">
+                    <div class="advice-icon mx-auto mb-3">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">EMI</h6>
+                    <p class="text-muted small mb-0">Calculator</p>
+                </a>
+            </div>
+            <!-- Eligibility Calculator -->
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'properties:loan_eligibility' %}" class="advice-card text-center">
+                    <div class="advice-icon mx-auto mb-3">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">Eligibility</h6>
+                    <p class="text-muted small mb-0">Check Limit</p>
+                </a>
+            </div>
+            <!-- Stamp Duty -->
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'properties:stamp_duty' %}" class="advice-card text-center">
+                    <div class="advice-icon mx-auto mb-3">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">Stamp Duty</h6>
+                    <p class="text-muted small mb-0">Fees Calc</p>
+                </a>
+            </div>
+            <!-- Interiors Estimator -->
+            <div class="col-md-4 col-lg-2">
+                <a href="javascript:void(0)" class="advice-card text-center" data-bs-toggle="modal" data-bs-target="#interiorsModal">
+                    <div class="advice-icon mx-auto mb-3">
+                        <i class="fas fa-couch"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">Interiors</h6>
+                    <p class="text-muted small mb-0">Budget Tool</p>
+                </a>
+            </div>
+            <!-- PropWorth -->
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'properties:propworth' %}" class="advice-card text-center">
+                    <div class="advice-icon mx-auto mb-3">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">PropWorth</h6>
+                    <p class="text-muted small mb-0">Valuation</p>
+                </a>
+            </div>
+            <!-- Rates & Trends -->
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'properties:rates_trends' %}" class="advice-card text-center">
+                    <div class="advice-icon mx-auto mb-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">Trends</h6>
+                    <p class="text-muted small mb-0">Market Analysis</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .advice-card {
+            display: block;
+            background: #fff;
+            padding: 35px 25px;
+            border-radius: 20px;
+            text-decoration: none !important;
+            color: #222 !important;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+        .advice-card:hover {
+            border-color: #ff6600;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+            transform: translateY(-8px);
+        }
+        .advice-icon {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: #333;
+            position: relative;
+            width: fit-content;
+        }
+        .advice-icon .dot {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            width: 8px;
+            height: 8px;
+            background: #ff6600;
+            border-radius: 50%;
+        }
+        .advice-card h6 {
+            font-size: 1.1rem;
+            letter-spacing: -0.2px;
+        }
+        .advice-card p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            min-height: 45px;
+        }
+        .view-now {
+            color: #ff6600;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            transition: gap 0.3s;
+        }
+        .advice-card:hover .view-now {
+            gap: 5px;
+        }
+
+        /* Full Screen Modal */
+        .modal-fullscreen-custom {
+            padding: 0 !important;
+        }
+        .modal-fullscreen-custom .modal-dialog {
+            width: 100%;
+            max-width: none;
+            height: 100%;
+            margin: 0;
+        }
+        .modal-fullscreen-custom .modal-content {
+            height: 100%;
+            border: 0;
+            border-radius: 0;
+        }
+        .form-control-minimal {
+            border: none;
+            border-bottom: 1px solid #ddd;
+            border-radius: 0;
+            padding: 15px 0;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+        .form-control-minimal:focus {
+            outline: none;
+            border-bottom: 2px solid #ff6600;
+        }
+        .glass-marketing {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+
+    <!-- Interiors Estimator Modal -->
+    <div class="modal fade modal-fullscreen-custom" id="interiorsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="row g-0 h-100">
+                    <!-- Left Side: Form -->
+                    <div class="col-lg-6 p-5 d-flex flex-column bg-white">
+                        <div class="mb-5">
+                            <button type="button" class="btn btn-link text-dark p-0 text-decoration-none" data-bs-dismiss="modal">
+                                <i class="fas fa-arrow-left fs-5"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="mx-auto w-100" style="max-width: 450px;">
+                            <h2 class="fw-normal mb-5" style="font-size: 2rem;">Where can we send estimation?</h2>
+                            
+                            <form id="interiorsLeadForm" onsubmit="handleInteriorsSubmit(event)">
+                                <div class="mb-4">
+                                    <input type="text" class="form-input-line" placeholder="Name" required>
+                                </div>
+                                
+                                <div class="d-flex align-items-end mb-4 gap-3">
+                                    <div style="min-width: 100px;">
+                                        <select class="form-input-line border-0">
+                                            <option>IND +91</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <input type="tel" class="form-input-line" placeholder="Mobile Number" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <input type="email" class="form-input-line" placeholder="Email ID" required>
+                                    <div class="text-primary small mt-1" style="display: none;">Please enter correct email.</div>
+                                </div>
+                                
+                                <div class="mb-5">
+                                    <select class="form-input-line border-0" required>
+                                        <option selected disabled>Select City</option>
+                                        <option>Ahmedabad</option>
+                                        <option>Mumbai</option>
+                                        <option>Pune</option>
+                                        <option>Bangalore</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" id="submitBtn" class="btn btn-primary btn-lg rounded-pill px-5 py-2 fw-bold" style="background-color: #ff6600; border: none; font-size: 0.9rem;">
+                                    Get Free Estimate
+                                </button>
+                                
+                                <div id="successMsg" class="mt-4 text-success fw-bold" style="display: none;">
+                                    <i class="fas fa-check-circle me-2"></i> Thank you! Our designer will contact you shortly.
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <script>
+                            function handleInteriorsSubmit(event) {
+                                event.preventDefault();
+                                const btn = document.getElementById('submitBtn');
+                                const msg = document.getElementById('successMsg');
+                                
+                                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Sending...';
+                                btn.disabled = true;
+                                
+                                // Simulate API call
+                                setTimeout(() => {
+                                    btn.style.display = 'none';
+                                    msg.style.display = 'block';
+                                    
+                                    // Close modal after 2 seconds
+                                    setTimeout(() => {
+                                        const modalElement = document.getElementById('interiorsModal');
+                                        const modal = bootstrap.Modal.getInstance(modalElement);
+                                        modal.hide();
+                                        
+                                        // Reset form for next time
+                                        setTimeout(() => {
+                                            document.getElementById('interiorsLeadForm').reset();
+                                            btn.innerHTML = 'Get Free Estimate';
+                                            btn.disabled = false;
+                                            btn.style.display = 'block';
+                                            msg.style.display = 'none';
+                                        }, 500);
+                                    }, 2000);
+                                }, 1500);
+                            }
+                        </script>
+                        
+                        <div class="mt-auto text-muted x-small">
+                            By continuing, you agree to our <a href="#" class="text-decoration-none text-muted fw-bold">Terms & Conditions</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side: Image & Why Choose Us -->
+                    <div class="col-lg-6 position-relative d-none d-lg-block" style="background: #f8f9fa; min-height: 500px;">
+                        <img src="{% static 'img/interior_banner.png' %}" class="w-100 h-100 object-fit-cover position-absolute" style="top: 0; left: 0; z-index: 1;" alt="Interior">
+                        
+                        <div class="position-relative p-5 h-100 d-flex align-items-center" style="z-index: 2;">
+                            <div class="glass-box-premium p-5 ms-4">
+                                <h4 class="fw-bold mb-4 text-dark">Why choose us?</h4>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-4 d-flex align-items-start">
+                                        <div class="icon-circle-red me-3">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Verified Designers</h6>
+                                            <p class="text-muted small mb-0">Top-rated experts for your dream home</p>
+                                        </div>
+                                    </li>
+                                    <li class="mb-4 d-flex align-items-start">
+                                        <div class="icon-circle-red me-3">
+                                            <i class="fas fa-rupee-sign"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Right Price Guarantee</h6>
+                                            <p class="text-muted small mb-0">Compare quotes & pay the best price</p>
+                                        </div>
+                                    </li>
+                                    <li class="mb-0 d-flex align-items-start">
+                                        <div class="icon-circle-red me-3">
+                                            <i class="fas fa-percentage"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Exclusive Offers</h6>
+                                            <p class="text-muted small mb-0">Save more with discount coupons</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .glass-box-premium {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            max-width: 400px;
+        }
+        .icon-circle-red {
+            width: 32px;
+            height: 32px;
+            background: #ff6600;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .form-input-line {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+            font-size: 1rem;
+            color: #333;
+            background: transparent;
+            transition: all 0.3s;
+        }
+        .form-input-line:focus {
+            outline: none;
+            border-bottom-color: #ff6600;
+            padding-left: 5px;
+        }
+        .x-small { font-size: 0.75rem; }
+    </style>
+
+    <!-- Property Snapshot -->
+    <section class="mb-5">
+        <h2 class="section-title">Ahmedabad Property Snapshot</h2>
+        <div class="snapshot-box">
+            <p class="text-muted small mb-0" id="ahmedabadSnapshot">
+                <span class="snapshot-short">The starting point of freedom struggle of Gandhi ji, Ahmedabad is situated on the banks of River Sabarmati. Being fifth largest city, it is considered to be the best city to live in India. The weather in Ahmedabad is semi-arid hot and the average temperature here lies between 12 to 41 degrees. Ahmedabad is the city of startups as the startup culture here has gained a lot of attention.</span>
+                <span class="snapshot-full d-none">The starting point of freedom struggle of Gandhi ji, Ahmedabad is situated on the banks of River Sabarmati. Being fifth largest city, it considered to be the best city to live in India. The weather in Ahmedabad is semi- arid hot and the average temperature here lies between 12 to 41 degrees. Ahmedabad is the city of startups as the startup culture here has gained a lot of attention. Introduction of Incubation and Entrepreneurship (CIIE), Centre for Innovation and entrepreneurial programs like Saturday, Startup etc. has given a lot of encouragement to startup companies in Ahmedabad. The top MNCs in Ahmedabad are Tata Consultancy Services, IBM, Oracle, Cybage, Wipro and a lot more. Not only this, Ahmedabad is also a home to the best colleges and schools in India and the top MBA colleges in Ahmedabad are Indian Institute of Management (IIM), Shanti Business School, Mudra Institute of Communication etc. Relocating to Ahmedabad is a good idea if you are looking for a job or wish to apply for higher- education or if you wish to tantalize your taste buds with traditional Gujarati food like Khandvi, Gujarati Samosa and Kadhi, Dhokla, Methi ka Thepla, etc. The known builders in Ahmedabad are offering flats, shops, houses for sale in Ahmedabad. The top localities of Ahmedabad are Bopal and South Bopal, Satellite, SG Highway, Prahlad Nagar, Gota and a lot more. You can also explore flats for rent in Ahmedabad, PG accommodation in Ahmedabad for girls and boys in, etc. at Magicbricks.</span>
+                <a href="#" class="text-primary text-decoration-none fw-bold" id="snapshotToggle">Read more</a>
+            </p>
+            <div class="snapshot-stats">
+                <div class="snap-stat">
+                    <h4>{{ stats.low_budget }}+</h4>
+                    <p class="text-muted x-small text-uppercase">Low Budget Flats in Ahmedabad</p>
+                </div>
+                <div class="snap-stat">
+                    <h4>{{ stats.for_sale }}+</h4>
+                    <p class="text-muted x-small text-uppercase">Properties for Sale in Ahmedabad</p>
+                </div>
+                <div class="snap-stat">
+                    <h4>{{ stats.agents }}+</h4>
+                    <p class="text-muted x-small text-uppercase">Residential Property Agents in Ahmedabad</p>
+                </div>
+                <div class="snap-stat">
+                    <h4>{{ stats.projects }}+</h4>
+                    <p class="text-muted x-small text-uppercase">Residential Projects in Ahmedabad</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('snapshotToggle');
+            const shortText = document.querySelector('#ahmedabadSnapshot .snapshot-short');
+            const fullText = document.querySelector('#ahmedabadSnapshot .snapshot-full');
+
+            if (!toggle || !shortText || !fullText) return;
+
+            toggle.addEventListener('click', function(event) {
+                event.preventDefault();
+                const isExpanded = !fullText.classList.contains('d-none');
+                fullText.classList.toggle('d-none', isExpanded);
+                shortText.classList.toggle('d-none', !isExpanded);
+                toggle.textContent = isExpanded ? 'Read more' : 'Read less';
+            });
+        });
+    </script>
+
+    <!-- Post Free Banner (MagicBricks Style) -->
+    <div class="post-free-banner-mb">
+        <div class="post-free-banner-inner">
+            <div>
+                <h3 class="fw-bold mb-1">Post your Property for <span class="fst-italic" style="font-family: Georgia, serif;">free</span></h3>
+                <p class="mb-0" style="color: #555; font-size: 0.95rem;">List it on PropertyBazaar and get genuine leads</p>
+            </div>
+            <a href="{% url 'dashboard:add_property' %}" class="btn-post-free">
+                Post Property <span class="badge-free">FREE</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Property Options Section (MagicBricks Style) -->
+    <section class="footer-links-section">
+        <h2 class="section-title">Property Options in Ahmedabad</h2>
+        <div class="prop-options-tabs mb-4">
+            <button class="prop-tab active" onclick="switchPropTab(this, 'buy')">Buy</button>
+            <button class="prop-tab" onclick="switchPropTab(this, 'rent')">Rent</button>
+        </div>
+        <div id="prop-tab-buy" class="prop-tab-content">
+            <div class="row g-4">
+                <div class="col-md-3 link-column">
+                    <h6>Popular Residential Searches</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&listing_type=sale">Property for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=apartment&listing_type=sale">Flats in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=apartment&bedrooms=1&listing_type=sale">Studio Apartments in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=house&listing_type=sale">Resale House in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=house&listing_type=sale">House for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=villa&listing_type=sale">Villas for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=penthouse&listing_type=sale">Penthouse in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&possession=ready_to_move&listing_type=sale">Ready To Move Flats in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=apartment&listing_type=sale">Resale Flats in Ahmedabad</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 link-column">
+                    <h6>Popular BHK Searches</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=1&type=apartment&listing_type=sale">1 BHK Flats in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=2&type=apartment&listing_type=sale">2 BHK Flats in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=3&type=apartment&listing_type=sale">3 BHK Flats in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=4&type=apartment&listing_type=sale">4 BHK Flats in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=1&type=house&listing_type=sale">1 BHK House for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=2&type=house&listing_type=sale">2 BHK House for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=3&type=house&listing_type=sale">3 BHK House for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=4&type=house&listing_type=sale">4 BHK House for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=1&type=villa&listing_type=sale">1 BHK Villa for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=2&type=villa&listing_type=sale">2 BHK Villa for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=3&type=villa&listing_type=sale">3 BHK Villa for Sale in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=4&type=villa&listing_type=sale">4 BHK Villa for Sale in Ahmedabad</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 link-column">
+                    <h6>Popular Flat Searches</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'properties:property_list' %}?city=South+Bopal&type=apartment&listing_type=sale">Flats for Sale in South Bopal</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Gota&type=apartment&listing_type=sale">Flats for Sale in Gota</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Chandkheda&type=apartment&listing_type=sale">Flats for Sale in Chandkheda</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Science+City&type=apartment&listing_type=sale">Flats for Sale in Science City</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Shilaj&type=apartment&listing_type=sale">Flats for Sale in Shilaj</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Thaltej&type=apartment&listing_type=sale">Flats for Sale in Thaltej</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Satellite&type=apartment&listing_type=sale">Flats for Sale in Satellite</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Bopal&type=apartment&listing_type=sale">Flats for Sale in Bopal</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Narolgam&type=apartment&listing_type=sale">Flats for Sale in Narolgam</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Sanand&type=apartment&listing_type=sale">Flats for Sale in Sanand</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 link-column">
+                    <h6>Popular House Searches</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'properties:property_list' %}?city=Chandkheda&type=house&listing_type=sale">House for Sale in Chandkheda</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Maninagar&type=house&listing_type=sale">House for Sale in Maninagar</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Naroda&type=house&listing_type=sale">House for Sale in Naroda</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Nikol&type=house&listing_type=sale">House for Sale in Nikol</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Bopal&type=house&listing_type=sale">House for Sale in Bopal</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Vastral&type=house&listing_type=sale">House for Sale in Vastral</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=South+Bopal&type=house&listing_type=sale">House for Sale in South Bopal</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ghodasar&type=house&listing_type=sale">House for Sale in Ghodasar</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Thaltej&type=house&listing_type=sale">House for Sale in Thaltej</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ghatlodiya&type=house&listing_type=sale">House for Sale in Ghatlodiya</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="prop-tab-rent" class="prop-tab-content" style="display:none;">
+            <div class="row g-4">
+                <div class="col-md-3 link-column">
+                    <h6>Popular Residential Rentals</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=apartment&listing_type=rent">Flats for Rent in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=house&listing_type=rent">House for Rent in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=1&listing_type=rent">Studio for Rent in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&type=villa&listing_type=rent">Villas for Rent in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&furnishing=fully-furnished&listing_type=rent">Furnished Flats in Ahmedabad</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 link-column">
+                    <h6>Popular BHK Rentals</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=1&type=apartment&listing_type=rent">1 BHK Flats for Rent in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=2&type=apartment&listing_type=rent">2 BHK Flats for Rent in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=3&type=apartment&listing_type=rent">3 BHK Flats for Rent in Ahmedabad</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Ahmedabad&bedrooms=4&type=apartment&listing_type=rent">4 BHK Flats for Rent in Ahmedabad</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 link-column">
+                    <h6>Flats for Rent by Area</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'properties:property_list' %}?city=Satellite&type=apartment&listing_type=rent">Flats for Rent in Satellite</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Bodakdev&type=apartment&listing_type=rent">Flats for Rent in Bodakdev</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Vastrapur&type=apartment&listing_type=rent">Flats for Rent in Vastrapur</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Prahlad+Nagar&type=apartment&listing_type=rent">Flats for Rent in Prahlad Nagar</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 link-column">
+                    <h6>House for Rent by Area</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'properties:property_list' %}?city=Bopal&type=house&listing_type=rent">House for Rent in Bopal</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Gota&type=house&listing_type=rent">House for Rent in Gota</a></li>
+                        <li><a href="{% url 'properties:property_list' %}?city=Thaltej&type=house&listing_type=rent">House for Rent in Thaltej</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Recommended for You (MagicBricks Style) -->
+        <div class="recommended-section mt-5 pt-4 border-top">
+            <h2 class="section-title mb-4">Recommended for You</h2>
+
+            <!-- Scrollable Underline Tabs -->
+            <div class="rec-tabs-mb mb-4">
+                <div class="rec-tabs-scroll">
+                    <button class="rec-tab-mb" onclick="switchRecTab(this, 'blogs')">Top Blogs</button>
+                    <button class="rec-tab-mb active" onclick="switchRecTab(this, 'govt')">Govt Portal</button>
+                    <button class="rec-tab-mb" onclick="switchRecTab(this, 'celebrity')">Celebrity Homes</button>
+                    <button class="rec-tab-mb" onclick="switchRecTab(this, 'decor')">Home Decor</button>
+                    <button class="rec-tab-mb" onclick="switchRecTab(this, 'stories')">Visual Stories</button>
+                    <button class="rec-tab-mb" onclick="switchRecTab(this, 'land')">Land Records</button>
+                    <button class="rec-tab-mb" onclick="switchRecTab(this, 'housing')">Housing Schemes</button>
+                    <button class="rec-tab-mb" onclick="switchRecTab(this, 'rera')">RERA</button>
+                    <button class="rec-tab-mb" onclick="switchRecTab(this, 'tools')">Tools &amp; Calculators</button>
+                </div>
+            </div>
+
+            <!-- Govt Portal Tab -->
+            <div id="rec-tab-govt" class="rec-tab-content-mb">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="https://igrs.ap.gov.in/" target="_blank" class="rec-link">IGRS AP</a></li>
+                        <li><a href="https://tnreginet.gov.in/" target="_blank" class="rec-link">TNREGINET</a></li>
+                        <li><a href="https://registration.telangana.gov.in/" target="_blank" class="rec-link">IGRS Telangana</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="https://epanjiyan.rajasthan.gov.in/" target="_blank" class="rec-link">IGRS Rajasthan</a></li>
+                        <li><a href="https://tsmdc.telangana.gov.in/" target="_blank" class="rec-link">TSMDC</a></li>
+                        <li><a href="https://bhumijankari.bihar.gov.in/" target="_blank" class="rec-link">IGRS Bihar</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="https://jharbhoomi.jharkhand.gov.in/" target="_blank" class="rec-link">IGRS Jharkhand</a></li>
+                        <li><a href="https://unifiedportal-mem.epfindia.gov.in/" target="_blank" class="rec-link">EPFO UAN Login</a></li>
+                        <li><a href="https://igrsup.gov.in/" target="_blank" class="rec-link">IGRSUP</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="https://mpigr.gov.in/" target="_blank" class="rec-link">MPIGR</a></li>
+                        <li><a href="https://igrmaharashtra.gov.in/" target="_blank" class="rec-link">IGR Maharashtra</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- Top Blogs Tab -->
+            <div id="rec-tab-blogs" class="rec-tab-content-mb" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="{% url 'blog:post_list' %}" class="rec-link">Property Investment Tips 2024</a></li>
+                        <li><a href="{% url 'blog:post_list' %}" class="rec-link">Home Loan Guide for First-Time Buyers</a></li>
+                        <li><a href="{% url 'blog:post_list' %}" class="rec-link">How to Verify Property Documents</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="{% url 'blog:post_list' %}" class="rec-link">Top Areas to Invest in Ahmedabad</a></li>
+                        <li><a href="{% url 'blog:post_list' %}" class="rec-link">RERA: What Buyers Must Know</a></li>
+                        <li><a href="{% url 'blog:post_list' %}" class="rec-link">Ready to Move vs Under Construction</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="{% url 'blog:post_list' %}" class="rec-link">5 Tips for NRI Property Buyers</a></li>
+                        <li><a href="{% url 'blog:post_list' %}" class="rec-link">Vastu Tips for New Home</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- Celebrity Homes Tab -->
+            <div id="rec-tab-celebrity" class="rec-tab-content-mb" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="#" class="rec-link">Amitabh Bachchan's Mumbai Bungalow</a></li>
+                        <li><a href="#" class="rec-link">Virat Kohli's Delhi Home</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="#" class="rec-link">Mukesh Ambani's Antilia</a></li>
+                        <li><a href="#" class="rec-link">Deepika Padukone's Apartment</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- Home Decor Tab -->
+            <div id="rec-tab-decor" class="rec-tab-content-mb" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="#" class="rec-link">Modern Living Room Ideas 2024</a></li>
+                        <li><a href="#" class="rec-link">Budget Kitchen Makeover Tips</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="#" class="rec-link">Small Bedroom Decor Ideas</a></li>
+                        <li><a href="#" class="rec-link">Balcony Garden Design Guide</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- Visual Stories Tab -->
+            <div id="rec-tab-stories" class="rec-tab-content-mb" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="#" class="rec-link">Top New Projects in Ahmedabad</a></li>
+                        <li><a href="#" class="rec-link">Luxury Homes Under 1 Crore</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- Land Records Tab -->
+            <div id="rec-tab-land" class="rec-tab-content-mb" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="https://anyror.gujarat.gov.in/" target="_blank" class="rec-link">AnyROR Gujarat</a></li>
+                        <li><a href="https://bhulekh.mahabhumi.gov.in/" target="_blank" class="rec-link">Mahabhulekh Maharashtra</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="https://upbhulekh.gov.in/" target="_blank" class="rec-link">UP Bhulekh</a></li>
+                        <li><a href="https://bhunaksha.rajasthan.gov.in/" target="_blank" class="rec-link">Bhu Naksha Rajasthan</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- Housing Schemes Tab -->
+            <div id="rec-tab-housing" class="rec-tab-content-mb" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="#" class="rec-link">PMAY - Pradhan Mantri Awas Yojana</a></li>
+                        <li><a href="#" class="rec-link">Gujarat Housing Schemes</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="#" class="rec-link">Affordable Housing Projects</a></li>
+                        <li><a href="#" class="rec-link">EWS/LIG Housing Schemes</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- RERA Tab -->
+            <div id="rec-tab-rera" class="rec-tab-content-mb" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="https://gujrera.gujarat.gov.in/" target="_blank" class="rec-link">Gujarat RERA</a></li>
+                        <li><a href="https://maharera.mahaonline.gov.in/" target="_blank" class="rec-link">MahaRERA</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="https://rera.rajasthan.gov.in/" target="_blank" class="rec-link">Rajasthan RERA</a></li>
+                        <li><a href="#" class="rec-link">UP RERA</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- Tools Tab -->
+            <div id="rec-tab-tools" class="rec-tab-content-mb" style="display:none;">
+                <div class="row g-3">
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="{% url 'properties:emi_calculator' %}" class="rec-link">EMI Calculator</a></li>
+                        <li><a href="{% url 'properties:loan_eligibility' %}" class="rec-link">Loan Eligibility Calculator</a></li>
+                        <li><a href="{% url 'properties:stamp_duty' %}" class="rec-link">Stamp Duty Calculator</a></li>
+                    </ul></div>
+                    <div class="col-md-3 link-column"><ul class="list-unstyled">
+                        <li><a href="{% url 'properties:bank_offers_detail' %}" class="rec-link">Compare Bank Offers</a></li>
+                        <li><a href="{% url 'properties:propworth' %}" class="rec-link">PropWorth Estimator</a></li>
+                    </ul></div>
+                </div>
+            </div>
+
+            <!-- Area Calculator Row -->
+            <div class="area-calc-row mt-4 pt-3 border-top d-flex align-items-center gap-3 flex-wrap">
+                <span class="fw-bold text-dark" style="white-space:nowrap;">Area Calculator</span>
+                <div class="area-pills-scroll">
+                    <a href="{% url 'properties:area_converter' %}?from=sqft&to=sqm" class="area-pill">Square Feet to Square Meter</a>
+                    <a href="{% url 'properties:area_converter' %}?from=sqm&to=sqft" class="area-pill">Square Meter to Square Feet</a>
+                    <a href="{% url 'properties:area_converter' %}?from=hectare&to=acre" class="area-pill">Hectare to Acre</a>
+                    <a href="{% url 'properties:area_converter' %}?from=sqft&to=sqyard" class="area-pill">Square Feet to Square Yard</a>
+                    <a href="{% url 'properties:area_converter' %}?from=acre&to=sqft" class="area-pill">Acre to Square Feet</a>
+                    <a href="{% url 'properties:area_converter' %}?from=sqm&to=sqyard" class="area-pill">Square Meter to Square Yard</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .post-free-banner-mb { background: #fffbec; border: 1px solid #ffe58a; border-radius: 12px; margin-bottom: 40px; }
+        .post-free-banner-inner { display: flex; justify-content: space-between; align-items: center; padding: 24px 36px; }
+        .post-free-banner-inner h3 { font-size: 1.3rem; color: #ff6600; margin-bottom: 4px; }
+        .btn-post-free { background: #ffc107; color: #ff6600; font-weight: 700; border: none; border-radius: 50px; padding: 12px 32px; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; transition: background 0.2s; }
+        .btn-post-free:hover { background: #e6ac00; color: #ff6600; }
+        .badge-free { background: #fff; color: #ff6600; padding: 3px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; border: 1px solid #e0e0e0; }
+        .prop-options-tabs { display: flex; border-bottom: 2px solid #eee; }
+        .prop-tab { background: none; border: none; padding: 10px 24px; font-size: 1rem; font-weight: 600; color: #555; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .prop-tab.active { color: #ff6600; border-bottom-color: #ff6600; }
+
+        /* Recommended for You - MagicBricks Style */
+        .rec-tabs-mb { border-bottom: 1px solid #eee; }
+        .rec-tabs-scroll { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .rec-tabs-scroll::-webkit-scrollbar { display: none; }
+        .rec-tab-mb { background: none; border: none; padding: 12px 20px; font-size: 0.9rem; font-weight: 500; color: #555; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
+        .rec-tab-mb.active { color: #ff6600; border-bottom-color: #ff6600; font-weight: 700; }
+        .rec-tab-mb:hover:not(.active) { color: #ff6600; }
+        .rec-link { color: #ff6600; text-decoration: none; font-size: 0.9rem; font-weight: 500; display: block; margin-bottom: 10px; }
+        .rec-link:hover { text-decoration: underline; color: #cc5200; }
+
+        /* Area Calculator Row */
+        .area-pills-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+        .area-pills-scroll::-webkit-scrollbar { display: none; }
+        .area-pill { background: #fff; border: 1px solid #ddd; border-radius: 50px; padding: 7px 18px; font-size: 0.8rem; font-weight: 500; color: #444; text-decoration: none; white-space: nowrap; transition: all 0.2s; }
+        .area-pill:hover { border-color: #ff6600; color: #ff6600; background: #fff5f5; }
+
+    </style>
+    <script>
+        function switchPropTab(btn, tabId) {
+            document.querySelectorAll('.prop-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.prop-tab-content').forEach(c => c.style.display = 'none');
+            btn.classList.add('active');
+            document.getElementById('prop-tab-' + tabId).style.display = 'block';
+        }
+        function switchRecTab(btn, tabId) {
+            document.querySelectorAll('.rec-tab-mb').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.rec-tab-content-mb').forEach(c => c.style.display = 'none');
+            btn.classList.add('active');
+            document.getElementById('rec-tab-' + tabId).style.display = 'block';
+        }
+    </script>
+
+    <!-- Map Modal -->
+    <div class="modal fade" id="mapModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 overflow-hidden">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Pick Location on Map</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="map" style="height: 400px; width: 100%;"></div>
+                    <div class="p-3 bg-light text-center">
+                        <p class="small text-muted mb-0">Click anywhere on the map to select that location as your search area.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

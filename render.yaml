@@ -1,0 +1,22 @@
+# Render Blueprint — GitHub repo connect pachi auto deploy
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: propertybazaar
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: "2"
+      # Neon.tech thi free Postgres URL copy kari ne Render dashboard ma add karo:
+      # - key: DATABASE_URL
+      #   sync: false

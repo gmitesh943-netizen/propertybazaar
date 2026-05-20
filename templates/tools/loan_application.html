@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body { background-color: #f8f9fa; }
+    .application-container {
+        max-width: 1100px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .step-header {
+        background: #fdfdfd;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 30px 0;
+    }
+    .step-pill {
+        height: 6px; width: 80px; background: #eee; margin: 0 auto; border-radius: 10px;
+    }
+    .step-pill.active { background: #ff6600; box-shadow: 0 0 10px rgba(255, 102, 0, 0.3); }
+    .step-text { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    .step-text.active { color: #ff6600; }
+    .step-text.inactive { color: #aaa; }
+
+    .city-card {
+        text-align: center;
+        cursor: pointer;
+        padding: 20px;
+        border-radius: 20px;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+        background: #fdfdfd;
+    }
+    .city-card:hover {
+        background: #fff5f5;
+        transform: translateY(-5px);
+    }
+    .city-card.selected {
+        background: #fff5f5;
+        border-color: #ff6600;
+        box-shadow: 0 10px 25px rgba(255, 102, 0, 0.1);
+    }
+    .city-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border: 1px solid #f0f0f0;
+    }
+    .city-name { font-weight: 700; font-size: 1rem; color: #333; }
+    
+    .search-box {
+        max-width: 700px;
+        margin: 0 auto 50px;
+        position: relative;
+    }
+    .search-input {
+        width: 100%;
+        padding: 20px 60px 20px 30px;
+        border-radius: 16px;
+        border: 1px solid #e0e0e0;
+        font-size: 1.1rem;
+        background: #f9f9f9;
+        transition: all 0.3s;
+    }
+    .search-input:focus {
+        background: #fff;
+        border-color: #ff6600;
+        box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.1);
+        outline: none;
+    }
+    
+    .form-section { padding: 60px 80px; }
+    .action-footer {
+        border-top: 1px solid #eee;
+        padding: 30px 80px;
+        display: flex;
+        justify-content: flex-end;
+        background: #fafafa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="application-container">
+        <!-- Progress -->
+        <div class="step-header">
+            <div class="d-flex justify-content-center gap-3 gap-md-5">
+                <div class="text-center">
+                    <div class="step-text active mb-2">Property</div>
+                    <div class="step-pill active"></div>
+                </div>
+                <div class="text-center">
+                    <div class="step-text inactive mb-2">Employment</div>
+                    <div class="step-pill"></div>
+                </div>
+                <div class="text-center">
+                    <div class="step-text inactive mb-2">Loan</div>
+                    <div class="step-pill"></div>
+                </div>
+                <div class="text-center">
+                    <div class="step-text inactive mb-2">Profile</div>
+                    <div class="step-pill"></div>
+                </div>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-section">
+                <div class="text-center mb-5">
+                    <h2 class="fw-black display-6 mb-3" style="color: #ff6600;">Property <span class="text-primary">Identification</span></h2>
+                    <p class="text-muted">Provide the location and details of the property you wish to finance.</p>
+                </div>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-12">
+                        <label class="form-label text-start d-block fw-bold mb-2">City of Property</label>
+                        <div class="search-box mb-0" style="max-width: 100%;">
+                            <input type="text" class="search-input" id="citySearch" name="city" placeholder="e.g. Ahmedabad, Gujarat" value="{{ selected_city }}" required>
+                            <i class="fas fa-location-dot" style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); color: #ff6600; font-size: 1.2rem;"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-start d-block fw-bold mb-2">Property Type</label>
+                        <select class="form-select" name="property_type" required>
+                            <option value="flat">Flat / Apartment</option>
+                            <option value="villa">Independent House / Villa</option>
+                            <option value="plot">Residential Plot</option>
+                            <option value="commercial">Commercial Property</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-start d-block fw-bold mb-2">Property Status</label>
+                        <select class="form-select" name="property_status" required>
+                            <option value="ready">Ready to Move</option>
+                            <option value="under-construction">Under Construction</option>
+                            <option value="resale">Resale Property</option>
+                            <option value="yet-to-buy">Not yet identified</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label text-start d-block fw-bold mb-2">Estimated Property Value (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text border-0 bg-light">₹</span>
+                            <input type="number" class="form-control" name="property_value" placeholder="e.g. 50,00,000" required>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-4 text-start">Or select from popular cities</h6>
+                <div class="row row-cols-2 row-cols-md-5 g-4">
+                    {% for city in popular_cities %}
+                    <div class="col">
+                        <div class="city-card {% if city.name == selected_city %}selected{% endif %}" onclick="selectCity(this, '{{ city.name }}')">
+                            <div class="city-icon-wrapper">
+                                <img src="{{ city.image }}" alt="{{ city.name }}" style="width: 40px; height: 40px; object-fit: contain; filter: grayscale(0.2);">
+                            </div>
+                            <div class="city-name">{{ city.name }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="action-footer">
+                <button type="submit" class="btn btn-primary py-3 px-5 fw-bold shadow-sm" style="border-radius: 14px; font-size: 1.1rem; min-width: 220px;" id="nextBtn">
+                    Next: Employment <i class="fas fa-chevron-right ms-2"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function selectCity(element, cityName) {
+        document.querySelectorAll('.city-card').forEach(card => card.classList.remove('selected'));
+        element.classList.add('selected');
+        document.getElementById('citySearch').value = cityName;
+    }
+</script>
+{% endblock %}
+
+
+
+
+
+

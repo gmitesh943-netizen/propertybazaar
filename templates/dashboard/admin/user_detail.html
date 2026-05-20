@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Details - Admin - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:admin_home' %}" class="text-primary text-decoration-none">Admin</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:admin_users' %}" class="text-primary text-decoration-none">Users</a></li>
+                        <li class="breadcrumb-item active">User Details</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-black mb-0">User <span class="text-primary">Profile</span></h2>
+            </div>
+            <div>
+                <a href="{% url 'dashboard:admin_users' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Users
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column: User Profile Info -->
+            <div class="col-lg-4">
+                <div class="card border-0 rounded-4 shadow-sm mb-4">
+                    <div class="card-body text-center p-5">
+                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px; font-size: 40px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1">{{ user_obj.get_full_name }}</h4>
+                        <p class="text-muted mb-2">{{ user_obj.email }}</p>
+                        <span class="badge bg-light text-dark text-capitalize mb-3">{{ user_obj.role }}</span>
+                        
+                        <div class="d-flex justify-content-center gap-2 mb-4">
+                            {% if user_obj.is_active %}
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Account Active</span>
+                            {% else %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">Account Inactive</span>
+                            {% endif %}
+                        </div>
+
+                        <ul class="list-group list-group-flush text-start mt-4">
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Phone:</span>
+                                <span class="fw-bold">{{ user_obj.phone_number|default:"Not Provided" }}</span>
+                            </li>
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Joined:</span>
+                                <span class="fw-bold">{{ user_obj.date_joined|date:"M d, Y" }}</span>
+                            </li>
+                            {% for label, value in stats.items %}
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <span class="text-muted">{{ label }}:</span>
+                                <span class="fw-bold text-primary">{{ value }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Subscriptions & Properties -->
+            <div class="col-lg-8">
+                <!-- Subscription Section -->
+                <div class="card border-0 rounded-4 shadow-sm mb-4">
+                    <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-crown text-warning me-2"></i>Subscription History</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if subscriptions %}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Plan Name</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sub in subscriptions %}
+                                        <tr>
+                                            <td class="fw-bold">{{ sub.plan.name }}</td>
+                                            <td>{{ sub.start_date|date:"M d, Y" }}</td>
+                                            <td>{{ sub.end_date|date:"M d, Y" }}</td>
+                                            <td>
+                                                {% if not sub.is_expired %}
+                                                <span class="badge bg-success">Active</span>
+                                                {% else %}
+                                                <span class="badge bg-secondary">Expired</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-box-open fs-1 text-light mb-3"></i>
+                                <p class="mb-0">This user has no subscription history.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Properties Section (If Agent/Builder/Seller) -->
+                {% if user_obj.role != 'buyer' %}
+                <div class="card border-0 rounded-4 shadow-sm">
+                    <div class="card-header bg-white border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-building text-primary me-2"></i>User's Properties</h5>
+                        <span class="badge bg-light text-dark border">{{ user_obj.properties.count }} Total</span>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if user_obj.properties.exists %}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Property Title</th>
+                                            <th>Type</th>
+                                            <th>Price</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for prop in user_obj.properties.all|slice:":5" %}
+                                        <tr>
+                                            <td>
+                                                <h6 class="mb-0 fw-bold text-truncate" style="max-width: 200px;">{{ prop.title }}</h6>
+                                                <small class="text-muted">{{ prop.city }}</small>
+                                            </td>
+                                            <td>{{ prop.get_listing_type_display }}</td>
+                                            <td class="fw-bold">₹{{ prop.price|floatformat:0 }}</td>
+                                            <td>
+                                                {% if prop.status == 'published' %}
+                                                <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">Published</span>
+                                                {% elif prop.status == 'draft' %}
+                                                <span class="badge bg-warning bg-opacity-10 text-warning px-2 py-1">Draft</span>
+                                                {% else %}
+                                                <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 text-capitalize">{{ prop.status }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% if user_obj.properties.count > 5 %}
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'dashboard:admin_properties' %}" class="btn btn-sm btn-light rounded-pill">View All Properties</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-home fs-1 text-light mb-3"></i>
+                                <p class="mb-0">This user has not listed any properties yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="interiors-container">
+    <div class="container-fluid p-0 h-100">
+        <div class="row g-0 h-100">
+            <!-- Left Side: Form -->
+            <div class="col-lg-6 d-flex flex-column p-5 bg-white">
+                <div class="mb-5">
+                    <a href="{% url 'properties:home' %}" class="text-dark text-decoration-none d-flex align-items-center mb-4">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </a>
+                    <h1 class="display-6 fw-bold">Where can we send estimation?</h1>
+                </div>
+
+                <form action="#" method="POST" class="mt-4" style="max-width: 450px;">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <input type="text" class="form-control-custom" placeholder="Name" required>
+                    </div>
+                    <div class="mb-4 d-flex">
+                        <div class="country-code me-2">
+                            <select class="form-select-custom">
+                                <option selected>IND +91</option>
+                            </select>
+                        </div>
+                        <input type="tel" class="form-control-custom flex-grow-1" placeholder="Mobile Number" required>
+                    </div>
+                    <div class="mb-4">
+                        <input type="email" class="form-control-custom" placeholder="Email ID" required>
+                        <div class="invalid-feedback d-block text-primary small mt-1" style="display: none !important;">
+                            Please enter correct email.
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <select class="form-select-custom" required>
+                            <option selected disabled>Select City</option>
+                            <option>Ahmedabad</option>
+                            <option>Mumbai</option>
+                            <option>Bangalore</option>
+                            <option>Delhi</option>
+                            <option>Pune</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm">
+                        Get Free Estimate
+                    </button>
+                </form>
+
+                <div class="mt-auto pt-5">
+                    <p class="text-muted small">By continuing, you agree to our <a href="#" class="text-primary">Terms & Conditions</a></p>
+                </div>
+            </div>
+
+            <!-- Right Side: Marketing & Image -->
+            <div class="col-lg-6 position-relative d-none d-lg-block">
+                <img src="{% static 'img/interior_banner.png' %}" class="position-absolute w-100 h-100 object-fit-cover" alt="Premium Interior Design">
+                <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-25"></div>
+                
+                <div class="position-relative p-5 text-white mt-5">
+                    <div class="glass-box p-5 rounded-4 mt-5">
+                        <h2 class="fw-bold mb-4">Why choose us?</h2>
+                        <ul class="list-unstyled">
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="dot me-3"></span> Verified Designers
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="dot me-3"></span> Compare Quotes & Pay Right Price
+                            </li>
+                            <li class="mb-3 d-flex align-items-center">
+                                <span class="dot me-3"></span> Exclusive Offers & Discount Coupons
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .interiors-container {
+        height: 100vh;
+        min-height: 700px;
+        background: #fff;
+    }
+    .form-control-custom, .form-select-custom {
+        width: 100%;
+        padding: 12px 0;
+        border: none;
+        border-bottom: 1px solid #ddd;
+        border-radius: 0;
+        background: transparent;
+        font-size: 1.1rem;
+        transition: border-color 0.3s;
+    }
+    .form-control-custom:focus, .form-select-custom:focus {
+        outline: none;
+        border-bottom: 2px solid #ff6600;
+    }
+    .country-code {
+        width: 120px;
+    }
+    .glass-box {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .dot {
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .object-fit-cover {
+        object-fit: cover;
+    }
+    /* Hide Navbar/Footer for this tool if needed */
+    nav, footer { display: none !important; }
+</style>
+{% endblock %}
+
+
+
+
+
+

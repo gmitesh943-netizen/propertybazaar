@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home Loan Eligibility Calculator - PropertyBazaar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calculator-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 15px 45px rgba(0,0,0,0.05);
+    }
+    .eligibility-meter {
+        height: 12px;
+        background: #eee;
+        border-radius: 6px;
+        overflow: hidden;
+        margin: 20px 0;
+    }
+    .meter-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ffc107, #28a745);
+        width: 0%;
+        transition: width 1s ease-in-out;
+    }
+    .result-box {
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+    }
+    .amount-text {
+        font-size: 3rem;
+        font-weight: 900;
+        color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h6 class="text-success fw-bold text-uppercase">Financial Tools</h6>
+        <h1 class="fw-black display-5 mb-3">Home Loan <span class="text-success">Eligibility</span></h1>
+        <p class="text-muted col-lg-6 mx-auto">Find out how much loan you can get based on your income and existing obligations.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-10">
+            <div class="calculator-card">
+                <div class="row g-5">
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Gross Monthly Income (₹)</label>
+                            <input type="number" id="monthlyIncome" class="form-control form-control-lg" value="100000">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Existing Monthly EMIs (₹)</label>
+                            <input type="number" id="existingEMI" class="form-control form-control-lg" value="0">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Tenure (Years)</label>
+                            <select id="tenure" class="form-select form-select-lg">
+                                <option value="5">5 Years</option>
+                                <option value="10">10 Years</option>
+                                <option value="15">15 Years</option>
+                                <option value="20" selected>20 Years</option>
+                                <option value="25">25 Years</option>
+                                <option value="30">30 Years</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Interest Rate (%)</label>
+                            <input type="number" id="rate" class="form-control form-control-lg" value="8.5" step="0.1">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 d-flex flex-column justify-content-center">
+                        <div class="result-box">
+                            <h5 class="fw-bold mb-4">Estimated Loan Eligibility</h5>
+                            <div class="amount-text" id="eligibleAmount">₹ 0</div>
+                            <div class="eligibility-meter">
+                                <div class="meter-fill" id="meterFill"></div>
+                            </div>
+                            <p class="text-muted small mt-3">Calculated assuming a FOIR of 50-60%</p>
+                        </div>
+                        
+                        <div class="mt-4 p-4 border rounded-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Expected Monthly EMI</span>
+                                <span class="fw-bold" id="estEMI">₹ 0</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Total Tenure</span>
+                                <span class="fw-bold" id="dispTenure">20 Years</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'properties:loan_application' %}" class="btn btn-success btn-lg w-100 mt-4 rounded-pill fw-bold">Check Best Bank Offers</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const incomeInput = document.getElementById('monthlyIncome');
+        const emiInput = document.getElementById('existingEMI');
+        const tenureInput = document.getElementById('tenure');
+        const rateInput = document.getElementById('rate');
+        
+        const eligibleAmount = document.getElementById('eligibleAmount');
+        const estEMI = document.getElementById('estEMI');
+        const dispTenure = document.getElementById('dispTenure');
+        const meterFill = document.getElementById('meterFill');
+
+        function formatCurrency(num) {
+            return '₹ ' + new Intl.NumberFormat('en-IN').format(Math.round(num));
+        }
+
+        function calculate() {
+            const income = parseFloat(incomeInput.value) || 0;
+            const existingEMI = parseFloat(emiInput.value) || 0;
+            const years = parseFloat(tenureInput.value);
+            const rate = parseFloat(rateInput.value) / 12 / 100;
+            const months = years * 12;
+
+            // FOIR (Fixed Obligation to Income Ratio) - usually 50%
+            const maxEMI = (income * 0.5) - existingEMI;
+            
+            if (maxEMI <= 0) {
+                eligibleAmount.innerText = 'Not Eligible';
+                estEMI.innerText = '₹ 0';
+                meterFill.style.width = '0%';
+                return;
+            }
+
+            // Loan Amount Formula: P = EMI / [R * (1+R)^N / ((1+R)^N - 1)]
+            const loanAmount = maxEMI / (rate * Math.pow(1 + rate, months) / (Math.pow(1 + rate, months) - 1));
+            
+            eligibleAmount.innerText = formatCurrency(loanAmount);
+            estEMI.innerText = formatCurrency(maxEMI);
+            dispTenure.innerText = years + ' Years';
+            
+            // Just for visual effect
+            const percent = Math.min(100, (loanAmount / 10000000) * 100);
+            meterFill.style.width = percent + '%';
+        }
+
+        [incomeInput, emiInput, tenureInput, rateInput].forEach(el => el.addEventListener('input', calculate));
+        calculate();
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+

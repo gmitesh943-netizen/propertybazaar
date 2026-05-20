@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-4 px-5" style="background-color: #ff6600 !important;">
+                    <h2 class="fw-bold mb-0"><i class="fas fa-plus-circle me-3"></i>{{ title }}</h2>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.media }}
+                        
+                        <!-- Basic Info Section -->
+                        <div class="mb-5">
+                            <h4 class="fw-bold border-bottom pb-2 mb-4 text-primary">Basic Information</h4>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    {{ form.title|as_crispy_field }}
+                                </div>
+                                <div class="col-md-12">
+                                    {{ form.description|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.category|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.property_type|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.status|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.price|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location Section -->
+                        <div class="mb-5">
+                            <h4 class="fw-bold border-bottom pb-2 mb-4 text-primary">Location</h4>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    {{ form.address|as_crispy_field }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form.city|as_crispy_field }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form.state|as_crispy_field }}
+                                </div>
+                                <div class="col-md-4">
+                                    {{ form.zip_code|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Details Section -->
+                        <div class="mb-5">
+                            <h4 class="fw-bold border-bottom pb-2 mb-4 text-primary">Property Details</h4>
+                            <div class="row g-3">
+                                <div class="col-md-2">
+                                    {{ form.bedrooms|as_crispy_field }}
+                                </div>
+                                <div class="col-md-2">
+                                    {{ form.bathrooms|as_crispy_field }}
+                                </div>
+                                <div class="col-md-2">
+                                    {{ form.rooms|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.area|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.garage|as_crispy_field }}
+                                </div>
+                                <div class="col-md-12">
+                                    {{ form.amenities|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Media Section -->
+                        <div class="mb-5">
+                            <h4 class="fw-bold border-bottom pb-2 mb-4 text-primary">Property Media</h4>
+                            
+                            <div class="card bg-light border-0 p-4 mb-4">
+                                <h6 class="fw-bold mb-3">Upload Images</h6>
+                                {{ image_formset.management_form }}
+                                <div class="row">
+                                    {% for form in image_formset %}
+                                        <div class="col-md-4 mb-3">
+                                            {{ form|crispy }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="card bg-light border-0 p-4">
+                                <h6 class="fw-bold mb-3">Upload Videos</h6>
+                                {{ video_formset.management_form }}
+                                {% for form in video_formset %}
+                                    <div class="mb-3">
+                                        {{ form|crispy }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="text-end mt-5 pt-3 border-top">
+                            <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary px-5 py-3 fw-bold rounded-pill me-3 text-decoration-none">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow-sm" style="background-color: #ff6600; border: none;">
+                                Submit Property
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

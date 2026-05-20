@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Properties - PropertyBazaar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .location-action-btn {
+        width: 42px;
+        border-color: #dee2e6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar Filters -->
+            <div class="col-lg-3">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">Filters</h5>
+                        <form method="GET" id="filter-form">
+                            <input type="hidden" name="lat" id="latInput" value="{{ request.GET.lat }}">
+                            <input type="hidden" name="lng" id="lngInput" value="{{ request.GET.lng }}">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Location</label>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                    <input type="text" name="city" id="cityInput" class="form-control border-start-0" placeholder="City, Area" value="{{ request.GET.city }}" list="locationOptions" autocomplete="off">
+                                </div>
+                                <datalist id="locationOptions">
+                                    {% for location in location_options %}
+                                    <option value="{{ location }}">
+                                    {% endfor %}
+                                </datalist>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-light location-action-btn" id="pickMapBtn" data-bs-toggle="modal" data-bs-target="#propertyMapModal" title="Pick from map">
+                                        <i class="fas fa-map text-primary"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-light location-action-btn" id="locateMeBtn" title="Use current location">
+                                        <i class="fas fa-crosshairs text-primary"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-link text-muted small text-decoration-none px-1" id="clearLocationBtn">Clear location</button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Listing Type</label>
+                                <select name="listing_type" class="form-select">
+                                    <option value="">All Listings</option>
+                                    <option value="sale" {% if request.GET.listing_type == 'sale' %}selected{% endif %}>For Sale</option>
+                                    <option value="rent" {% if request.GET.listing_type == 'rent' %}selected{% endif %}>For Rent</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Property Type</label>
+                                <select name="type" class="form-select">
+                                    <option value="">All Types</option>
+                                    {% for type in property_types %}
+                                    <option value="{{ type.slug }}" {% if request.GET.type == type.slug %}selected{% endif %}>{{ type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Budget</label>
+                                <div class="d-flex gap-2">
+                                    <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ request.GET.min_price }}">
+                                    <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ request.GET.max_price }}">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Bedrooms (BHK)</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="bedrooms" id="bhk1" value="1" {% if request.GET.bedrooms == '1' %}checked{% endif %}>
+                                    <label class="btn btn-outline-primary btn-sm" for="bhk1">1+</label>
+                                    <input type="radio" class="btn-check" name="bedrooms" id="bhk2" value="2" {% if request.GET.bedrooms == '2' %}checked{% endif %}>
+                                    <label class="btn btn-outline-primary btn-sm" for="bhk2">2+</label>
+                                    <input type="radio" class="btn-check" name="bedrooms" id="bhk3" value="3" {% if request.GET.bedrooms == '3' %}checked{% endif %}>
+                                    <label class="btn btn-outline-primary btn-sm" for="bhk3">3+</label>
+                                    <input type="radio" class="btn-check" name="bedrooms" id="bhk4" value="4" {% if request.GET.bedrooms == '4' %}checked{% endif %}>
+                                    <label class="btn btn-outline-primary btn-sm" for="bhk4">4+</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Furnishing</label>
+                                <select name="furnishing" class="form-select">
+                                    <option value="">Any</option>
+                                    <option value="unfurnished" {% if request.GET.furnishing == 'unfurnished' %}selected{% endif %}>Unfurnished</option>
+                                    <option value="semi-furnished" {% if request.GET.furnishing == 'semi-furnished' %}selected{% endif %}>Semi-furnished</option>
+                                    <option value="fully-furnished" {% if request.GET.furnishing == 'fully-furnished' %}selected{% endif %}>Fully-furnished</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Possession</label>
+                                <select name="possession" class="form-select">
+                                    <option value="">Any</option>
+                                    <option value="ready_to_move" {% if request.GET.possession == 'ready_to_move' %}selected{% endif %}>Ready to Move</option>
+                                    <option value="under_construction" {% if request.GET.possession == 'under_construction' %}selected{% endif %}>Under Construction</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" name="rera" id="reraSwitch" {% if request.GET.rera %}checked{% endif %}>
+                                    <label class="form-check-label small fw-bold" for="reraSwitch">RERA Approved</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="verified" id="verifiedSwitch" {% if request.GET.verified %}checked{% endif %}>
+                                    <label class="form-check-label small fw-bold" for="verifiedSwitch">Verified Listings</label>
+                                </div>
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" name="featured" id="featuredSwitch" {% if request.GET.featured %}checked{% endif %}>
+                                    <label class="form-check-label small fw-bold" for="featuredSwitch">Featured Properties</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Apply Filters</button>
+                            <a href="{% url 'properties:property_list' %}" class="btn btn-link w-100 text-decoration-none text-muted small mt-2">Clear All</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Grid -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <p class="mb-0">{{ page_obj.paginator.count }} Properties found</p>
+                    <select name="sort" class="form-select w-auto" form="filter-form" onchange="document.getElementById('filter-form').submit();">
+                        <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Price Low to High</option>
+                        <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Price High to Low</option>
+                    </select>
+                </div>
+
+                <div class="row g-4">
+                    {% for property in properties %}
+                    <div class="col-md-6 col-xl-4">
+                        <div class="card h-100 shadow-sm border-0 property-card transition">
+                            <div class="position-relative overflow-hidden">
+                                {% if property.images.all %}
+                                <img src="{{ property.images.first.image.url }}" class="card-img-top" alt="{{ property.title }}" style="height: 220px; object-fit: cover;">
+                                {% else %}
+                                <img src="https://via.placeholder.com/400x220" class="card-img-top" alt="Placeholder">
+                                {% endif %}
+                                <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-2">
+                                    <span class="badge bg-primary px-3 py-2 rounded-pill">{{ property.category.name }}</span>
+                                    {% if property.verified %}
+                                    <span class="badge bg-success px-3 py-2 rounded-pill"><i class="fas fa-check-circle"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-50 text-white">
+                                    <h5 class="mb-0 fw-bold">₹{{ property.price }}</h5>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold text-truncate mb-0" style="max-width: 80%;">{{ property.title }}</h6>
+                                    {% if property.rera_approved %}
+                                    <span class="text-primary small" title="RERA Approved"><i class="fas fa-shield-alt"></i></span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1 text-primary"></i> {{ property.city }}</p>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-4">
+                                        <div class="bg-light p-2 rounded text-center small">
+                                            <i class="fas fa-bed text-primary d-block mb-1"></i>
+                                            {{ property.bedrooms }} BHK
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light p-2 rounded text-center small">
+                                            <i class="fas fa-expand text-primary d-block mb-1"></i>
+                                            {{ property.area }}
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="bg-light p-2 rounded text-center small">
+                                            <i class="fas fa-couch text-primary d-block mb-1"></i>
+                                            {{ property.get_furnishing_status_display|truncatechars:6 }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                    <span class="text-muted small">Posted by {{ property.get_posted_by_display }}</span>
+                                    <a href="{% url 'properties:property_detail' property.slug %}" class="btn btn-primary btn-sm px-3 rounded-pill">View Detail</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <h3>No properties found.</h3>
+                        <p>Try adjusting your search filters.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?{% if filter_querystring %}{{ filter_querystring }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?{% if filter_querystring %}{{ filter_querystring }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="propertyMapModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 overflow-hidden">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Pick Location on Map</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="propertyFilterMap" style="height: 420px; width: 100%;"></div>
+                <div class="p-3 bg-light text-center">
+                    <p class="small text-muted mb-0">Map પર click કરો, area auto-fill થશે અને Apply Filters દબાવો.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('filter-form');
+        const cityInput = document.getElementById('cityInput');
+        const latInput = document.getElementById('latInput');
+        const lngInput = document.getElementById('lngInput');
+        const locateMeBtn = document.getElementById('locateMeBtn');
+        const clearLocationBtn = document.getElementById('clearLocationBtn');
+        const mapModal = document.getElementById('propertyMapModal');
+        let map;
+        let marker;
+
+        function resetLocateButton() {
+            locateMeBtn.innerHTML = '<i class="fas fa-crosshairs text-primary"></i>';
+        }
+
+        function setLocation(lat, lng, area) {
+            latInput.value = lat;
+            lngInput.value = lng;
+            if (area) cityInput.value = area;
+        }
+
+        function reverseGeocode(lat, lng) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 2500);
+
+            return fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
+                    signal: controller.signal
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.address || {};
+                    return address.suburb || address.neighbourhood || address.residential || address.city_district || address.city || 'Ahmedabad';
+                })
+                .catch(() => 'Current Location')
+                .finally(() => clearTimeout(timeout));
+        }
+
+        function setMarker(lat, lng) {
+            if (!map) return;
+            const point = [lat, lng];
+            if (marker) {
+                marker.setLatLng(point);
+            } else {
+                marker = L.marker(point).addTo(map);
+            }
+            map.setView(point, 13);
+        }
+
+        cityInput.addEventListener('input', function() {
+            latInput.value = '';
+            lngInput.value = '';
+        });
+
+        clearLocationBtn.addEventListener('click', function() {
+            cityInput.value = '';
+            latInput.value = '';
+            lngInput.value = '';
+            cityInput.focus();
+        });
+
+        locateMeBtn.addEventListener('click', function() {
+            if (!navigator.geolocation) {
+                cityInput.placeholder = 'Location not supported. Enter area manually';
+                cityInput.focus();
+                return;
+            }
+
+            locateMeBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-primary"></i>';
+            locateMeBtn.disabled = true;
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                setLocation(lat, lng, 'Current Location');
+                reverseGeocode(lat, lng).then(area => {
+                    setLocation(lat, lng, area);
+                    form.submit();
+                }).finally(function() {
+                    resetLocateButton();
+                    locateMeBtn.disabled = false;
+                });
+            }, function(error) {
+                cityInput.placeholder = error.code === error.PERMISSION_DENIED
+                    ? 'Location blocked. Allow permission and try again'
+                    : 'Could not get location. Enter area manually';
+                cityInput.value = '';
+                latInput.value = '';
+                lngInput.value = '';
+                cityInput.focus();
+                resetLocateButton();
+                locateMeBtn.disabled = false;
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            });
+        });
+
+        mapModal.addEventListener('shown.bs.modal', function() {
+            if (!map) {
+                const startLat = parseFloat(latInput.value) || 23.0225;
+                const startLng = parseFloat(lngInput.value) || 72.5714;
+                map = L.map('propertyFilterMap').setView([startLat, startLng], 12);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                if (latInput.value && lngInput.value) {
+                    setMarker(startLat, startLng);
+                }
+
+                map.on('click', function(event) {
+                    const lat = event.latlng.lat;
+                    const lng = event.latlng.lng;
+                    setMarker(lat, lng);
+                    reverseGeocode(lat, lng).then(area => setLocation(lat, lng, area));
+                });
+            }
+            map.invalidateSize();
+        });
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+

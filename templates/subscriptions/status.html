@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}My Subscription Status - PropertyBazaar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .active-status-pill {
+        border: 0;
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .active-status-pill:hover,
+    .active-status-pill:focus {
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(25, 135, 84, 0.25);
+    }
+
+    .current-plan-card {
+        scroll-margin-top: 110px;
+        transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .current-plan-card:target {
+        border-color: #198754 !important;
+        box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.14);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-0 py-4 px-5">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="fw-bold mb-0">Subscription Status</h2>
+                        {% if active_sub %}
+                            <a href="#current-plan" class="badge bg-success rounded-pill px-3 py-2 text-decoration-none active-status-pill" aria-label="View current active plan">Active</a>
+                        {% else %}
+                            <span class="badge bg-primary rounded-pill px-3 py-2">No Active Plan</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-body p-5 pt-0">
+                    {% if active_sub %}
+                        <div id="current-plan" class="p-4 rounded-4 bg-light mb-4 border-start border-4 border-primary current-plan-card">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill mb-2">Current Active Plan</span>
+                                    <h4 class="fw-bold mb-1">{{ active_sub.plan.name }}</h4>
+                                    <p class="text-muted mb-0">Valid until: <span class="text-dark fw-semibold">{{ active_sub.end_date|date:"F d, Y" }}</span></p>
+                                </div>
+                                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                    <a href="{% url 'subscriptions:plan_list' %}" class="btn btn-outline-primary rounded-pill btn-sm fw-bold px-4">Renew Plan</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3 mt-4">Current Usage</h5>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="p-4 rounded-4 bg-white border h-100">
+                                    <p class="text-muted small text-uppercase fw-bold mb-2">{% if user.role == 'buyer' %}Properties Viewed{% else %}Properties Posted{% endif %}</p>
+                                    <div class="d-flex align-items-baseline gap-2">
+                                        <h2 class="fw-bold mb-0">{{ limits.used }}</h2>
+                                        <span class="text-muted">/ {{ limits.total }}</span>
+                                    </div>
+                                    <div class="progress mt-3" style="height: 8px;">
+                                        {% with used=limits.used total=limits.total %}
+                                            {% if total != 'Unlimited' %}
+                                                <div class="progress-bar bg-primary" style="width: {% widthratio used total 100 %}%"></div>
+                                            {% else %}
+                                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    {% if limits.total != 'Unlimited' %}
+                                    <p class="small text-muted mt-2 mb-0">{{ limits.remaining }} views remaining</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-4 rounded-4 bg-white border h-100">
+                                    <p class="text-muted small text-uppercase fw-bold mb-2">Subscription Benefits</p>
+                                    <ul class="list-unstyled small mb-0">
+                                        {% if active_sub.plan.feature_list %}
+                                            {% for feature in active_sub.plan.feature_list %}
+                                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> {{ feature }}</li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Priority support access</li>
+                                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Early access to new listings</li>
+                                            <li><i class="fas fa-check text-success me-2"></i> No annoying advertisements</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="p-5 bg-light rounded-4">
+                                <i class="fas fa-exclamation-triangle fs-1 text-warning mb-3"></i>
+                                <h3 class="fw-bold">You are on the Free Plan</h3>
+                                <p class="text-muted">Upgrade now to unlock unlimited access and premium features.</p>
+                                <a href="{% url 'subscriptions:plan_list' %}" class="btn btn-primary rounded-pill px-5 py-2 fw-bold mt-3">View Plans</a>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3 mt-4">Free Usage Limits</h5>
+                        <div class="row g-4">
+                            <div class="col-md-6 mx-auto">
+                                <div class="p-4 rounded-4 bg-white border">
+                                    <p class="text-muted small text-uppercase fw-bold mb-2">{% if user.role == 'buyer' %}Free Property Views{% else %}Free Postings{% endif %}</p>
+                                    <div class="d-flex align-items-baseline gap-2">
+                                        <h2 class="fw-bold mb-0">{{ limits.used }}</h2>
+                                        <span class="text-muted">/ {{ limits.total }}</span>
+                                    </div>
+                                    <div class="progress mt-3" style="height: 8px;">
+                                        <div class="progress-bar bg-primary" style="width: {% widthratio limits.used limits.total 100 %}%"></div>
+                                    </div>
+                                    <p class="small text-muted mt-2 mb-0">{{ limits.remaining }} remaining</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <p class="text-muted small">Need help with your subscription? <a href="#" class="text-primary fw-bold">Contact Support</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

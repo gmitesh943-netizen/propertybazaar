@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Choose Your Plan - PropertyBazaar{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #ff6600 0%, #cc5200 100%);
+        --premium-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        --glass-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    .pricing-header {
+        background: var(--primary-gradient);
+        padding: 80px 0;
+        color: white;
+        border-radius: 0 0 50% 50% / 20px;
+        margin-bottom: -60px;
+    }
+
+    .pricing-card {
+        background: white;
+        border: none;
+        border-radius: 20px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .pricing-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+
+    .pricing-card.premium-plan {
+        border: 2px solid #1e3c72;
+        transform: scale(1.05);
+        z-index: 2;
+    }
+
+    .pricing-card.premium-plan:hover {
+        transform: scale(1.05) translateY(-15px);
+    }
+
+    .pricing-card.active-current {
+        border: 2px solid #198754;
+        box-shadow: 0 16px 32px rgba(25, 135, 84, 0.14);
+    }
+
+    .current-plan-badge {
+        background: #198754;
+        color: white;
+        padding: 6px 16px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+    }
+
+    .premium-badge {
+        background: var(--premium-gradient);
+        color: white;
+        padding: 5px 20px;
+        position: absolute;
+        top: 20px;
+        right: -30px;
+        transform: rotate(45deg);
+        font-size: 12px;
+        font-weight: bold;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .plan-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .premium-plan .plan-icon {
+        background: var(--premium-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .price-tag {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #222;
+        margin-bottom: 0;
+    }
+
+    .price-currency {
+        font-size: 1.5rem;
+        vertical-align: top;
+        margin-right: 5px;
+    }
+
+    .price-duration {
+        color: #666;
+        font-size: 1rem;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 30px 0;
+    }
+
+    .feature-list li {
+        padding: 10px 0;
+        color: #444;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .feature-list li i {
+        color: #28a745;
+    }
+
+    .btn-subscribe {
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s;
+    }
+
+    .btn-primary-sub {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+    }
+
+    .btn-premium-sub {
+        background: var(--premium-gradient);
+        border: none;
+        color: white;
+    }
+
+    .btn-subscribe:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pricing-header text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Elevate Your Experience</h1>
+        <p class="lead mb-0">Choose the perfect plan to find your dream home faster.</p>
+    </div>
+</div>
+
+<div class="container py-5 mt-5">
+    <div class="row g-4 justify-content-center">
+        {% for plan in plans %}
+        <div class="col-lg-4 col-md-6">
+            <div class="pricing-card h-100 shadow-sm p-5 {% if 'Premium' in plan.name %}premium-plan{% endif %} {% if active_sub and active_sub.plan.id == plan.id %}active-current{% endif %}">
+                {% if active_sub and active_sub.plan.id == plan.id %}
+                <div class="current-plan-badge">ACTIVE PLAN</div>
+                {% endif %}
+                {% if 'Premium' in plan.name %}
+                <div class="premium-badge">BEST VALUE</div>
+                {% endif %}
+                
+                <div class="text-center">
+                    <div class="plan-icon">
+                        {% if 'Premium' in plan.name %}
+                        <i class="fas fa-gem"></i>
+                        {% elif 'Paid' in plan.name %}
+                        <i class="fas fa-rocket"></i>
+                        {% else %}
+                        <i class="fas fa-paper-plane"></i>
+                        {% endif %}
+                    </div>
+                    <h3 class="fw-bold mb-4">{{ plan.name }}</h3>
+                    <div class="price-container">
+                        <p class="price-tag">
+                            <span class="price-currency">₹</span>{{ plan.price|intcomma }}
+                        </p>
+                        <span class="price-duration">/ {{ plan.duration_days }} Days</span>
+                    </div>
+                </div>
+
+                <ul class="feature-list">
+                    {% if plan.role == 'buyer' %}
+                        <li><i class="fas fa-check-circle"></i> {% if plan.is_unlimited %}Unlimited{% else %}{{ plan.view_limit }}{% endif %} Property Views</li>
+                        <li><i class="fas fa-check-circle"></i> Direct Seller Contact</li>
+                        <li><i class="fas fa-check-circle"></i> Priority Support</li>
+                    {% else %}
+                        <li><i class="fas fa-check-circle"></i> {% if plan.is_unlimited %}Unlimited{% else %}{{ plan.post_limit }}{% endif %} Property Listings</li>
+                        <li><i class="fas fa-check-circle"></i> Featured Listings</li>
+                        <li><i class="fas fa-check-circle"></i> Detailed Lead Analytics</li>
+                    {% endif %}
+                    
+                    {% for feature in plan.feature_list %}
+                        <li><i class="fas fa-check-circle"></i> {{ feature }}</li>
+                    {% endfor %}
+                </ul>
+
+                <div class="text-center mt-auto">
+                    {% if active_sub and active_sub.plan.id == plan.id %}
+                    <a href="{% url 'subscriptions:status' %}#current-plan" class="btn btn-subscribe w-100 btn-success text-white">
+                        Active Plan
+                    </a>
+                    {% else %}
+                    <a href="{% url 'subscriptions:subscribe' plan.id %}" class="btn btn-subscribe w-100 {% if 'Premium' in plan.name %}btn-premium-sub{% else %}btn-primary-sub{% endif %}">
+                        Subscribe Now
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="p-5 bg-light rounded-4">
+                <i class="fas fa-info-circle fs-1 text-muted mb-3"></i>
+                <h3>No plans available yet.</h3>
+                <p class="text-muted">Please check back later or contact admin.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+
+
+
+
+

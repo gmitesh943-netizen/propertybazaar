@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify OTP - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 text-center">
+                <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                    <i class="fas fa-shield-alt text-success fs-2"></i>
+                </div>
+                <h3 class="fw-bold mb-3">Verify OTP</h3>
+                <p class="text-muted mb-4">We've sent a 6-digit OTP to your email address. Please enter it below to proceed.</p>
+                
+                <form method="POST" action="{% url 'accounts:verify_reset_otp' %}">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <input type="text" name="otp" class="form-control form-control-lg text-center fw-bold letter-spacing-2 py-3" placeholder="Enter 6-digit OTP" maxlength="6" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill" style="background-color: #ff6600; border: none;">Verify & Proceed</button>
+                </form>
+                
+                <div class="mt-4 pt-3 border-top">
+                    <p class="text-muted small mb-0"><a href="{% url 'accounts:forgot_password' %}" class="text-primary fw-bold text-decoration-none">Change Email Address</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

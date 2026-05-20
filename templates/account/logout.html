@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Out - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-left">
+        <h1 class="auth-benefit-title">Things you Can Do with PropertyBazaar Account</h1>
+        
+        <div class="auth-benefit-item">
+            <div class="auth-benefit-icon"><i class="fas fa-check"></i></div>
+            <div class="auth-benefit-text">
+                <h5>Post one Single Property for FREE</h5>
+                <p>Reach thousands of buyers instantly.</p>
+            </div>
+        </div>
+
+        <div class="auth-benefit-item">
+            <div class="auth-benefit-icon"><i class="fas fa-check"></i></div>
+            <div class="auth-benefit-text">
+                <h5>Set property alerts for your requirement</h5>
+                <p>Get notified about new listings.</p>
+            </div>
+        </div>
+
+        <div class="auth-benefit-item">
+            <div class="auth-benefit-icon"><i class="fas fa-check"></i></div>
+            <div class="auth-benefit-text">
+                <h5>Get accessed by over 1 Lakh buyers</h5>
+                <p>Showcase your property to a massive audience.</p>
+            </div>
+        </div>
+    </div>
+    <div class="auth-right">
+        <div class="auth-card text-center">
+            <div class="mb-4">
+                <i class="fas fa-sign-out-alt text-primary" style="font-size: 4rem;"></i>
+            </div>
+            <h3 class="fw-bold mb-3">Sign Out</h3>
+            <p class="text-muted mb-4">Are you sure you want to sign out of your PropertyBazaar account?</p>
+            
+            <form method="post" action="{% url 'account_logout' %}">
+                {% csrf_token %}
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                {% endif %}
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm mb-3" style="background-color: #ff6600; border: none;">
+                    Yes, Sign Out
+                </button>
+                <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary w-100 py-3 fw-bold rounded-pill">
+                    No, Stay Logged In
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

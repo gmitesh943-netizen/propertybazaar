@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}{{ agent.get_full_name }} - Expert Real Estate Agent | PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-5">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'properties:top_agents' %}" class="text-decoration-none text-muted">Top Agents</a></li>
+            <li class="breadcrumb-item active fw-bold text-primary">{{ agent.get_full_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Sidebar: Agent Info -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top" style="top: 100px;">
+                <div class="agent-profile-header text-center p-5 bg-light border-bottom">
+                    {% if agent.profile.profile_image %}
+                        <img src="{{ agent.profile.profile_image.url }}" class="rounded-circle mb-3 border border-4 border-white shadow" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ agent.get_full_name }}&background=d8232a&color=fff&size=150" class="rounded-circle mb-3 border border-4 border-white shadow">
+                    {% endif %}
+                    <h3 class="fw-bold mb-1">{{ agent.get_full_name }}</h3>
+                    <p class="text-primary fw-bold mb-0"><i class="fas fa-check-circle me-1"></i> Verified Property Expert</p>
+                    <div class="mt-3">
+                        <span class="badge bg-white text-dark border px-3 py-2 rounded-pill me-2"><i class="fas fa-star text-warning me-1"></i> 4.9 Rating</span>
+                        <span class="badge bg-white text-dark border px-3 py-2 rounded-pill"><i class="fas fa-briefcase text-primary me-1"></i> 5+ Years Exp.</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-uppercase small text-muted mb-3">About Agent</h6>
+                    <p class="text-muted mb-4">{{ agent.profile.bio|default:"Experienced real estate professional dedicated to helping clients find their perfect home in Ahmedabad. Specializes in luxury apartments and new residential projects." }}</p>
+                    
+                    <h6 class="fw-bold text-uppercase small text-muted mb-3">Contact Details</h6>
+                    <div class="d-grid gap-3 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <p class="small text-muted mb-0">Phone</p>
+                                <p class="fw-bold mb-0">{{ agent.phone_number|default:"+91 98XXX XXXXX" }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <p class="small text-muted mb-0">Email</p>
+                                <p class="fw-bold mb-0">{{ agent.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg rounded-pill fw-bold py-3"><i class="fab fa-whatsapp me-2"></i> Chat on WhatsApp</button>
+                        <button class="btn btn-outline-dark btn-lg rounded-pill fw-bold py-3">Send Message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content: Properties -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-end mb-4 pb-3 border-bottom">
+                <div>
+                    <h2 class="fw-bold mb-1">Properties by {{ agent.first_name }}</h2>
+                    <p class="text-muted mb-0">Discover {{ properties.count }} active listings managed by this agent</p>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-pill px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Sort by: Newest
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
+                        <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {% for property in properties %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 property-card-hover">
+                        <div class="position-relative">
+                            {% if property.images.all %}
+                                <img src="{{ property.images.first.image.url }}" class="card-img-top" style="height: 220px; object-fit: cover;">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="card-img-top" style="height: 220px; object-fit: cover;">
+                            {% endif %}
+                            <span class="badge bg-primary position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">{{ property.category.name }}</span>
+                            <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-dark text-white">
+                                <h5 class="fw-bold mb-0">₹{{ property.price|intword }}</h5>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-2 text-truncate">{{ property.title }}</h5>
+                            <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-2"></i>{{ property.city }}, Ahmedabad</p>
+                            <div class="d-flex gap-3 text-muted small border-top pt-3">
+                                <span><i class="fas fa-bed me-1 text-primary"></i> {{ property.bedrooms }} BHK</span>
+                                <span><i class="fas fa-bath me-1 text-primary"></i> {{ property.bathrooms }} Bath</span>
+                                <span><i class="fas fa-vector-square me-1 text-primary"></i> {{ property.area }} sqft</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 p-4 pt-0">
+                            <a href="{% url 'properties:property_detail' property.slug %}" class="btn btn-outline-primary w-100 rounded-pill fw-bold">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-home fa-2x text-muted"></i>
+                    </div>
+                    <h5 class="fw-bold">No active listings</h5>
+                    <p class="text-muted">This agent currently has no public property listings.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-dark {
+        background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    }
+    .property-card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .property-card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important;
+    }
+    .breadcrumb-item + .breadcrumb-item::before { content: ">"; }
+</style>
+{% endblock %}
+
+
+
+
+
+

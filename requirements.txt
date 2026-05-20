@@ -1,0 +1,17 @@
+django>=5.0,<6.0
+djangorestframework
+psycopg2-binary
+Pillow
+django-filter
+django-crispy-forms
+crispy-bootstrap5
+django-ckeditor
+django-allauth
+razorpay
+python-decouple
+gunicorn
+django-cleanup
+whitenoise
+django-cors-headers
+geopy
+dj-database-url

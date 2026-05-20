@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Sell Property - PropertyBazaar{% endblock %}
+
+{% block extra_css %}
+<style>
+  .sell-container {
+    max-width: 960px;
+    margin: 60px auto;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.08);
+    overflow: hidden;
+    padding: 30px;
+  }
+  .sell-header {
+    background: linear-gradient(135deg, #ff6600, #cc5200);
+    color: #fff;
+    text-align: center;
+    padding: 30px;
+    border-radius: 20px 20px 0 0;
+  }
+  .sell-header h2 {margin:0; font-weight:700;}
+  .sell-form .form-control {border-radius:10px;}
+  .sell-form .btn-primary {
+    background:#ff6600; border:none; border-radius:10px; padding:12px 30px;
+    font-weight:600; width:100%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sell-container">
+  <div class="sell-header">
+    <h2>List Your Property for Sale</h2>
+    <p class="mb-0">Reach thousands of potential buyers instantly.</p>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mt-4" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" class="sell-form mt-4">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary mt-3">Publish Property</button>
+  </form>
+</div>
+{% endblock %}
+
+
+
+
+
+

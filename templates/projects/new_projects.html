@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}New Projects Encyclopedia - PropertyBazaar{% endblock %}
+
+{% block content %}
+<!-- Encyclopedia Header with Auto-Sliding Background -->
+<section class="encyclopedia-header position-relative overflow-hidden" id="encyclopediaHero" style="min-height: 320px;">
+    <!-- Sliding Background Images -->
+    <div class="hero-bg-slider" id="heroBgSlider">
+        <div class="hero-bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1486325212027-8081e485255e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+        <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+        <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+        <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1545324418-f1d3ac157359?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+        <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+    </div>
+    <!-- Dark Overlay -->
+    <div class="hero-overlay"></div>
+    <!-- Content -->
+    <div class="container position-relative" style="z-index: 2; padding: 60px 0; text-align: center; color: white;">
+        <!-- PropertyBazaar Logo -->
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'properties:home' %}" style="text-decoration: none;">
+                <span style="font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; color: white; letter-spacing: -1.5px;">
+                    propertybazaar
+                </span>
+            </a>
+        </div>
+        <h1 class="encyclopedia-title">Encyclopedia For All New Projects</h1>
+        <p class="lead">in <strong>Ahmedabad</strong> <i class="fas fa-chevron-down ms-2 small"></i></p>
+        
+        <!-- Slide Indicators -->
+        <div class="hero-indicators" style="margin-top: 20px;">
+            <span class="hero-dot active" onclick="goToSlide(0)"></span>
+            <span class="hero-dot" onclick="goToSlide(1)"></span>
+            <span class="hero-dot" onclick="goToSlide(2)"></span>
+            <span class="hero-dot" onclick="goToSlide(3)"></span>
+            <span class="hero-dot" onclick="goToSlide(4)"></span>
+        </div>
+
+        <div class="header-cards" style="margin-top: 30px;">
+            <div class="header-card">
+                <i class="fas fa-comment-dots"></i>
+                <p class="mb-0 small fw-bold">Expert Reviews & Advice</p>
+            </div>
+            <div class="header-card">
+                <i class="fas fa-folder-open"></i>
+                <p class="mb-0 small fw-bold">Project Directory For All New Projects</p>
+            </div>
+            <div class="header-card">
+                <i class="fas fa-file-alt"></i>
+                <p class="mb-0 small fw-bold">Updated Project Reports from RERA</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-bg-slider {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+.hero-bg-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+}
+.hero-bg-slide.active {
+    opacity: 1;
+}
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(30, 5, 10, 0.78), rgba(30, 5, 10, 0.88));
+    z-index: 1;
+}
+.hero-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.hero-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: background 0.3s;
+    display: inline-block;
+}
+.hero-dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+</style>
+
+<script>
+(function() {
+    const slides = document.querySelectorAll('.hero-bg-slide');
+    const dots = document.querySelectorAll('.hero-dot');
+    let current = 0;
+    let timer;
+
+    function goToSlide(n) {
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = (n + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+    }
+
+    window.goToSlide = goToSlide;
+
+    function autoSlide() {
+        timer = setInterval(() => goToSlide(current + 1), 5000);
+    }
+
+    autoSlide();
+
+    // Pause on hover
+    document.getElementById('encyclopediaHero').addEventListener('mouseenter', () => clearInterval(timer));
+    document.getElementById('encyclopediaHero').addEventListener('mouseleave', autoSlide);
+})();
+</script>
+
+<!-- Hotspots Section -->
+<section class="hotspots-section">
+    <div class="container">
+        <h5 class="fw-bold mb-4">Hotspots in <span class="text-decoration-underline">Ahmedabad</span></h5>
+        <div class="row g-3">
+            <div class="col-md-2">
+                <a href="?location=Vaishnodevi-Gota-Zundal&lat=23.0860&lng=72.5320" class="hotspot-card {% if request.GET.location == 'Vaishnodevi-Gota-Zundal' %}border-danger shadow-sm{% endif %}">
+                    <span class="small {% if request.GET.location == 'Vaishnodevi-Gota-Zundal' %}text-primary fw-bold{% endif %}">Vaishnodevi-Gota-Zundal</span>
+                    <i class="fas fa-chevron-right text-primary"></i>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="?location=Chandkheda&lat=23.1050&lng=72.5890" class="hotspot-card {% if request.GET.location == 'Chandkheda' %}border-danger shadow-sm{% endif %}">
+                    <span class="small {% if request.GET.location == 'Chandkheda' %}text-primary fw-bold{% endif %}">Chandkheda</span>
+                    <i class="fas fa-chevron-right text-primary"></i>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="?location=Bopal & South Bopal&lat=23.0310&lng=72.4700" class="hotspot-card {% if request.GET.location == 'Bopal & South Bopal' %}border-danger shadow-sm{% endif %}">
+                    <span class="small {% if request.GET.location == 'Bopal & South Bopal' %}text-primary fw-bold{% endif %}">Bopal & South Bopal</span>
+                    <i class="fas fa-chevron-right text-primary"></i>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="?location=Naroda&lat=23.0850&lng=72.6450" class="hotspot-card {% if request.GET.location == 'Naroda' %}border-danger shadow-sm{% endif %}">
+                    <span class="small {% if request.GET.location == 'Naroda' %}text-primary fw-bold{% endif %}">Naroda</span>
+                    <i class="fas fa-chevron-right text-primary"></i>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="?location=Rest of Ahmedabad&lat=23.0225&lng=72.5714" class="hotspot-card {% if request.GET.location == 'Rest of Ahmedabad' %}border-danger shadow-sm{% endif %}">
+                    <span class="small {% if request.GET.location == 'Rest of Ahmedabad' %}text-primary fw-bold{% endif %}">Rest of Ahmedabad</span>
+                    <i class="fas fa-chevron-right text-primary"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Listing Section -->
+<div class="container py-5">
+    <div class="mb-4">
+        <div class="btn-group" role="group">
+            <a href="{% url 'properties:new_projects' %}" class="btn btn-outline-primary active px-4">New Projects ({{ total_count }})</a>
+            <a href="{% url 'properties:top_agents' %}" class="btn btn-outline-primary px-4">Top Agents</a>
+            <a href="{% url 'properties:encyclopedia_properties' %}" class="btn btn-outline-primary px-4">Properties</a>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold mb-0">All {{ total_count }} New Projects {% if request.GET.location %}near {{ request.GET.location }}{% else %}in Ahmedabad{% endif %}</h4>
+        {% if request.GET.location %}
+            <a href="{% url 'properties:new_projects' %}" class="btn btn-sm btn-outline-secondary ms-3 rounded-pill"><i class="fas fa-times me-1"></i> Clear Area</a>
+        {% endif %}
+    </div>
+
+    <!-- Filter Bar -->
+    <form method="GET" class="d-flex gap-2 mb-5 overflow-auto pb-2">
+        <input type="text" name="search" class="form-control" placeholder="Search Projects..." style="width: 250px;" value="{{ request.GET.search }}">
+        <select name="max_price" class="form-select" style="width: 150px;">
+            <option value="">Budget</option>
+            <option value="5000000" {% if request.GET.max_price == "5000000" %}selected{% endif %}>Under 50 Lac</option>
+            <option value="10000000" {% if request.GET.max_price == "10000000" %}selected{% endif %}>Under 1 Cr</option>
+            <option value="20000000" {% if request.GET.max_price == "20000000" %}selected{% endif %}>Under 2 Cr</button>
+        </select>
+        <select name="bedrooms" class="form-select" style="width: 120px;">
+            <option value="">BHK</option>
+            <option value="1" {% if request.GET.bedrooms == "1" %}selected{% endif %}>1 BHK</option>
+            <option value="2" {% if request.GET.bedrooms == "2" %}selected{% endif %}>2 BHK</option>
+            <option value="3" {% if request.GET.bedrooms == "3" %}selected{% endif %}>3 BHK</option>
+            <option value="4" {% if request.GET.bedrooms == "4" %}selected{% endif %}>4 BHK</option>
+        </select>
+        <button type="submit" class="btn btn-primary px-4">Apply Filters</button>
+        <a href="{% url 'properties:new_projects' %}" class="btn btn-outline-secondary px-4">Reset</a>
+    </form>
+
+    {% for property in properties %}
+    <!-- Dynamic Project Card -->
+    <div class="builder-project-card">
+        <div class="bp-image">
+            {% if property.images.all %}
+                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+            {% else %}
+                <img src="https://images.unsplash.com/photo-1545324418-f1d3ac157359?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="project">
+            {% endif %}
+            {% if property.featured %}
+            <span class="badge bg-success position-absolute top-0 start-0 m-3">TOP RATED</span>
+            {% endif %}
+        </div>
+        <div class="bp-content">
+            <h4 class="fw-bold mb-1">{{ property.title }}</h4>
+            <p class="text-muted small mb-1">{{ property.city }}, {{ property.state }}</p>
+            <h5 class="fw-bold text-primary">₹{{ property.price|intword }}</h5>
+            <p class="small text-muted">{{ property.bedrooms }} BHK | {{ property.status|title }}</p>
+            
+            <div class="bp-expert-section">
+                <div class="flex-grow-1">
+                    <p class="mb-1 small fw-bold">Expert Reviews & Advice</p>
+                    <p class="x-small text-muted mb-0">{{ property.description|striptags|truncatewords:10 }}</p>
+                </div>
+                <div class="text-end">
+                    <a href="{% url 'properties:property_detail' property.slug %}" class="text-primary small fw-bold text-decoration-none">View Details <i class="fas fa-chevron-right ms-1"></i></a>
+                </div>
+            </div>
+            
+            <div class="d-flex gap-4 mt-auto">
+                <div>
+                    <p class="x-small text-muted mb-1 text-uppercase">Area</p>
+                    <p class="small mb-0">{{ property.area }} sqft</p>
+                </div>
+                <div>
+                    <p class="x-small text-muted mb-1 text-uppercase">Posted</p>
+                    <p class="small mb-0">{{ property.created_at|timesince }} ago</p>
+                </div>
+            </div>
+        </div>
+        <div class="bp-actions">
+            <button class="btn-contact-builder" onclick="openContactModal('{{ property.id }}', '{{ property.title }}')">Contact Builder</button>
+            <a href="{% url 'properties:loan_application' %}?city={{ property.city }}" class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold small text-decoration-none text-center d-block mt-2">
+                <i class="fas fa-hand-holding-usd me-1"></i> Check Loan Eligibility
+            </a>
+            <button class="btn-download mt-2" onclick="alert('Downloading brochure...')"><i class="fas fa-download me-2"></i> Download Brochure</button>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-5">
+        <img src="https://img.icons8.com/color/96/nothing-found.png" class="mb-3">
+        <h5 class="fw-bold">No projects match your criteria</h5>
+        <p class="text-muted">Try adjusting your filters or search terms.</p>
+    </div>
+    {% endfor %}
+
+    <!-- Special Showcase Placeholder -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden my-5" style="background: #2a0a0e; color: white;">
+        <div class="row g-0">
+            <div class="col-md-4 p-5">
+                <span class="badge bg-warning text-dark mb-3">NEW LAUNCH SHOWCASE</span>
+                <h2 class="fw-bold mb-3">Elenza Gradient</h2>
+                <p class="small opacity-75">Shela, Ahmedabad</p>
+                <h3 class="fw-bold">₹87.4 Lac - ₹2.52 Cr</h3>
+                <p class="mb-4">3, 4 BHK | Possession in Dec 2029</p>
+                <button class="btn btn-primary px-5 py-3 rounded-pill fw-bold">Show Interest</button>
+            </div>
+            <div class="col-md-8">
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" class="w-100 h-100" style="object-fit: cover;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Builder Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalPropertyTitle">Contact Builder</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="inquiryForm" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Your Name</label>
+                        <input type="text" name="name" class="form-control rounded-3" value="{{ request.user.get_full_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Email Address</label>
+                        <input type="email" name="email" class="form-control rounded-3" value="{{ request.user.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Phone Number</label>
+                        <input type="text" name="phone" class="form-control rounded-3" placeholder="e.g. +91 98765 43210" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Message</label>
+                        <textarea name="message" class="form-control rounded-3" rows="3" required>I am interested in this project. Please share more details.</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 fw-bold">Send Inquiry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openContactModal(propertyId, propertyTitle) {
+    const modal = new bootstrap.Modal(document.getElementById('contactModal'));
+    const form = document.getElementById('inquiryForm');
+    document.getElementById('modalPropertyTitle').innerText = 'Inquiry for ' + propertyTitle;
+    form.action = '/inquiries/send/' + propertyId + '/';
+    modal.show();
+}
+
+document.getElementById('inquiryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = this;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Sending...';
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Your inquiry has been sent successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('contactModal')).hide();
+        } else {
+            alert('Error: ' + JSON.stringify(data.errors));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Send Inquiry';
+    });
+});
+</script>
+{% endblock %}
+
+
+
+
+
+

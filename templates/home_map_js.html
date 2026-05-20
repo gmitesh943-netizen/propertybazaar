@@ -1,0 +1,91 @@
+{% extends 'home.html' %}
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let map;
+        let marker;
+        const cityInput = document.getElementById('cityInput');
+        const locateMeBtn = document.getElementById('locateMeBtn');
+        const defaultArea = 'Ahmedabad';
+
+        function resetLocateButton() {
+            locateMeBtn.innerHTML = '<i class="fas fa-crosshairs text-primary"></i>';
+        }
+
+        function setManualLocationMessage(message) {
+            cityInput.value = '';
+            cityInput.placeholder = message;
+            cityInput.focus();
+        }
+
+        function fillAreaFromCoordinates(lat, lng) {
+            return fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.address || {};
+                    const area = address.suburb || address.neighbourhood || address.city || defaultArea;
+                    cityInput.value = area;
+                    return area;
+                })
+                .catch(() => {
+                    cityInput.value = defaultArea;
+                    return defaultArea;
+                });
+        }
+
+        // Initialize Map when modal opens
+        const mapModal = document.getElementById('mapModal');
+        mapModal.addEventListener('shown.bs.modal', function () {
+            if (!map) {
+                // Default center to Ahmedabad
+                map = L.map('map').setView([23.0225, 72.5714], 12);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                map.on('click', function(e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    
+                    if (marker) {
+                        marker.setLatLng(e.latlng);
+                    } else {
+                        marker = L.marker(e.latlng).addTo(map);
+                    }
+
+                    fillAreaFromCoordinates(lat, lng);
+                });
+            }
+            map.invalidateSize();
+        });
+
+        // Geolocation
+        locateMeBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                locateMeBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-primary"></i>';
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    fillAreaFromCoordinates(lat, lng).finally(resetLocateButton);
+                }, function(error) {
+                    if (error.code === error.PERMISSION_DENIED) {
+                        setManualLocationMessage('Allow location permission or enter area manually');
+                    } else {
+                        setManualLocationMessage('Could not get location. Enter area manually');
+                    }
+                    resetLocateButton();
+                });
+            } else {
+                setManualLocationMessage('Location not supported. Enter area manually');
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+

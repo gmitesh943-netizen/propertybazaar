@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center mb-5">
+            <h1 class="display-4 fw-bold mb-3">Tips & Guides</h1>
+            <p class="lead text-muted">Expert advice to help you navigate the complex world of real estate.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 p-4" style="border-radius: 20px;">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill me-3">Buying</span>
+                    <small class="text-muted">5 min read</small>
+                </div>
+                <h4 class="fw-bold mb-3">First-Time Home Buyer's Checklist</h4>
+                <p class="text-muted">From budget planning to documentation, here's everything you need to know before signing the deal.</p>
+                <a href="#" class="text-primary fw-bold text-decoration-none mt-auto">Read More <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100 p-4" style="border-radius: 20px;">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill me-3">Investment</span>
+                    <small class="text-muted">8 min read</small>
+                </div>
+                <h4 class="fw-bold mb-3">How to Spot a Growing Real Estate Market</h4>
+                <p class="text-muted">Learn the key indicators that suggest a locality is about to see a price surge in the next 2-3 years.</p>
+                <a href="#" class="text-primary fw-bold text-decoration-none mt-auto">Read More <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h3 class="fw-bold mb-4">Subscribe to our Newsletter</h3>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control form-control-lg border-0 bg-light px-4" placeholder="Enter your email" style="border-radius: 12px 0 0 12px;">
+                        <button class="btn btn-primary btn-lg px-4" type="button" style="border-radius: 0 12px 12px 0;">Join Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

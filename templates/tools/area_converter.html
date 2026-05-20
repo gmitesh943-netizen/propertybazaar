@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - PropertyBazaar{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4 text-center border-0">
+                    <h2 class="fw-bold mb-0"><i class="fas fa-calculator me-2"></i>Area Unit Converter</h2>
+                    <p class="mb-0 opacity-75">Instantly convert between real estate area units</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form id="converterForm">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Enter Value</label>
+                            <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
+                                <input type="number" id="inputValue" class="form-control border-0 bg-light" placeholder="0.00" step="any" value="1">
+                                <select id="fromUnit" class="form-select border-0 bg-light fw-bold" style="max-width: 150px;">
+                                    <option value="sqft" {% if from_unit == 'sqft' %}selected{% endif %}>Sq. Ft.</option>
+                                    <option value="sqm" {% if from_unit == 'sqm' %}selected{% endif %}>Sq. Mt.</option>
+                                    <option value="sqyard" {% if from_unit == 'sqyard' %}selected{% endif %}>Sq. Yd.</option>
+                                    <option value="acre" {% if from_unit == 'acre' %}selected{% endif %}>Acre</option>
+                                    <option value="hectare" {% if from_unit == 'hectare' %}selected{% endif %}>Hectare</option>
+                                    <option value="bigha" {% if from_unit == 'bigha' %}selected{% endif %}>Bigha</option>
+                                    <option value="guntha" {% if from_unit == 'guntha' %}selected{% endif %}>Guntha</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-4">
+                            <button type="button" id="swapBtn" class="btn btn-outline-primary rounded-circle shadow-sm" style="width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-exchange-alt fa-rotate-90"></i>
+                            </button>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Converted Value</label>
+                            <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
+                                <input type="text" id="outputValue" class="form-control border-0 bg-white fw-bold text-primary" placeholder="0.00" readonly>
+                                <select id="toUnit" class="form-select border-0 bg-light fw-bold" style="max-width: 150px;">
+                                    <option value="sqft" {% if to_unit == 'sqft' %}selected{% endif %}>Sq. Ft.</option>
+                                    <option value="sqm" {% if to_unit == 'sqm' %}selected{% endif %}>Sq. Mt.</option>
+                                    <option value="sqyard" {% if to_unit == 'sqyard' %}selected{% endif %}>Sq. Yd.</option>
+                                    <option value="acre" {% if to_unit == 'acre' %}selected{% endif %}>Acre</option>
+                                    <option value="hectare" {% if to_unit == 'hectare' %}selected{% endif %}>Hectare</option>
+                                    <option value="bigha" {% if to_unit == 'bigha' %}selected{% endif %}>Bigha</option>
+                                    <option value="guntha" {% if to_unit == 'guntha' %}selected{% endif %}>Guntha</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="bg-light p-3 rounded-3 mb-4 border-start border-danger border-4">
+                            <p class="small text-muted mb-0"><i class="fas fa-info-circle me-1"></i> <strong>Conversion Formula:</strong> <span id="formulaText">1 Sq. Ft. = 0.0929 Sq. Mt.</span></p>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="button" id="copyResult" class="btn btn-dark btn-lg rounded-pill fw-bold py-3 shadow">
+                                <i class="far fa-copy me-2"></i>Copy Result
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Common Conversions Table -->
+            <div class="card border-0 shadow-sm rounded-4 mt-5">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Common Area Conversions</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Unit</th>
+                                    <th>Equal to (Sq. Ft.)</th>
+                                    <th>Equal to (Sq. Mt.)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1 Sq. Yard</td><td>9</td><td>0.8361</td></tr>
+                                <tr><td>1 Acre</td><td>43,560</td><td>4,046.86</td></tr>
+                                <tr><td>1 Hectare</td><td>1,07,639</td><td>10,000</td></tr>
+                                <tr><td>1 Bigha (Guj)</td><td>17,424</td><td>1,618.74</td></tr>
+                                <tr><td>1 Guntha</td><td>1,089</td><td>101.17</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card { transition: transform 0.3s ease; }
+    .input-group:focus-within { box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.1) !important; }
+    .form-control:focus, .form-select:focus { box-shadow: none !important; }
+    #swapBtn:hover { transform: scale(1.1); background-color: #ff6600; color: white; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputVal = document.getElementById('inputValue');
+        const outputVal = document.getElementById('outputValue');
+        const fromUnit = document.getElementById('fromUnit');
+        const toUnit = document.getElementById('toUnit');
+        const swapBtn = document.getElementById('swapBtn');
+        const formulaText = document.getElementById('formulaText');
+
+        // Conversion rates to Sq. Ft. (Base unit)
+        const toSqft = {
+            sqft: 1,
+            sqm: 10.7639104,
+            sqyard: 9,
+            acre: 43560,
+            hectare: 107639.104,
+            bigha: 17424, // Gujarat standard, can vary
+            guntha: 1089
+        };
+
+        const unitNames = {
+            sqft: 'Sq. Ft.',
+            sqm: 'Sq. Mt.',
+            sqyard: 'Sq. Yd.',
+            acre: 'Acre',
+            hectare: 'Hectare',
+            bigha: 'Bigha',
+            guntha: 'Guntha'
+        };
+
+        function calculate() {
+            const val = parseFloat(inputVal.value);
+            if (isNaN(val)) {
+                outputVal.value = '';
+                return;
+            }
+
+            // Convert input to Sqft then to output unit
+            const sqftValue = val * toSqft[fromUnit.value];
+            const result = sqftValue / toSqft[toUnit.value];
+            
+            outputVal.value = result.toLocaleString(undefined, {maximumFractionDigits: 4});
+
+            // Update formula text
+            const unitRate = toSqft[fromUnit.value] / toSqft[toUnit.value];
+            formulaText.innerText = `1 ${unitNames[fromUnit.value]} = ${unitRate.toFixed(4)} ${unitNames[toUnit.value]}`;
+        }
+
+        inputVal.addEventListener('input', calculate);
+        fromUnit.addEventListener('change', calculate);
+        toUnit.addEventListener('change', calculate);
+
+        swapBtn.addEventListener('click', function() {
+            const temp = fromUnit.value;
+            fromUnit.value = toUnit.value;
+            toUnit.value = temp;
+            calculate();
+        });
+
+        document.getElementById('copyResult').addEventListener('click', function() {
+            const text = `${inputVal.value} ${unitNames[fromUnit.value]} = ${outputVal.value} ${unitNames[toUnit.value]}`;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = this;
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
+                btn.classList.replace('btn-dark', 'btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.replace('btn-success', 'btn-dark');
+                }, 2000);
+            });
+        });
+
+        calculate();
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+
