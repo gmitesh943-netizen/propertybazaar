@@ -16,6 +16,9 @@ media/
 
 # Secrets
 .env
+.env.local
+.vercel-token
+.vercel
 *.pem
 
 # IDE / OS

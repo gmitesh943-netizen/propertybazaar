@@ -9,4 +9,7 @@ django.setup()
 
 from django.core.management import call_command
 
-call_command("migrate", "--noinput", verbosity=1)
+if os.environ.get("DATABASE_URL"):
+    call_command("migrate", "--noinput", verbosity=1)
+else:
+    print("Skip migrate: set DATABASE_URL in Vercel Environment Variables (Neon.tech)")
