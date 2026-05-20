@@ -207,10 +207,18 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# --- Production (Render / hosting) ---
+# --- Production (Render / Vercel / hosting) ---
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+VERCEL_URL = os.environ.get('VERCEL_URL', '')
+VERCEL_PROD_URL = os.environ.get('VERCEL_PROJECT_PRODUCTION_URL', '')
+for _vercel_host in (VERCEL_URL, VERCEL_PROD_URL):
+    if _vercel_host and _vercel_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_vercel_host)
+if os.environ.get('VERCEL'):
+    ALLOWED_HOSTS.append('.vercel.app')
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -222,8 +230,13 @@ if not DEBUG:
     else:
         CSRF_TRUSTED_ORIGINS = [
             f'https://{host}' for host in ALLOWED_HOSTS
-            if host not in ('localhost', '127.0.0.1', '*', '')
+            if host not in ('localhost', '127.0.0.1', '*', '') and not host.startswith('.')
         ]
+    for _vercel_host in (VERCEL_URL, VERCEL_PROD_URL):
+        if _vercel_host:
+            origin = f'https://{_vercel_host}'
+            if origin not in CSRF_TRUSTED_ORIGINS:
+                CSRF_TRUSTED_ORIGINS.append(origin)
 
 STORAGES = {
     'default': {

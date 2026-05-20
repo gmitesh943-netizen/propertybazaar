@@ -1,0 +1,14 @@
+venv/
+.venv/
+.git/
+media/
+db.sqlite3
+staticfiles/
+__pycache__/
+*.pyc
+.env
+.env.local
+imgggg/
+scratch/
+server_*.txt
+*.mp4
