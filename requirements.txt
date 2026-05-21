@@ -8,6 +8,7 @@ crispy-bootstrap5
 django-ckeditor
 django-allauth
 PyJWT>=2.0
+cryptography>=42.0
 razorpay
 python-decouple
 gunicorn
