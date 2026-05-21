@@ -19,6 +19,18 @@ ALLOWED_HOSTS = [
     h.strip() for h in config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') if h.strip()
 ]
 
+# LocalTunnel / ngrok (public demo URL — hostname har run par alag hoi shake)
+if DEBUG:
+    for _host in ('.loca.lt', '.localtunnel.me', '.ngrok-free.app', '.ngrok.io'):
+        if _host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(_host)
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    _csrf_extra = [
+        o.strip() for o in config('CSRF_TRUSTED_ORIGINS', default='').split(',') if o.strip()
+    ]
+    CSRF_TRUSTED_ORIGINS = _csrf_extra
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -68,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'config.middleware.TunnelCSRFMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -211,6 +224,9 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+if os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID'):
+    if '.onrender.com' not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append('.onrender.com')
 
 VERCEL_URL = os.environ.get('VERCEL_URL', '')
 VERCEL_PROD_URL = os.environ.get('VERCEL_PROJECT_PRODUCTION_URL', '')
@@ -243,6 +259,10 @@ STORAGES = {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        'BACKEND': (
+            'whitenoise.storage.CompressedStaticFilesStorage'
+            if DEBUG
+            else 'django.contrib.staticfiles.storage.StaticFilesStorage'
+        ),
     },
 }
