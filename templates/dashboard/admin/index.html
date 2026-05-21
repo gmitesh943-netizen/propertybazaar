@@ -121,7 +121,7 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 {% if prop.images.all %}
-                                                <img src="{{ prop.images.first.image.url }}" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                                <img src="{{ prop.primary_image_url }}" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
                                                 {% endif %}
                                                 <div>
                                                     <h6 class="mb-0 fw-bold small text-truncate" style="max-width: 200px;">{{ prop.title }}</h6>

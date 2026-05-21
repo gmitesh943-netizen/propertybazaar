@@ -167,11 +167,7 @@
             <div class="list">
                 {% for property in featured_properties %}
                 <div class="item">
-                    {% if property.images.all %}
-                    <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
-                    {% else %}
-                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80" alt="default">
-                    {% endif %}
+                    <img src="{{ property.primary_image_url }}" alt="{{ property.title }}">
                     <div class="content">
                         <div class="author">PropertyBazaar</div>
                         <div class="title text-truncate">{{ property.title }}</div>
@@ -195,7 +191,7 @@
                 {% for property in featured_properties %}
                 <div class="item">
                     {% if property.images.all %}
-                    <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                    <img src="{{ property.primary_image_url }}" alt="{{ property.title }}">
                     {% else %}
                     <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" alt="default">
                     {% endif %}
@@ -568,11 +564,7 @@
                 <a href="{% url 'properties:property_detail' property.slug %}" class="text-decoration-none text-dark">
                     <div class="project-card h-100">
                         <div class="project-img-wrapper">
-                            {% if property.images.all %}
-                            <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
-                            {% else %}
-                            <img src="https://images.unsplash.com/photo-1545324418-f1d3ac157359?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="{{ property.title }}">
-                            {% endif %}
+                            <img src="{{ property.primary_image_url }}" alt="{{ property.title }}">
                         </div>
                         <div class="project-footer bg-white border-top">
                             <div class="project-info-text">
@@ -602,11 +594,7 @@
             {% for property in popular_owner_properties %}
             <div class="col-md-3">
                 <div class="property-mini-card">
-                    {% if property.images.all %}
-                    <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
-                    {% else %}
-                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="default">
-                    {% endif %}
+                    <img src="{{ property.primary_image_url }}" alt="{{ property.title }}">
                     <div class="p-3">
                         <h6 class="fw-bold mb-1">{{ property.bedrooms }} BHK Flat</h6>
                         <p class="text-primary fw-bold mb-1">₹{{ property.price|intword }} | {{ property.area }} sqft</p>

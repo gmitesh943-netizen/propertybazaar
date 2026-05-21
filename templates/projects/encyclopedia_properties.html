@@ -40,7 +40,7 @@
                     <!-- Left: Image Section -->
                     <div class="col-md-4 position-relative">
                         {% if property.images.all %}
-                            <img src="{{ property.images.first.image.url }}" class="h-100 w-100" style="object-fit: cover; min-height: 280px;">
+                            <img src="{{ property.primary_image_url }}" class="h-100 w-100" style="object-fit: cover; min-height: 280px;">
                         {% else %}
                             <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="h-100 w-100" style="object-fit: cover; min-height: 280px;">
                         {% endif %}

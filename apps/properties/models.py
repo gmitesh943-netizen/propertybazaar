@@ -176,13 +176,35 @@ class Property(models.Model):
     def __str__(self):
         return self.title
 
+    def primary_image_url(self):
+        img = self.images.order_by('-is_featured', 'id').first()
+        if img:
+            return img.get_display_url()
+        return PropertyImage.DEFAULT_FALLBACK
+
 class PropertyImage(models.Model):
+    DEFAULT_FALLBACK = (
+        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80'
+    )
+
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='property_images/')
+    image = models.ImageField(upload_to='property_images/', blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, help_text='External image URL (used on Render/cloud)')
     is_featured = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Image for {self.property.title}"
+
+    def get_display_url(self):
+        if self.image_url:
+            return self.image_url
+        if self.image:
+            try:
+                if self.image.storage.exists(self.image.name):
+                    return self.image.url
+            except Exception:
+                pass
+        return self.DEFAULT_FALLBACK
 
 class PropertyVideo(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='videos')

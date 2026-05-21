@@ -135,11 +135,7 @@
                     <div class="col-md-6 col-xl-4">
                         <div class="card h-100 shadow-sm border-0 property-card transition">
                             <div class="position-relative overflow-hidden">
-                                {% if property.images.all %}
-                                <img src="{{ property.images.first.image.url }}" class="card-img-top" alt="{{ property.title }}" style="height: 220px; object-fit: cover;">
-                                {% else %}
-                                <img src="https://via.placeholder.com/400x220" class="card-img-top" alt="Placeholder">
-                                {% endif %}
+                                <img src="{{ property.primary_image_url }}" class="card-img-top" alt="{{ property.title }}" style="height: 220px; object-fit: cover;">
                                 <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-2">
                                     <span class="badge bg-primary px-3 py-2 rounded-pill">{{ property.category.name }}</span>
                                     {% if property.verified %}

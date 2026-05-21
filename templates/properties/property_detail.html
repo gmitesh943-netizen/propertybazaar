@@ -13,7 +13,7 @@
                     <div class="carousel-inner">
                         {% for img in property.images.all %}
                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <img src="{{ img.image.url }}" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="...">
+                            <img src="{{ img.get_display_url }}" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="...">
                         </div>
                         {% empty %}
                         <div class="carousel-item active">
