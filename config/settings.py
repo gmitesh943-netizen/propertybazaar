@@ -236,6 +236,15 @@ for _vercel_host in (VERCEL_URL, VERCEL_PROD_URL):
 if os.environ.get('VERCEL'):
     ALLOWED_HOSTS.append('.vercel.app')
 
+# PythonAnywhere support
+if '.pythonanywhere.com' not in str(ALLOWED_HOSTS):
+    _pa_host = os.environ.get('PYTHONANYWHERE_DOMAIN', '')
+    if _pa_host and _pa_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_pa_host)
+# Always allow pythonanywhere subdomain pattern
+if not any('.pythonanywhere.com' in h for h in ALLOWED_HOSTS):
+    ALLOWED_HOSTS.append('.pythonanywhere.com')
+
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
